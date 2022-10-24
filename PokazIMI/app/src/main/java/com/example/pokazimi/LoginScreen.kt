@@ -26,12 +26,14 @@ import androidx.compose.ui.unit.sp
 import com.example.pokazimi.data.remote.RequestService
 import com.example.pokazimi.data.remote.dto.LoginRequest
 import com.example.pokazimi.data.remote.dto.MessageResponse
+import com.example.pokazimi.data.remote.dto.RegistrationRequest
 import com.example.pokazimi.destinations.HomeScreenDestination
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.ktor.client.*
 import io.ktor.client.request.*
+import kotlinx.coroutines.runBlocking
 
 @Destination(start = true)
 @Composable
@@ -176,7 +178,18 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
-                            onClick = { login(username, password, navigator)},
+                            onClick = {
+                                if(!expandedState)
+                                {
+                                    if(login(username, password))
+                                          navigator.navigate(HomeScreenDestination)
+                                }
+                                else
+                                {
+                                    if(register(username, password, firstName, lastName, email))
+                                        navigator.navigate(HomeScreenDestination)
+                                }
+                            },
                             enabled = isFormValid,
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(16.dp)
@@ -212,21 +225,25 @@ fun LoginScreen(navigator: DestinationsNavigator) {
     }
 }
 
+fun register(username: String, password: String, firstName: String, lastName: String, email: String): Boolean {
+    val service = RequestService.create()
 
-fun login(username: String, password: String, navigator: DestinationsNavigator) {
+    if(runBlocking { service.registration(RegistrationRequest(firstName, lastName, username, email, password)) }  == null)
+    {
+        return false
+    }
+    return true
+}
+
+fun login(username: String, password: String) : Boolean {
 
     val service = RequestService.create()
-    val message = produceState<MessageResponse>(
-        initialValue = MessageResponse(""),
-        producer = {
-            value = service.login(LoginRequest(username, password))!!
-        }
-    )
 
-    if(message.value.message == "Success") {
-        //Bravo majmune
-        navigator.navigate(HomeScreenDestination)
+    if(runBlocking { service.login(LoginRequest(username, password)) }  == null)
+    {
+        return false
     }
+    return true
 }
 
 /*

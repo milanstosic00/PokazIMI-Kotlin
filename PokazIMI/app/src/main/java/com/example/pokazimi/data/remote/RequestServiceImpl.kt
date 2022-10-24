@@ -72,7 +72,7 @@ class RequestServiceImpl(private val client: HttpClient) : RequestService{
     override suspend fun registration(registrationRequest: RegistrationRequest): MessageResponse? {
         return try {
             client.post<MessageResponse>{
-                url(HttpRoutes.LOGIN)
+                url(HttpRoutes.REGISTER)
                 contentType(ContentType.Application.Json)
                 body = registrationRequest
             }
