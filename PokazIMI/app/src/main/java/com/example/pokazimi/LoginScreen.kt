@@ -23,10 +23,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.pokazimi.data.remote.RequestService
+import com.example.pokazimi.data.remote.dto.LoginRequest
+import com.example.pokazimi.data.remote.dto.MessageResponse
 import com.example.pokazimi.destinations.HomeScreenDestination
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import io.ktor.client.*
+import io.ktor.client.request.*
 
 @Destination(start = true)
 @Composable
@@ -37,7 +42,11 @@ fun LoginScreen(navigator: DestinationsNavigator) {
         systemUiController.setStatusBarColor(Color(0xffff0008))
     }
 
-    var fullname by remember {
+    var firstName by remember {
+        mutableStateOf("")
+    }
+
+    var lastName by remember {
         mutableStateOf("")
     }
 
@@ -78,7 +87,7 @@ fun LoginScreen(navigator: DestinationsNavigator) {
             )
             Card(
                 modifier = Modifier
-                    .weight(if(!expandedState) 2f else 3f)
+                    .weight(if (!expandedState) 2f else 5f)
                     .padding(8.dp),
                 shape = RoundedCornerShape(32.dp)
             ) {
@@ -94,11 +103,25 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                         if(expandedState) {
                             OutlinedTextField(
                                 modifier = Modifier.fillMaxWidth(),
-                                value = fullname,
-                                onValueChange = {fullname = it},
-                                label = { Text(text = "Full Name")},
+                                value = firstName,
+                                onValueChange = {firstName = it},
+                                label = { Text(text = "First Name")},
                                 trailingIcon = {
-                                    if(fullname.isNotBlank()) {
+                                    if(firstName.isNotBlank()) {
+                                        IconButton(onClick = { /*TODO*/ }) {
+                                            Icon(imageVector = Icons.Filled.Clear, contentDescription = "")
+                                        }
+                                    }
+                                }
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            OutlinedTextField(
+                                modifier = Modifier.fillMaxWidth(),
+                                value = lastName,
+                                onValueChange = {lastName = it},
+                                label = { Text(text = "Last Name")},
+                                trailingIcon = {
+                                    if(lastName.isNotBlank()) {
                                         IconButton(onClick = { /*TODO*/ }) {
                                             Icon(imageVector = Icons.Filled.Clear, contentDescription = "")
                                         }
@@ -153,7 +176,7 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
-                            onClick = { if(username == "admin" && password == "admin") navigator.navigate(HomeScreenDestination) },
+                            onClick = { login(username, password, navigator)},
                             enabled = isFormValid,
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(16.dp)
@@ -186,6 +209,23 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                 }
             }
         }
+    }
+}
+
+
+fun login(username: String, password: String, navigator: DestinationsNavigator) {
+
+    val service = RequestService.create()
+    val message = produceState<MessageResponse>(
+        initialValue = MessageResponse(""),
+        producer = {
+            value = service.login(LoginRequest(username, password))!!
+        }
+    )
+
+    if(message.value.message == "Success") {
+        //Bravo majmune
+        navigator.navigate(HomeScreenDestination)
     }
 }
 
