@@ -178,6 +178,7 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
+                            //Preradi ovu funkciju
                             onClick = {
                                 if(!expandedState)
                                 {
