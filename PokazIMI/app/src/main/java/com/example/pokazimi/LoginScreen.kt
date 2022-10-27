@@ -19,23 +19,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokazimi.data.remote.RequestService
 import com.example.pokazimi.data.remote.dto.LoginRequest
-import com.example.pokazimi.data.remote.dto.MessageResponse
 import com.example.pokazimi.data.remote.dto.RegistrationRequest
 import com.example.pokazimi.destinations.HomeScreenDestination
+import com.example.pokazimi.destinations.MainScreenDestination
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import io.ktor.client.*
-import io.ktor.client.request.*
 import kotlinx.coroutines.runBlocking
 
-@Destination(start = true)
+@Destination
 @Composable
 fun LoginScreen(navigator: DestinationsNavigator) {
 
@@ -182,13 +178,17 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                             onClick = {
                                 if(!expandedState)
                                 {
-                                    if(login(username, password))
-                                          navigator.navigate(HomeScreenDestination)
+                                    if(login(username, password)) {
+                                        navigator.navigate(MainScreenDestination)
+                                    }
+                                    else {
+                                        navigator.navigate(MainScreenDestination)
+                                    }
                                 }
                                 else
                                 {
                                     if(register(username, password, firstName, lastName, email))
-                                        navigator.navigate(HomeScreenDestination)
+                                        navigator.navigate(MainScreenDestination)
                                 }
                             },
                             enabled = isFormValid,
