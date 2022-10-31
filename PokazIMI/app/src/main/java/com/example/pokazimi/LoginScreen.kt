@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.sp
 import com.example.pokazimi.data.remote.RequestService
 import com.example.pokazimi.data.remote.dto.LoginRequest
 import com.example.pokazimi.data.remote.dto.RegistrationRequest
+import com.example.pokazimi.data.remote.services.LogInService
+import com.example.pokazimi.data.remote.services.RegistrationService
 import com.example.pokazimi.destinations.HomeScreenDestination
 import com.example.pokazimi.destinations.MainScreenDestination
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -227,7 +229,7 @@ fun LoginScreen(navigator: DestinationsNavigator) {
 }
 
 fun register(username: String, password: String, firstName: String, lastName: String, email: String): Boolean {
-    val service = RequestService.create()
+    val service = RegistrationService.create()
 
     if(runBlocking { service.registration(RegistrationRequest(firstName, lastName, username, email, password)) }  == null)
     {
@@ -238,7 +240,7 @@ fun register(username: String, password: String, firstName: String, lastName: St
 
 fun login(username: String, password: String) : Boolean {
 
-    val service = RequestService.create()
+    val service = LogInService.create()
 
     if(runBlocking { service.login(LoginRequest(username, password)) }  == null)
     {

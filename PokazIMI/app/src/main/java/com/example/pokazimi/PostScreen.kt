@@ -1,6 +1,9 @@
 package com.example.pokazimi
 
 import android.graphics.drawable.Icon
+import android.util.Log
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -207,5 +210,6 @@ fun PostScreen(navController: NavHostController) {
             }
         }
     }
+}
 
-} 
+
