@@ -38,6 +38,8 @@ fun PostScreen(navController: NavHostController) {
         systemUiController.setStatusBarColor(color)
     }
 
+    val postActivity = PostActivity()
+
     // treba da se dodaju slika i opis, a automatski se dodaju, username, datum, vreme, lajkovi = 0, ocene = prazno i komentari = prazno
 
     Column {
@@ -169,7 +171,7 @@ fun PostScreen(navController: NavHostController) {
                                 .fillMaxSize()
                                 .background(MaterialTheme.colors.background),
                             value = text,
-                            onValueChange = {newText -> text = newText}
+                            onValueChange = {newText -> postActivity.chooseDescription(newText)}
                         )
                     }
 
@@ -183,7 +185,7 @@ fun PostScreen(navController: NavHostController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = { postActivity.chooseImage() },
                     modifier = Modifier
                         .width(160.dp),
                     contentPadding = PaddingValues(start = 4.dp, top = 4.dp, end = 4.dp, bottom = 4.dp)
@@ -197,7 +199,7 @@ fun PostScreen(navController: NavHostController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Button(
-                    onClick = { text = " " },
+                    onClick = { postActivity.savePost() },
                     modifier = Modifier
                         .width(160.dp),
                     contentPadding = PaddingValues(start = 4.dp, top = 4.dp, end = 4.dp, bottom = 4.dp)
