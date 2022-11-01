@@ -7,6 +7,10 @@ import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.features.logging.*
 
+//import io.ktor.client.features.json.*
+//import io.ktor.client.features.json.serializer.*
+//import io.ktor.client.features.logging.*
+
 interface RequestService {
 
     suspend fun getPosts(): List<PostResponse>
@@ -17,35 +21,19 @@ interface RequestService {
 
     suspend fun registration(registrationRequest: RegistrationRequest): MessageResponse?
 
+
     companion object {
         fun create(): RequestService {
             return RequestServiceImpl(
-                client = HttpClient(CIO) {
-                install(ContentNegotiation) {
-                    json(Json {
-                        prettyPrint = true
-                        isLenient = true
-                        ignoreUnknownKeys = true
-                    })
-                }
-                install(HttpTimeout) {
-                    requestTimeoutMillis = 25000L
-                }
-                install(Logging) {
-                    logger = object : Logger {
-                        override fun log(message: String) {
-                            Log.i("Logging", message)
-                        }
+                client = HttpClient(Android) {
+                    install(Logging) {
+                        level = LogLevel.ALL
                     }
-                    level = LogLevel.ALL
+                    install(JsonFeature) {
+                        serializer = KotlinxSerializer()
+                    }
                 }
-                install(ResponseObserver) {
-                    onResponse {}
-                }
-            }
             )
         }
     }
-
-
 }
