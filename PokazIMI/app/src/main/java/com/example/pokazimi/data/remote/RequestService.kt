@@ -20,15 +20,32 @@ interface RequestService {
     companion object {
         fun create(): RequestService {
             return RequestServiceImpl(
-                client = HttpClient(Android) {
-                    install(Logging) {
-                        level = LogLevel.ALL
-                    }
-                    install(JsonFeature) {
-                         serializer = KotlinxSerializer()
-                    }
+                client = HttpClient(CIO) {
+                install(ContentNegotiation) {
+                    json(Json {
+                        prettyPrint = true
+                        isLenient = true
+                        ignoreUnknownKeys = true
+                    })
                 }
+                install(HttpTimeout) {
+                    requestTimeoutMillis = 25000L
+                }
+                install(Logging) {
+                    logger = object : Logger {
+                        override fun log(message: String) {
+                            Log.i("Logging", message)
+                        }
+                    }
+                    level = LogLevel.ALL
+                }
+                install(ResponseObserver) {
+                    onResponse {}
+                }
+            }
             )
         }
     }
+
+
 }

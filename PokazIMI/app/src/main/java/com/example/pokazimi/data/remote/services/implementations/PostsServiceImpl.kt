@@ -17,7 +17,7 @@ class PostsServiceImpl(private val client: HttpClient): PostsService {
     override suspend fun createPost(postRequest: PostRequest): MessageResponse? {
         return try {
             client.post<MessageResponse>{
-                url(HttpRoutes.LOGIN)
+                url(HttpRoutes.SAVE_POST)
                 contentType(ContentType.Application.Json)
                 body = PostRequest
             }

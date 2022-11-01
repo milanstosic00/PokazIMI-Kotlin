@@ -1,21 +1,17 @@
 package com.example.pokazimi
 
+import android.R.attr.bitmap
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.provider.MediaStore
 import android.util.Log
 import android.widget.ImageView
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import com.example.pokazimi.data.remote.dto.PostRequest
-import com.example.pokazimi.data.remote.services.PostsService
-import com.example.pokazimi.ui.theme.PokazIMITheme
-import com.ramcosta.composedestinations.DestinationsNavHost
 import java.io.ByteArrayOutputStream
+
 
 class PostActivity: ComponentActivity() {
     private lateinit var description: String
@@ -50,8 +46,11 @@ class PostActivity: ComponentActivity() {
         description = newDescription
     }
 
-    fun savePost()
+    fun savePost(userId: Int, description: String, image: Bitmap)
     {
-        postViewModel.savePost(description,image)
+        val stream = ByteArrayOutputStream()
+        image.compress(Bitmap.CompressFormat.PNG, 90, stream)
+        val imageByteArray = stream.toByteArray()
+        postViewModel.savePost(1,description,imageByteArray)
     }
 }
