@@ -22,9 +22,6 @@ interface PostsService {
                     install(Logging) {
                         level = LogLevel.ALL
                     }
-                    install(JsonFeature) {
-                        serializer = KotlinxSerializer()
-                    }
                 }
             )
         }
