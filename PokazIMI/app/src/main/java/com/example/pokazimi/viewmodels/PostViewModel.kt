@@ -1,4 +1,4 @@
-package com.example.pokazimi
+package com.example.pokazimi.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

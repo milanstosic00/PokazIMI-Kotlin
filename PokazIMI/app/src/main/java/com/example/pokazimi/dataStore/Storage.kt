@@ -6,7 +6,10 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class Storage(private val context: Context) {
 
@@ -36,5 +39,10 @@ class Storage(private val context: Context) {
         context.dataStore.edit { preferences ->
             preferences[REFRESH_TOKEN] = token
         }
+    }
+
+    fun returnAccessToken(): String {
+        val user_token = runBlocking { getAccessToken.collect() }
+        return user_token as String
     }
 }

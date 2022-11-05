@@ -28,6 +28,7 @@ import com.example.pokazimi.data.remote.dto.RegistrationRequest
 import com.example.pokazimi.data.remote.services.LogInService
 import com.example.pokazimi.data.remote.services.RegistrationService
 import com.example.pokazimi.dataStore.Storage
+import com.example.pokazimi.destinations.LoginScreenDestination
 import com.example.pokazimi.destinations.MainScreenDestination
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
@@ -113,7 +114,7 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                                 label = { Text(text = "First Name")},
                                 trailingIcon = {
                                     if(firstName.isNotBlank()) {
-                                        IconButton(onClick = { /*TODO*/ }) {
+                                        IconButton(onClick = { firstName = "" }) {
                                             Icon(imageVector = Icons.Filled.Clear, contentDescription = "")
                                         }
                                     }
@@ -127,7 +128,7 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                                 label = { Text(text = "Last Name")},
                                 trailingIcon = {
                                     if(lastName.isNotBlank()) {
-                                        IconButton(onClick = { /*TODO*/ }) {
+                                        IconButton(onClick = { lastName = "" }) {
                                             Icon(imageVector = Icons.Filled.Clear, contentDescription = "")
                                         }
                                     }
@@ -136,12 +137,12 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                             Spacer(modifier = Modifier.height(8.dp))
                             OutlinedTextField(
                                 modifier = Modifier.fillMaxWidth(),
-                                value = email,
-                                onValueChange = {email = it},
-                                label = { Text(text = "Email")},
+                                value = username,
+                                onValueChange = {username = it},
+                                label = { Text(text = "Username")},
                                 trailingIcon = {
-                                    if(email.isNotBlank()) {
-                                        IconButton(onClick = { /*TODO*/ }) {
+                                    if(username.isNotBlank()) {
+                                        IconButton(onClick = { username = "" }) {
                                             Icon(imageVector = Icons.Filled.Clear, contentDescription = "")
                                         }
                                     }
@@ -156,7 +157,7 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                             label = { Text(text = "Email")},
                             trailingIcon = {
                                 if(email.isNotBlank()) {
-                                    IconButton(onClick = { /*TODO*/ }) {
+                                    IconButton(onClick = { email = "" }) {
                                         Icon(imageVector = Icons.Filled.Clear, contentDescription = "")
                                     }
                                 }
@@ -198,8 +199,14 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                                 }
                                 else
                                 {
-                                    if(register(username, password, firstName, lastName, email))
-                                        navigator.navigate(MainScreenDestination)
+                                    if(register(username, password, firstName, lastName, email)) {
+                                        username = ""
+                                        password = ""
+                                        firstName = ""
+                                        lastName = ""
+                                        expandedState = false
+                                    }
+
                                 }
                             },
                             enabled = isFormValid,

@@ -1,8 +1,5 @@
 package com.example.pokazimi
 
-import android.graphics.drawable.Icon
-import android.util.Log
-import androidx.activity.result.PickVisualMediaRequest
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -33,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.pokazimi.ui.activity.PostActivity
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 

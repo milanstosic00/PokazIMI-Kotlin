@@ -1,4 +1,4 @@
-package com.example.pokazimi
+package com.example.pokazimi.data.item
 
 import android.media.Image
 import androidx.annotation.StringRes

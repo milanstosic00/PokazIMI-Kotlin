@@ -1,6 +1,5 @@
-package com.example.pokazimi
+package com.example.pokazimi.ui.activity
 
-import android.R.attr.bitmap
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
@@ -10,6 +9,7 @@ import android.widget.ImageView
 import androidx.activity.ComponentActivity
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import com.example.pokazimi.viewmodels.PostViewModel
 import java.io.ByteArrayOutputStream
 
 

@@ -6,7 +6,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -15,13 +14,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.pokazimi.data.item.BottomNavItem
 import com.ramcosta.composedestinations.annotation.Destination
-
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 
 @Destination
 @Composable
-fun MainScreen() {
+fun MainScreen(navigator: DestinationsNavigator) {
     val navController = rememberNavController()
 
     Scaffold (
@@ -51,15 +51,15 @@ fun MainScreen() {
             )
         }
     ) {
-        Navigation(navController = navController)
+        Navigation(navController = navController, navigator)
     }
 }
 
 @Composable
-fun Navigation(navController: NavHostController) {
+fun Navigation(navController: NavHostController, navigator: DestinationsNavigator) {
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
-            HomeScreen()
+            HomeScreen(navigator)
         }
         composable("post") {
             PostScreen(navController)
