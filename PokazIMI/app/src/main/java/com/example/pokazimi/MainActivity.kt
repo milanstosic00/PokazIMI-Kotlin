@@ -56,6 +56,8 @@ class MainActivity : ComponentActivity() {
 @com.ramcosta.composedestinations.annotation.Destination(start = true)
 @Composable
 fun LoadingScreen(navigator: DestinationsNavigator){
+
+    navigator.navigate(MainScreenDestination)
     val context = LocalContext.current
     //val scope = rememberCoroutineScope()
     val dataStore = Storage(context)

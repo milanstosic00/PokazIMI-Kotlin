@@ -177,7 +177,7 @@ fun PostScreen(navController: NavHostController) {
                                     .padding(6.dp),
                                 horizontalAlignment = Alignment.End
                             ) {
-                                Icon(imageVector = Icons.Default.ChatBubbleOutline, contentDescription = "Like", modifier = Modifier.size(32.dp))
+                                Icon(imageVector = Icons.Default.ChatBubbleOutline, contentDescription = "Comment", modifier = Modifier.size(32.dp))
                             }
                             Column (
                                 modifier = Modifier
@@ -185,7 +185,7 @@ fun PostScreen(navController: NavHostController) {
                                     .padding(4.dp),
                                 horizontalAlignment = Alignment.End
                             ) {
-                                Icon(imageVector = Icons.Default.StarOutline, contentDescription = "Like", modifier = Modifier.size(34.dp))
+                                Icon(imageVector = Icons.Default.StarOutline, contentDescription = "Share", modifier = Modifier.size(34.dp))
                             }
                     }
                     Row(

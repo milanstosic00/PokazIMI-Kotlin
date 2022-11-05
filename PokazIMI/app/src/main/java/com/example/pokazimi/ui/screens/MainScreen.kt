@@ -59,13 +59,13 @@ fun MainScreen(navigator: DestinationsNavigator) {
 fun Navigation(navController: NavHostController, navigator: DestinationsNavigator) {
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
-            HomeScreen(navigator)
+            HomeScreen(navController)
         }
         composable("post") {
             PostScreen(navController)
         }
         composable("profile") {
-            ProfileScreen()
+            ProfileScreen(0, navigator, navController) // 0 znaci da gleda svoj profil - u navbaru ostaje hardkodovana 0
         }
     }
 }

@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.pokazimi.dataStore.Storage
 import com.example.pokazimi.destinations.LoginScreenDestination
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -22,29 +23,11 @@ import kotlinx.coroutines.launch
 
 @Destination
 @Composable
-fun HomeScreen(navigator: DestinationsNavigator) {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    val dataStore = Storage(context)
-
+fun HomeScreen(navController: NavHostController) {
     val systemUiController = rememberSystemUiController()
     val color = MaterialTheme.colors.background
     SideEffect {
         systemUiController.setStatusBarColor(color)
     }
-
-    Scaffold() {
-        Text(text = "Home Screen!")
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(
-            onClick = {
-                scope.launch { dataStore.saveAccessToken("") }
-                navigator.navigate(LoginScreenDestination)
-            }
-        ) {
-            Text(text = "LOG OUT")
-        }
-    }
-    
-
+    Text(text = "Home Screen")
 }
