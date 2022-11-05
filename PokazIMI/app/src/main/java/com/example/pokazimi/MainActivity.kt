@@ -1,30 +1,12 @@
 package com.example.pokazimi
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.datastore.preferences.preferencesDataStore
-import androidx.lifecycle.ViewModelProvider
 //import androidx.datastore.preferences.core.Preferences
-import com.example.pokazimi.data.remote.RequestService
-import com.example.pokazimi.data.remote.dto.PostResponse
-import com.example.pokazimi.data.remote.repository.DataStoreRepository
-import com.example.pokazimi.datastore.Storage
-import com.example.pokazimi.destinations.Destination
-import com.example.pokazimi.destinations.HomeScreenDestination
+import com.example.pokazimi.dataStore.Storage
 import com.example.pokazimi.destinations.LoginScreenDestination
 import com.example.pokazimi.destinations.MainScreenDestination
 import com.example.pokazimi.ui.theme.PokazIMITheme
@@ -83,13 +65,13 @@ fun Init(navigator: DestinationsNavigator){
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val dataStore = Storage(context)
-    val token = dataStore.getToken.collectAsState(initial = "")
+    val token = dataStore.getAccessToken.collectAsState(initial = "")
 
-    if(token.value == "") {
-        navigator.navigate(LoginScreenDestination)
+    if(token.value.equals("")) {
+        navigator.navigate(MainScreenDestination)
     }
     else {
-        navigator.navigate(MainScreenDestination)
+        navigator.navigate(LoginScreenDestination)
     }
 }
 

@@ -1,4 +1,4 @@
-package com.example.pokazimi.datastore
+package com.example.pokazimi.dataStore
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -12,17 +12,29 @@ class Storage(private val context: Context) {
 
     companion object {
         private val Context.dataStore: DataStore<androidx.datastore.preferences.core.Preferences> by preferencesDataStore("Storage")
-        val USER_TOKEN = stringPreferencesKey("user_token")
+        val ACCESS_TOKEN = stringPreferencesKey("access_token")
+        val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
     }
 
-    val getToken: Flow<String?> = context.dataStore.data
+    val getAccessToken: Flow<String?> = context.dataStore.data
         .map { preferences ->
-            preferences[USER_TOKEN] ?: ""
+            preferences[ACCESS_TOKEN] ?: ""
         }
 
-    suspend fun saveToken(token: String) {
+    suspend fun saveAccessToken(token: String) {
         context.dataStore.edit { preferences ->
-            preferences[USER_TOKEN] = token
+            preferences[ACCESS_TOKEN] = token
+        }
+    }
+
+    val getRefreshToken: Flow<String?> = context.dataStore.data
+        .map { preferences ->
+            preferences[REFRESH_TOKEN] ?: ""
+        }
+
+    suspend fun saveRefreshToken(token: String) {
+        context.dataStore.edit { preferences ->
+            preferences[REFRESH_TOKEN] = token
         }
     }
 }

@@ -2,6 +2,7 @@ package com.example.pokazimi.data.remote.services
 
 import com.example.pokazimi.data.remote.RequestService
 import com.example.pokazimi.data.remote.RequestServiceImpl
+import com.example.pokazimi.data.remote.dto.LogInResponse
 import com.example.pokazimi.data.remote.dto.LoginRequest
 import com.example.pokazimi.data.remote.dto.MessageResponse
 import com.example.pokazimi.data.remote.dto.RegistrationRequest
@@ -13,7 +14,7 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.features.logging.*
 
 interface LogInService {
-    suspend fun login(loginRequest: LoginRequest): MessageResponse?
+    suspend fun login(loginRequest: LoginRequest): LogInResponse?
 
 
     companion object {

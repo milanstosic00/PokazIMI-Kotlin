@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -21,21 +22,25 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.pokazimi.data.remote.RequestService
+import com.example.pokazimi.data.remote.dto.LogInResponse
 import com.example.pokazimi.data.remote.dto.LoginRequest
 import com.example.pokazimi.data.remote.dto.RegistrationRequest
 import com.example.pokazimi.data.remote.services.LogInService
 import com.example.pokazimi.data.remote.services.RegistrationService
-import com.example.pokazimi.destinations.HomeScreenDestination
+import com.example.pokazimi.dataStore.Storage
 import com.example.pokazimi.destinations.MainScreenDestination
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 @Destination
 @Composable
 fun LoginScreen(navigator: DestinationsNavigator) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val dataStore = Storage(context)
 
     val systemUiController = rememberSystemUiController()
     SideEffect {
@@ -71,7 +76,7 @@ fun LoginScreen(navigator: DestinationsNavigator) {
     }
 
     val isFormValid by derivedStateOf {
-        username.isNotBlank() && password.length >= 5
+        email.isNotBlank() && password.length >= 5
     }
 
     Scaffold(backgroundColor = MaterialTheme.colors.primary) {
@@ -146,11 +151,11 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                         }
                         OutlinedTextField(
                             modifier = Modifier.fillMaxWidth(),
-                            value = username,
-                            onValueChange = {username = it},
-                            label = { Text(text = "Username")},
+                            value = email,
+                            onValueChange = {email = it},
+                            label = { Text(text = "Email")},
                             trailingIcon = {
-                                if(username.isNotBlank()) {
+                                if(email.isNotBlank()) {
                                     IconButton(onClick = { /*TODO*/ }) {
                                         Icon(imageVector = Icons.Filled.Clear, contentDescription = "")
                                     }
@@ -180,11 +185,15 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                             onClick = {
                                 if(!expandedState)
                                 {
-                                    if(login(username, password)) {
+                                    val loginResponse = login(email, password)
+                                    if(loginResponse != null) {
+
+                                        scope.launch { dataStore.saveAccessToken(loginResponse.accessToken) }
                                         navigator.navigate(MainScreenDestination)
+
                                     }
                                     else {
-                                        navigator.navigate(MainScreenDestination)
+                                        //navigator.navigate(MainScreenDestination)
                                     }
                                 }
                                 else
@@ -238,15 +247,13 @@ fun register(username: String, password: String, firstName: String, lastName: St
     return true
 }
 
-fun login(username: String, password: String) : Boolean {
+fun login(username: String, password: String) : LogInResponse? {
 
     val service = LogInService.create()
+    val response = runBlocking { service.login(LoginRequest(username, password)) } ?: return null
 
-    if(runBlocking { service.login(LoginRequest(username, password)) }  == null)
-    {
-        return false
-    }
-    return true
+    println("access token je: asdasdasd " + response.accessToken)
+    return response
 }
 
 /*
