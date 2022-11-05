@@ -7,6 +7,8 @@ import com.example.pokazimi.data.remote.dto.PostResponse
 import com.example.pokazimi.data.remote.services.PostsService
 import io.ktor.client.*
 import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 
 class PostsServiceImpl(private val client: HttpClient): PostsService {
@@ -14,16 +16,23 @@ class PostsServiceImpl(private val client: HttpClient): PostsService {
         TODO("Not yet implemented")
     }
 
-    override suspend fun createPost(postRequest: PostRequest): MessageResponse? {
+    override suspend fun createPost(postRequest: PostRequest): Boolean {
         return try {
-            client.post<MessageResponse>{
-                url(HttpRoutes.LOGIN)
-                contentType(ContentType.Application.Json)
-                body = PostRequest
-            }
+            val response: HttpResponse = client.submitFormWithBinaryData(
+                url = HttpRoutes.SAVE_POST,
+                formData = formData {
+                    append("userId", postRequest.userId)
+                    append("description", postRequest.description)
+                    append("image", postRequest.image, Headers.build {
+                        append(HttpHeaders.ContentType, "image/jpeg")
+                        append(HttpHeaders.ContentDisposition, "filename=image.png")
+                    })
+                }
+            )
+            true
         } catch (e: Exception) {
             print("Error : ${e.message}")
-            null
+            false
         }
     }
 

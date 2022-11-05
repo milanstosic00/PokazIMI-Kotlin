@@ -7,6 +7,10 @@ import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.features.logging.*
 
+//import io.ktor.client.features.json.*
+//import io.ktor.client.features.json.serializer.*
+//import io.ktor.client.features.logging.*
+
 interface RequestService {
 
     suspend fun getPosts(): List<PostResponse>
@@ -17,6 +21,7 @@ interface RequestService {
 
     suspend fun registration(registrationRequest: RegistrationRequest): MessageResponse?
 
+
     companion object {
         fun create(): RequestService {
             return RequestServiceImpl(
@@ -25,7 +30,7 @@ interface RequestService {
                         level = LogLevel.ALL
                     }
                     install(JsonFeature) {
-                         serializer = KotlinxSerializer()
+                        serializer = KotlinxSerializer()
                     }
                 }
             )

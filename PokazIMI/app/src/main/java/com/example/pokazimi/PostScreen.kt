@@ -3,6 +3,14 @@ package com.example.pokazimi
 import android.graphics.drawable.Icon
 import android.util.Log
 import androidx.activity.result.PickVisualMediaRequest
+import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,8 +25,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -31,6 +40,22 @@ import com.ramcosta.composedestinations.annotation.Destination
 @Composable
 fun PostScreen(navController: NavHostController) {
 
+    val context = LocalContext.current
+    val myImage: Bitmap = BitmapFactory.decodeResource(Resources.getSystem(), android.R.mipmap.sym_def_app_icon)
+    val result = remember {
+        mutableStateOf<Bitmap>(myImage)
+    }
+
+    val chooseImage = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()){
+        if (Build.VERSION.SDK_INT < 29) {
+            result.value = MediaStore.Images.Media.getBitmap(context.contentResolver, it)
+        }
+        else {
+            val source = ImageDecoder.createSource(context.contentResolver, it as Uri)
+            result.value = ImageDecoder.decodeBitmap(source)
+        }
+    }
+
     var text by remember {
         mutableStateOf("Write you description here")
     }
@@ -40,7 +65,8 @@ fun PostScreen(navController: NavHostController) {
     SideEffect {
         systemUiController.setStatusBarColor(color)
     }
-
+//
+    val postActivity = PostActivity()
     // treba da se dodaju slika i opis, a automatski se dodaju, username, datum, vreme, lajkovi = 0, ocene = prazno i komentari = prazno
 
     Column {
@@ -66,7 +92,9 @@ fun PostScreen(navController: NavHostController) {
                 horizontalAlignment = Alignment.End
             ) {
                 IconButton(
-                    onClick = { navController.navigate("home") },
+                    onClick = {
+                         postActivity.savePost(1,text,result.value)
+                    },
                     modifier = Modifier
                         .padding(5.dp)
                 ) {
@@ -100,7 +128,8 @@ fun PostScreen(navController: NavHostController) {
                 ) {
                     Row() {
                         Image(
-                            painter = painterResource(id = R.drawable.test_img),
+                            result.value.asImageBitmap(),
+                            //painter = painterResource(id = R.drawable.test_img),
                             contentDescription = "Image",
                             modifier = Modifier
                                 .height(360.dp)
@@ -186,7 +215,7 @@ fun PostScreen(navController: NavHostController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = { chooseImage.launch("image/*") },
                     modifier = Modifier
                         .width(160.dp),
                     contentPadding = PaddingValues(start = 4.dp, top = 4.dp, end = 4.dp, bottom = 4.dp)
@@ -200,7 +229,7 @@ fun PostScreen(navController: NavHostController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Button(
-                    onClick = { text = " " },
+                    onClick = {  },
                     modifier = Modifier
                         .width(160.dp),
                     contentPadding = PaddingValues(start = 4.dp, top = 4.dp, end = 4.dp, bottom = 4.dp)
