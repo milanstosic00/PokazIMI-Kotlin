@@ -1,4 +1,4 @@
-package com.example.pokazimi
+package com.example.pokazimi.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -22,13 +22,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.pokazimi.R
 import com.example.pokazimi.data.remote.dto.LogInResponse
 import com.example.pokazimi.data.remote.dto.LoginRequest
 import com.example.pokazimi.data.remote.dto.RegistrationRequest
 import com.example.pokazimi.data.remote.services.LogInService
 import com.example.pokazimi.data.remote.services.RegistrationService
 import com.example.pokazimi.dataStore.Storage
-import com.example.pokazimi.destinations.LoginScreenDestination
 import com.example.pokazimi.destinations.MainScreenDestination
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
@@ -190,6 +190,7 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                                     if(loginResponse != null) {
 
                                         scope.launch { dataStore.saveAccessToken(loginResponse.accessToken) }
+                                        scope.launch { dataStore.saveRefreshToken(loginResponse.refreshToken) }
                                         navigator.navigate(MainScreenDestination)
 
                                     }

@@ -8,10 +8,14 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.pokazimi.dataStore.Storage
 import com.example.pokazimi.destinations.LoginScreenDestination
 import androidx.compose.runtime.Composable
+import com.example.pokazimi.data.remote.dto.RefreshTokenRequest
+import com.example.pokazimi.data.remote.services.AuthService
 import com.example.pokazimi.destinations.MainScreenDestination
 import com.example.pokazimi.ui.theme.PokazIMITheme
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
 
@@ -57,15 +61,34 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun LoadingScreen(navigator: DestinationsNavigator){
     val context = LocalContext.current
-    //val scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
     val dataStore = Storage(context)
     val token = dataStore.getAccessToken.collectAsState(initial = "token").value
+
 
     if(token == "") {
         navigator.navigate(LoginScreenDestination)
     }
     else if (token != "token"){
-        navigator.navigate(MainScreenDestination)
+        val authService = AuthService.create()
+
+        val refreshToken = dataStore.getRefreshToken.collectAsState(initial = "token").value
+        if(refreshToken != "token") {
+            val logInResponse =
+                runBlocking { authService.refresh(RefreshTokenRequest(refreshToken as String)) }
+
+            if (logInResponse == null || logInResponse.accessToken == "Refresh token expired") {
+
+                navigator.navigate(LoginScreenDestination)
+            }
+            runBlocking {
+                if (logInResponse != null) {
+                    dataStore.saveRefreshToken(logInResponse.refreshToken)
+                    dataStore.saveAccessToken(logInResponse.accessToken)
+                }
+            }
+            navigator.navigate(MainScreenDestination)
+        }
     }
 }
 
