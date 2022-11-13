@@ -9,4 +9,5 @@ object HttpRoutes {
     const val LOGIN = "$BASE_URL/auth/login"
     const val REGISTER = "$BASE_URL/auth/register"
     const val SAVE_POST = "$BASE_URL/post/save"
+    const val CHANGE_PROFILE_PICTURE = "$BASE_URL/api/changeProfilePicture"
 }
