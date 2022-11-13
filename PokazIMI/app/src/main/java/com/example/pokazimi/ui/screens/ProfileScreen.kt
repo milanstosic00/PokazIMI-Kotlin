@@ -1,4 +1,4 @@
-package com.example.pokazimi
+package com.example.pokazimi.ui.screens
 
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -9,30 +9,30 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.pokazimi.data.remote.dto.ChangeProfilePictureRequest
 import com.example.pokazimi.data.remote.services.ChangeProfilePictureService
+import com.example.pokazimi.composables.Post
 import com.example.pokazimi.dataStore.Storage
 import com.example.pokazimi.destinations.LoginScreenDestination
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -175,7 +175,7 @@ fun ProfileInfo(userId: Int, navigator: DestinationsNavigator, following: Boolea
             //Ako gleda tudji profil onda se vidi follow dugme
             //Ako gleda svoj profil onda se vidi logout dugme
 
-            if(userId != 0) {
+            if(userId == 0) {
                 IconButton(onClick = {
                     scope.launch { dataStore.saveAccessToken("") }
                     navigator.navigate(LoginScreenDestination) }
@@ -261,9 +261,7 @@ fun isFollowing(following: Boolean): Color {
     if(following) {
         return Color.Green
     }
-    else {
-        return MaterialTheme.colors.onSurface
-    }
+    return MaterialTheme.colors.onSurface
 }
 
 @Composable
@@ -275,143 +273,6 @@ fun Divide() {
             .padding(horizontal = 10.dp)
     ) {
         Divider(color = MaterialTheme.colors.onSurface, thickness = 1.dp)
-    }
-}
-
-@Composable
-fun Post() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(520.dp)
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(10.dp),
-            shape = RoundedCornerShape(16.dp),
-            backgroundColor = MaterialTheme.colors.surface,
-            elevation = 5.dp
-        ) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                PostHeader()
-                Spacer(modifier = Modifier.height(10.dp))
-                PostContent()
-                PostFooter()
-            }
-        }
-    }
-}
-
-@Composable
-fun PostHeader() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(70.dp)
-            .padding(10.dp)
-    ) {
-        Column (
-            modifier = Modifier
-                .weight(1f)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.test_img),
-                contentDescription = "Image",
-                modifier = Modifier
-                    .height(50.dp)
-                    .width(50.dp)
-                    .clip(CircleShape)
-            )
-        }
-
-        Column(
-            modifier = Modifier
-                .weight(4f)
-                .padding(5.dp)
-        ) {
-            Text(text = "@username", fontSize = 14.sp, fontWeight = FontWeight.Bold)
-            Text(text = "1 hour ago", fontSize = 10.sp, fontWeight = FontWeight.Light)
-        }
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 5.dp),
-            horizontalAlignment = Alignment.End
-        ) {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Default.LocationOn, contentDescription = "View Location", Modifier.size(30.dp))
-            }
-        }
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(20.dp)
-            .padding(start = 10.dp)
-    ) {
-        Text(text = "Neki test cisto da se popuni prostor", fontSize = 14.sp)
-    }
-}
-
-@Composable
-fun PostContent() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(330.dp)
-            .padding(horizontal = 10.dp)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.test_img),
-            contentDescription = "Image",
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(shape = RoundedCornerShape(16.dp)),
-            contentScale = ContentScale.Crop
-        )
-    }
-}
-
-@Composable
-fun PostFooter() {
-    Spacer(modifier = Modifier.height(10.dp))
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = "Like", Modifier.size(30.dp))
-            }
-        }
-        Column(
-            modifier = Modifier
-                .weight(2f),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Outlined.Comment, contentDescription = "Like", Modifier.size(30.dp))
-            }
-        }
-        Column(
-            modifier = Modifier
-                .weight(1f),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Outlined.StarOutline, contentDescription = "Like", Modifier.size(30.dp))
-            }
-        }
-
     }
 }
 
