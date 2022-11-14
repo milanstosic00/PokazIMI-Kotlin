@@ -80,6 +80,8 @@ fun LoginScreen(navigator: DestinationsNavigator) {
         email.isNotBlank() && password.length >= 5
     }
 
+
+
     Scaffold(backgroundColor = MaterialTheme.colors.primary) {
         Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top){
             Image(
