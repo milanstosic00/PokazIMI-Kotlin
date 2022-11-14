@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.pokazimi.composables.Post
+import com.example.pokazimi.ui.composables.Post
 import com.example.pokazimi.dataStore.Storage
 import com.example.pokazimi.destinations.LoginScreenDestination
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 
 @Destination
 @Composable
-fun HomeScreen(navController: NavHostController) {
+fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigator) {
     val systemUiController = rememberSystemUiController()
     val color = MaterialTheme.colors.background
     SideEffect {
@@ -62,8 +62,9 @@ fun HomeScreen(navController: NavHostController) {
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        Post()
-        Post()
-        Post()
+        Post(navController)
+        Post(navController)
+        Post(navController)
+        Spacer(modifier = Modifier.height(125.dp))
     }
 }

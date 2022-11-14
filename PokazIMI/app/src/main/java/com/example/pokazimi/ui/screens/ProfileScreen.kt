@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.pokazimi.data.remote.dto.ChangeProfilePictureRequest
 import com.example.pokazimi.data.remote.services.ChangeProfilePictureService
-import com.example.pokazimi.composables.Post
+import com.example.pokazimi.ui.composables.Post
 import com.example.pokazimi.dataStore.Storage
 import com.example.pokazimi.destinations.LoginScreenDestination
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -65,8 +65,8 @@ fun ProfileScreen(userId: Int, navigator: DestinationsNavigator, navController: 
         ProfileStats()
         Spacer(modifier = Modifier.height(10.dp))
         Divide()
-        Post()
-        Post()
+        Post(navController)
+        Post(navController)
         Spacer(modifier = Modifier.height(65.dp))
     }
 }

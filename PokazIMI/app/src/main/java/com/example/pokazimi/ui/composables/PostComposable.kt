@@ -1,6 +1,7 @@
-package com.example.pokazimi.composables
+package com.example.pokazimi.ui.composables
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,10 +20,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.composable
 import com.example.pokazimi.R
+import com.example.pokazimi.destinations.ViewPostScreenDestination
+import com.example.pokazimi.ui.screens.ViewPostScreen
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Composable
-fun Post() {
+fun Post(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -31,7 +37,10 @@ fun Post() {
         Card(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(10.dp),
+                .padding(10.dp)
+                .clickable {
+                    navController.navigate("viewpost")
+                },
             shape = RoundedCornerShape(16.dp),
             backgroundColor = MaterialTheme.colors.surface,
             elevation = 5.dp
@@ -39,8 +48,8 @@ fun Post() {
             Column(modifier = Modifier.fillMaxSize()) {
                 PostHeader()
                 Spacer(modifier = Modifier.height(10.dp))
-                PostContent()
-                PostFooter()
+                PostContent(navController)
+                PostFooter(navController)
             }
         }
     }
@@ -58,14 +67,7 @@ fun PostHeader() {
             modifier = Modifier
                 .weight(1f)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.test_img),
-                contentDescription = "Image",
-                modifier = Modifier
-                    .height(50.dp)
-                    .width(50.dp)
-                    .clip(CircleShape)
-            )
+            CircularImage()
         }
 
         Column(
@@ -98,12 +100,15 @@ fun PostHeader() {
 }
 
 @Composable
-fun PostContent() {
+fun PostContent(navController: NavHostController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(330.dp)
             .padding(horizontal = 10.dp)
+            .clickable {
+                navController.navigate("viewpost")
+            }
     ) {
         Image(
             painter = painterResource(id = R.drawable.test_img),
@@ -117,7 +122,7 @@ fun PostContent() {
 }
 
 @Composable
-fun PostFooter() {
+fun PostFooter(navController: NavHostController) {
     Spacer(modifier = Modifier.height(10.dp))
     Row(
         modifier = Modifier
@@ -140,7 +145,7 @@ fun PostFooter() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { navController.navigate("viewpost") }) {
                 Icon(imageVector = Icons.Outlined.Comment, contentDescription = "Comment", Modifier.size(30.dp))
             }
         }
@@ -156,4 +161,16 @@ fun PostFooter() {
         }
 
     }
+}
+
+@Composable
+fun CircularImage() {
+    Image(
+        painter = painterResource(id = R.drawable.test_img),
+        contentDescription = "Image",
+        modifier = Modifier
+            .height(50.dp)
+            .width(50.dp)
+            .clip(CircleShape)
+    )
 }
