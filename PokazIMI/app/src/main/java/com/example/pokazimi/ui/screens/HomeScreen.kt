@@ -19,6 +19,7 @@ import androidx.navigation.NavHostController
 import com.example.pokazimi.ui.composables.Post
 import com.example.pokazimi.dataStore.Storage
 import com.example.pokazimi.destinations.LoginScreenDestination
+import com.example.pokazimi.destinations.MapScreenDestination
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -40,7 +41,7 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
             .padding(10.dp)
     ) {
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { navigator.navigate(MapScreenDestination(viewingPost = false)) },
             modifier = Modifier
                 .fillMaxWidth(),
             shape = RoundedCornerShape(50.dp),
@@ -62,9 +63,9 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        Post(navController)
-        Post(navController)
-        Post(navController)
+        Post(navController, navigator)
+        Post(navController, navigator)
+        Post(navController, navigator)
         Spacer(modifier = Modifier.height(125.dp))
     }
 }

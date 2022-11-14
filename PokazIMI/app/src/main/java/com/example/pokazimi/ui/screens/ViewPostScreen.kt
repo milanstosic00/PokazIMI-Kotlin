@@ -26,13 +26,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.pokazimi.R
+import com.example.pokazimi.destinations.MapScreenDestination
 import com.example.pokazimi.ui.composables.CircularImage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Destination
 @Composable
-fun ViewPostScreen(navController: NavHostController) {
+fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavigator) {
     val systemUiController = rememberSystemUiController()
     val color = MaterialTheme.colors.background
     SideEffect {
@@ -44,7 +46,7 @@ fun ViewPostScreen(navController: NavHostController) {
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
     ) {
-        Header(navController)
+        Header(navController, navigator)
         PostImage()
         PostInfo()
         Divide()
@@ -54,7 +56,7 @@ fun ViewPostScreen(navController: NavHostController) {
 }
 
 @Composable
-fun Header(navController: NavHostController) {
+fun Header(navController: NavHostController, navigator: DestinationsNavigator) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -78,7 +80,7 @@ fun Header(navController: NavHostController) {
            modifier = Modifier.weight(1f)
        ) {
            IconButton(
-               onClick = { /*TODO*/ }
+               onClick = { navigator.navigate(MapScreenDestination(viewingPost = true, longitude = 20.90730f, latitude = 44.01750f)) }
            ) {
                Icon(
                    imageVector = Icons.Default.LocationOn,
