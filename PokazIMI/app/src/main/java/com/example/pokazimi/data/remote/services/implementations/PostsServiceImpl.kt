@@ -21,7 +21,7 @@ class PostsServiceImpl(private val client: HttpClient): PostsService {
             val response: HttpResponse = client.submitFormWithBinaryData(
                 url = HttpRoutes.SAVE_POST,
                 formData = formData {
-                    append("userId", postRequest.user)
+                    append("user", postRequest.user)
                     append("description", postRequest.description)
                     append("image", postRequest.image, Headers.build {
                         append(HttpHeaders.ContentType, "image/jpeg")

@@ -23,7 +23,7 @@ interface PostsService {
             return PostsServiceImpl(
                 client = HttpClient(Android) {
                     install(Logging) {
-                        level = LogLevel.INFO
+                        level = LogLevel.ALL
                     }
                 }
             )

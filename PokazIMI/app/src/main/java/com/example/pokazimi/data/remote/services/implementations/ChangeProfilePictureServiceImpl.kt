@@ -18,7 +18,7 @@ class ChangeProfilePictureServiceImpl(private val client: HttpClient): ChangePro
                 url = HttpRoutes.CHANGE_PROFILE_PICTURE,
                 formData = formData {
                     append("userId", changeRequest.userId)
-                    append("image", changeRequest.profilePicture, Headers.build {
+                    append("profilePicture", changeRequest.profilePicture, Headers.build {
                         append(HttpHeaders.ContentType, "image/jpeg")
                         append(HttpHeaders.ContentDisposition, "filename=image.png")
                     })

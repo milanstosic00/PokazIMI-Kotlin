@@ -35,6 +35,7 @@ import com.example.pokazimi.data.remote.services.ChangeProfilePictureService
 import com.example.pokazimi.ui.composables.Post
 import com.example.pokazimi.dataStore.Storage
 import com.example.pokazimi.destinations.LoginScreenDestination
+import com.example.pokazimi.ui.activity.ProfileAcivity
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -81,22 +82,17 @@ fun ProfileInfo(userId: Int, navigator: DestinationsNavigator, following: Boolea
         mutableStateOf<Bitmap>(myImage)
     }
 
+    val profileAcivity = ProfileAcivity()
+
     val chooseImage = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()){
         if (Build.VERSION.SDK_INT < 29) {
             result.value = MediaStore.Images.Media.getBitmap(context.contentResolver, it)
-            val stream = ByteArrayOutputStream()
-            result.value.compress(Bitmap.CompressFormat.PNG, 90, stream)
-            val imageByteArray = stream.toByteArray()
-            runBlocking { client.change(ChangeProfilePictureRequest(1, imageByteArray)) }
         }
         else {
             val source = ImageDecoder.createSource(context.contentResolver, it as Uri)
             result.value = ImageDecoder.decodeBitmap(source)
-            val stream = ByteArrayOutputStream()
-            result.value.compress(Bitmap.CompressFormat.PNG, 90, stream)
-            val imageByteArray = stream.toByteArray()
-            runBlocking { client.change(ChangeProfilePictureRequest(1, imageByteArray)) }
         }
+        profileAcivity.changeProfilePicture(1, result.value)
     }
 
     val scope = rememberCoroutineScope()
