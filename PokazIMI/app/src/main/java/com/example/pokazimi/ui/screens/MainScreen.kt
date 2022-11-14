@@ -16,6 +16,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.pokazimi.data.item.BottomNavItem
 import com.example.pokazimi.destinations.ViewPostScreenDestination
+import com.example.pokazimi.ui.screens.MapScreen
 import com.example.pokazimi.ui.screens.ProfileScreen
 import com.example.pokazimi.ui.screens.ViewPostScreen
 import com.ramcosta.composedestinations.annotation.Destination
@@ -71,7 +72,7 @@ fun Navigation(navController: NavHostController, navigator: DestinationsNavigato
             ProfileScreen(0, navigator, navController) // 0 znaci da gleda svoj profil - u navbaru ostaje hardkodovana 0
         }
         composable("viewpost") {
-            ViewPostScreen(navController = navController)
+            ViewPostScreen(navController = navController, navigator)
         }
     }
 }

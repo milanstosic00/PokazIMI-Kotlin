@@ -23,12 +23,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.example.pokazimi.R
+import com.example.pokazimi.destinations.MapScreenDestination
 import com.example.pokazimi.destinations.ViewPostScreenDestination
 import com.example.pokazimi.ui.screens.ViewPostScreen
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Composable
-fun Post(navController: NavHostController) {
+fun Post(navController: NavHostController, navigator: DestinationsNavigator) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -46,7 +47,7 @@ fun Post(navController: NavHostController) {
             elevation = 5.dp
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                PostHeader()
+                PostHeader(navController, navigator)
                 Spacer(modifier = Modifier.height(10.dp))
                 PostContent(navController)
                 PostFooter(navController)
@@ -56,7 +57,7 @@ fun Post(navController: NavHostController) {
 }
 
 @Composable
-fun PostHeader() {
+fun PostHeader(navController: NavHostController, navigator: DestinationsNavigator) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -84,7 +85,7 @@ fun PostHeader() {
                 .padding(start = 5.dp),
             horizontalAlignment = Alignment.End
         ) {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { navigator.navigate(MapScreenDestination(viewingPost = true, longitude = 20.90730f, latitude = 44.01750f)) }) {
                 Icon(imageVector = Icons.Default.LocationOn, contentDescription = "View Location", Modifier.size(30.dp))
             }
         }

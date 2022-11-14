@@ -1,6 +1,4 @@
 <resources>
     <string name="app_name">PokazIMI</string>
-    <string name="home_screen">Home</string>
-    <string name="post_screen">Post</string>
-    <string name="profile_screen">Profile</string>
+    <string name="mapbox_access_token">pk.eyJ1Ijoic3Rvc2ljMDAiLCJhIjoiY2xhZzFodHMxMWEydjN1bGRoMjg3MzdqdyJ9.jpeD8M3RFfHEbyzbsa0dNQ</string>
 </resources>

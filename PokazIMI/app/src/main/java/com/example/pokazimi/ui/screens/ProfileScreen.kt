@@ -66,8 +66,8 @@ fun ProfileScreen(userId: Int, navigator: DestinationsNavigator, navController: 
         ProfileStats()
         Spacer(modifier = Modifier.height(10.dp))
         Divide()
-        Post(navController)
-        Post(navController)
+        Post(navController, navigator)
+        Post(navController, navigator)
         Spacer(modifier = Modifier.height(65.dp))
     }
 }
