@@ -3,14 +3,22 @@ package com.example.pokazimi.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokazimi.data.remote.dto.ChangeProfilePictureRequest
-import com.example.pokazimi.data.remote.services.ChangeProfilePictureService
+import com.example.pokazimi.data.remote.dto.User
+import com.example.pokazimi.data.remote.services.ProfileService
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class ProfileScreenViewModel: ViewModel() {
-    private var profilePictureService = ChangeProfilePictureService.create()
+    private var profileService = ProfileService.create()
 
     fun changeProfilePicture( userId: Long, image: ByteArray)
     {
-        viewModelScope.launch { profilePictureService.change(ChangeProfilePictureRequest(userId, image)) }
+        viewModelScope.launch { profileService.change(ChangeProfilePictureRequest(userId, image)) }
+    }
+
+    fun getUser(userId: Long): User?
+    {
+
+        return  runBlocking{ profileService.getUser(userId) }
     }
 }

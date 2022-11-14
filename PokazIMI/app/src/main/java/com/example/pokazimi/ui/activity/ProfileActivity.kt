@@ -1,18 +1,14 @@
 package com.example.pokazimi.ui.activity
 
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.util.Log
-import android.widget.ImageView
 import androidx.activity.ComponentActivity
-import androidx.activity.result.contract.ActivityResultContracts
-import com.example.pokazimi.viewmodels.PostViewModel
+import com.example.pokazimi.data.remote.dto.User
 import com.example.pokazimi.viewmodels.ProfileScreenViewModel
 import java.io.ByteArrayOutputStream
 
-class ProfileAcivity: ComponentActivity() {
+class ProfileActivity: ComponentActivity() {
     private var profileViewModel = ProfileScreenViewModel()
 
     @Override
@@ -29,5 +25,10 @@ class ProfileAcivity: ComponentActivity() {
         val imageByteArray = stream.toByteArray()
 
         profileViewModel.changeProfilePicture(1,imageByteArray)
+    }
+
+    fun getUser(userId: Long): User?
+    {
+        return profileViewModel.getUser(userId)
     }
 }

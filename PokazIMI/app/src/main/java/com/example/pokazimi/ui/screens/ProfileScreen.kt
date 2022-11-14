@@ -30,18 +30,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.pokazimi.data.remote.dto.ChangeProfilePictureRequest
-import com.example.pokazimi.data.remote.services.ChangeProfilePictureService
+import com.example.pokazimi.data.remote.dto.User
+import com.example.pokazimi.data.remote.services.ProfileService
 import com.example.pokazimi.ui.composables.Post
 import com.example.pokazimi.dataStore.Storage
 import com.example.pokazimi.destinations.LoginScreenDestination
-import com.example.pokazimi.ui.activity.ProfileAcivity
+import com.example.pokazimi.ui.activity.ProfileActivity
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import java.io.ByteArrayOutputStream
 
 @Destination
 @Composable
@@ -75,14 +73,14 @@ fun ProfileScreen(userId: Int, navigator: DestinationsNavigator, navController: 
 @Composable
 fun ProfileInfo(userId: Int, navigator: DestinationsNavigator, following: Boolean, navController: NavHostController) {
 
-    val client = ChangeProfilePictureService.create()
+    val client = ProfileService.create()
     val context = LocalContext.current
     val myImage: Bitmap = BitmapFactory.decodeResource(Resources.getSystem(), android.R.mipmap.sym_def_app_icon)
     val result = remember {
         mutableStateOf<Bitmap>(myImage)
     }
 
-    val profileAcivity = ProfileAcivity()
+    val profileActivity = ProfileActivity()
 
     val chooseImage = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()){
         if (Build.VERSION.SDK_INT < 29) {
@@ -92,11 +90,13 @@ fun ProfileInfo(userId: Int, navigator: DestinationsNavigator, following: Boolea
             val source = ImageDecoder.createSource(context.contentResolver, it as Uri)
             result.value = ImageDecoder.decodeBitmap(source)
         }
-        profileAcivity.changeProfilePicture(1, result.value)
+        profileActivity.changeProfilePicture(1, result.value)
     }
 
     val scope = rememberCoroutineScope()
     val dataStore = Storage(context)
+
+    val user = profileActivity.getUser(1)
 
     Row(
         modifier = Modifier
@@ -197,22 +197,26 @@ fun ProfileInfo(userId: Int, navigator: DestinationsNavigator, following: Boolea
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = "Dugoime Dugoprezime",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
-        )
+        if (user != null) {
+            Text(
+                text = user.firstName + " " +  user.lastname,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = "@username",
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Medium
-        )
+        if (user != null) {
+            Text(
+                text = "@" + user.username,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
     }
 }
 
