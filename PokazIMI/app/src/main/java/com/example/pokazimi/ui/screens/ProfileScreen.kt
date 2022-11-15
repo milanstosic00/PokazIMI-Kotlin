@@ -7,6 +7,7 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Base64
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -32,10 +33,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.pokazimi.data.remote.dto.User
 import com.example.pokazimi.data.remote.services.ProfileService
-import com.example.pokazimi.ui.composables.Post
 import com.example.pokazimi.dataStore.Storage
 import com.example.pokazimi.destinations.LoginScreenDestination
 import com.example.pokazimi.ui.activity.ProfileActivity
+import com.example.pokazimi.ui.composables.Post
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -98,6 +99,8 @@ fun ProfileInfo(userId: Int, navigator: DestinationsNavigator, following: Boolea
 
     val user = profileActivity.getUser(1)
 
+    var image: Bitmap? = null
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -118,20 +121,43 @@ fun ProfileInfo(userId: Int, navigator: DestinationsNavigator, following: Boolea
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
-                Image(
-                    result.value.asImageBitmap(),
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .width(120.dp)
-                        .height(120.dp)
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colors.onSurface,
-                            shape = CircleShape
-                        )
-                        .padding(3.dp)
-                        .clip(CircleShape),
-                )
+                image = create_image(user)
+                if(image != null)
+                {
+                    Image(
+
+                        image!!.asImageBitmap(),
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier
+                            .width(120.dp)
+                            .height(120.dp)
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colors.onSurface,
+                                shape = CircleShape
+                            )
+                            .padding(3.dp)
+                            .clip(CircleShape),
+                    )
+                }
+                else
+                {
+                    Image(
+
+                        myImage.asImageBitmap(),
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier
+                            .width(120.dp)
+                            .height(120.dp)
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colors.onSurface,
+                                shape = CircleShape
+                            )
+                            .padding(3.dp)
+                            .clip(CircleShape),
+                    )
+                }
                 Button(
                     onClick = {
                         chooseImage.launch("image/*")
@@ -174,6 +200,7 @@ fun ProfileInfo(userId: Int, navigator: DestinationsNavigator, following: Boolea
             if(userId == 0) {
                 IconButton(onClick = {
                     scope.launch { dataStore.saveAccessToken("") }
+                    scope.launch { dataStore.saveRefreshToken("") }
                     navigator.navigate(LoginScreenDestination) }
                 ) {
                     Icon(imageVector = Icons.Default.Logout, contentDescription = "Logout", modifier = Modifier.size(30.dp))
@@ -199,7 +226,7 @@ fun ProfileInfo(userId: Int, navigator: DestinationsNavigator, following: Boolea
     ) {
         if (user != null) {
             Text(
-                text = user.firstName + " " +  user.lastname,
+                text = user.firstName + " " +  user.lastName,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -274,6 +301,23 @@ fun Divide() {
     ) {
         Divider(color = MaterialTheme.colors.onSurface, thickness = 1.dp)
     }
+}
+
+fun create_image(user: User?): Bitmap?
+{
+    var profilePic: ByteArray
+    var bmp: Bitmap
+    if(user != null) {
+        if(user.profilePicture != null) {
+            profilePic = user.profilePicture.toByteArray()
+            profilePic = Base64.decode(profilePic, Base64.DEFAULT)
+
+            bmp = BitmapFactory.decodeByteArray(profilePic, 0, profilePic.size)
+            return bmp
+        }
+    }
+
+    return null
 }
 
 

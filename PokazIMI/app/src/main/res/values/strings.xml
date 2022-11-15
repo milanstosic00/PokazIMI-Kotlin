@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">PokazIMI</string>
-    <string name="mapbox_access_token">pk.eyJ1Ijoic3Rvc2ljMDAiLCJhIjoiY2xhZzFodHMxMWEydjN1bGRoMjg3MzdqdyJ9.jpeD8M3RFfHEbyzbsa0dNQ</string>
+    <string name="mapbox_access_token">sk.eyJ1Ijoic3Rvc2ljMDAiLCJhIjoiY2xhaDZ1am5nMDk3ZjNvbXo1eDM1MnJvNyJ9.CANTVdYvgyqNVni727OBzw</string>
 </resources>
