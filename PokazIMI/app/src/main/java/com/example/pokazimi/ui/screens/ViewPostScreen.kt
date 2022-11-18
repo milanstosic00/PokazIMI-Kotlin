@@ -46,9 +46,9 @@ fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavi
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
     ) {
-        Header(navController, navigator)
+        Header(navController)
         PostImage()
-        PostInfo()
+        PostInfo(navigator)
         Divide()
         CommentSection()
         Spacer(modifier = Modifier.height(125.dp))
@@ -56,42 +56,24 @@ fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavi
 }
 
 @Composable
-fun Header(navController: NavHostController, navigator: DestinationsNavigator) {
+fun Header(navController: NavHostController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(55.dp)
+            .padding(PaddingValues(0.dp, 10.dp, 10.dp, 10.dp)),
+        horizontalArrangement = Arrangement.Start
     ) {
-       Column (
-           horizontalAlignment = Alignment.Start,
-           modifier = Modifier.weight(1f)
-       ) {
-           IconButton(
-               onClick = { navController.navigateUp() }
-           ) {
-               Icon(
-                   imageVector = Icons.Default.ArrowBack,
-                   contentDescription = "Back",
-                   Modifier.size(30.dp)
-               )
-           }
-       }
-       Column(
-           horizontalAlignment = Alignment.End,
-           modifier = Modifier.weight(1f)
-       ) {
-           IconButton(
-               onClick = { navigator.navigate(MapScreenDestination(viewingPost = true, longitude = 20.90730f, latitude = 44.01750f)) }
-           ) {
-               Icon(
-                   imageVector = Icons.Default.LocationOn,
-                   contentDescription = "View Location",
-                   Modifier.size(30.dp)
-               )
-           }
-       }
-
+        IconButton(
+            onClick = { navController.navigateUp() }
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Back",
+                Modifier.size(30.dp)
+            )
+        }
     }
-
 }
 
 @Composable
@@ -111,7 +93,7 @@ fun PostImage() {
 }
 
 @Composable
-fun PostInfo() {
+fun PostInfo(navigator: DestinationsNavigator) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -145,17 +127,14 @@ fun PostInfo() {
                 modifier = Modifier.height(30.dp))
             {
                 IconButton(
-                    onClick = { /*TODO*/ }
+                    onClick = { navigator.navigate(MapScreenDestination(viewingPost = true, longitude = 20.90730f, latitude = 44.01750f)) }
                 ) {
-                    Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = "Like", Modifier.size(30.dp))
+                    Icon(
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = "View Location",
+                        Modifier.size(30.dp)
+                    )
                 }
-            }
-            Row (
-                modifier = Modifier
-                    .height(20.dp)
-                    .absoluteOffset(y = 2.dp)
-            ) {
-                Text(text = "32", fontSize = 12.sp)
             }
         }
         Column(
@@ -172,7 +151,7 @@ fun PostInfo() {
                 IconButton(
                     onClick = { /*TODO*/ }
                 ) {
-                    Icon(imageVector = Icons.Default.StarOutline, contentDescription = "Like", Modifier.size(34.dp))
+                    Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = "Like", Modifier.size(30.dp))
                 }
             }
             Row (
@@ -180,7 +159,7 @@ fun PostInfo() {
                     .height(20.dp)
                     .absoluteOffset(y = 2.dp)
             ) {
-                Text(text = "3.2", fontSize = 12.sp)
+                Text(text = "32", fontSize = 12.sp)
             }
         }
     }

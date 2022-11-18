@@ -33,12 +33,12 @@ fun Post(navController: NavHostController, navigator: DestinationsNavigator) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(520.dp)
+            .height(500.dp)
     ) {
         Card(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(10.dp)
+                .padding(PaddingValues(10.dp, 0.dp, 10.dp, 10.dp))
                 .clickable {
                     navController.navigate("viewpost")
                 },
@@ -50,7 +50,7 @@ fun Post(navController: NavHostController, navigator: DestinationsNavigator) {
                 PostHeader(navController, navigator)
                 Spacer(modifier = Modifier.height(10.dp))
                 PostContent(navController)
-                PostFooter(navController)
+                PostFooter(navController, navigator)
             }
         }
     }
@@ -73,21 +73,11 @@ fun PostHeader(navController: NavHostController, navigator: DestinationsNavigato
 
         Column(
             modifier = Modifier
-                .weight(4f)
+                .weight(5f)
                 .padding(5.dp)
         ) {
             Text(text = "@username", fontSize = 14.sp, fontWeight = FontWeight.Bold)
             Text(text = "1 hour ago", fontSize = 10.sp, fontWeight = FontWeight.Light)
-        }
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 5.dp),
-            horizontalAlignment = Alignment.End
-        ) {
-            IconButton(onClick = { navigator.navigate(MapScreenDestination(viewingPost = true, longitude = 20.90730f, latitude = 44.01750f)) }) {
-                Icon(imageVector = Icons.Default.LocationOn, contentDescription = "View Location", Modifier.size(30.dp))
-            }
         }
     }
     Row(
@@ -123,7 +113,7 @@ fun PostContent(navController: NavHostController) {
 }
 
 @Composable
-fun PostFooter(navController: NavHostController) {
+fun PostFooter(navController: NavHostController, navigator: DestinationsNavigator) {
     Spacer(modifier = Modifier.height(10.dp))
     Row(
         modifier = Modifier
@@ -156,8 +146,8 @@ fun PostFooter(navController: NavHostController) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Outlined.StarOutline, contentDescription = "Rate", Modifier.size(30.dp))
+            IconButton(onClick = { navigator.navigate(MapScreenDestination(viewingPost = true, longitude = 20.90730f, latitude = 44.01750f)) }) {
+                Icon(imageVector = Icons.Default.LocationOn, contentDescription = "View Location", Modifier.size(30.dp))
             }
         }
 

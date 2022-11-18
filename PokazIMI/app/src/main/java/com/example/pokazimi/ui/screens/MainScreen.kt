@@ -66,7 +66,7 @@ fun Navigation(navController: NavHostController, navigator: DestinationsNavigato
             HomeScreen(navController, navigator)
         }
         composable("post") {
-            PostScreen(navController)
+            PostScreen(navController, navigator)
         }
         composable("profile") {
             ProfileScreen(0, navigator, navController) // 0 znaci da gleda svoj profil - u navbaru ostaje hardkodovana 0

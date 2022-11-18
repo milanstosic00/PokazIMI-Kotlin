@@ -1,5 +1,6 @@
 package com.example.pokazimi
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,8 +38,8 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(70.dp)
-            .padding(10.dp)
+            .height(50.dp)
+            .padding(horizontal = 10.dp, vertical = 5.dp)
     ) {
         Button(
             onClick = { navigator.navigate(MapScreenDestination(viewingPost = false)) },
@@ -59,13 +60,13 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
 
     Column(
         modifier = Modifier
-            .absoluteOffset(y = 60.dp)
+            .absoluteOffset(y = 55.dp)
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
         Post(navController, navigator)
         Post(navController, navigator)
         Post(navController, navigator)
-        Spacer(modifier = Modifier.height(125.dp))
+        Spacer(modifier = Modifier.height(115.dp))
     }
 }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
@@ -23,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavHostController
 import com.example.pokazimi.R
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
@@ -36,7 +38,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Destination
 @Composable
-fun MapScreen(navigator: DestinationsNavigator, viewingPost: Boolean = false, longitude: Float = 0.0f, latitude: Float = 0.0f) {
+fun MapScreen(navController: NavHostController, navigator: DestinationsNavigator, newPost: Boolean = false, viewingPost: Boolean = false, longitude: Float = 0.0f, latitude: Float = 0.0f) {
     var mapView: MapView? = null
     Column(
         modifier = Modifier
@@ -71,7 +73,27 @@ fun MapScreen(navigator: DestinationsNavigator, viewingPost: Boolean = false, lo
                 )
                 if(!viewingPost) {
                     Icon(imageVector = Icons.Default.LocationOn, contentDescription = "Icon", modifier = Modifier.absoluteOffset(y = (-12).dp))
+                    Row(
+                        modifier = Modifier.fillMaxSize().padding(10.dp),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        FloatingActionButton(
+                            onClick = {
+                                if(newPost) {
+                                    // Ako je novi post uzmi koordinate centra kamere i posalji request za cuvanje posta
+                                }
+                                else {
+                                    // U suprotnom idi na home stranicu i posalji request za search postova koji su blizu koordinata centra kamere
+                                    navController.navigate("home")
+                                }
+                            }
+                        ) {
+                            Icon(imageVector = Icons.Default.Done, contentDescription = "Done")
+                        }
+                    }
                 }
+
             }
         }
     }
@@ -127,8 +149,8 @@ fun Header(navigator: DestinationsNavigator) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(70.dp)
-            .padding(PaddingValues(0.dp, 10.dp, 10.dp, 10.dp))
+            .height(55.dp)
+            .padding(PaddingValues(0.dp, 5.dp, 10.dp, 10.dp))
             .background(color = MaterialTheme.colors.background)
     ) {
         IconButton(
