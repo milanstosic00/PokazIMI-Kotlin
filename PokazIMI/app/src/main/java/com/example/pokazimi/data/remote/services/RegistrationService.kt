@@ -15,6 +15,7 @@ interface RegistrationService {
     suspend fun registration(registrationRequest: RegistrationRequest): MessageResponse?
 
 
+
     companion object {
         fun create(): RegistrationService {
             return RegistrationServiceImpl(

@@ -46,11 +46,11 @@ class PostActivity: ComponentActivity() {
         description = newDescription
     }
 
-    fun savePost(userId: Int, description: String, image: Bitmap)
+    fun savePost(userId: Int, description: String, image: Bitmap, lat: Double, lon: Double)
     {
         val stream = ByteArrayOutputStream()
         image.compress(Bitmap.CompressFormat.PNG, 90, stream)
         val imageByteArray = stream.toByteArray()
-        postViewModel.savePost(1,description,imageByteArray)
+        postViewModel.savePost(1,description,imageByteArray, lat, lon)
     }
 }

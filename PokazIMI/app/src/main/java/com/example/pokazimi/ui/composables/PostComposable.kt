@@ -1,5 +1,6 @@
 package com.example.pokazimi.ui.composables
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -29,15 +31,14 @@ import com.example.pokazimi.ui.screens.ViewPostScreen
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Composable
-fun Post(navController: NavHostController, navigator: DestinationsNavigator) {
+fun Post(navController: NavHostController, navigator: DestinationsNavigator, username: String = "username", description: String = "Description", image: Bitmap?, content: Bitmap?, lat: Double, lon: Double, postId: Int) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(500.dp)
     ) {
         Card(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(PaddingValues(10.dp, 0.dp, 10.dp, 10.dp))
                 .clickable {
                     navController.navigate("viewpost")
@@ -47,17 +48,17 @@ fun Post(navController: NavHostController, navigator: DestinationsNavigator) {
             elevation = 5.dp
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                PostHeader(navController, navigator)
+                PostHeader(navController, navigator, username, description, image)
                 Spacer(modifier = Modifier.height(10.dp))
-                PostContent(navController)
-                PostFooter(navController, navigator)
+                PostContent(navigator, content!!, postId)
+                PostFooter(navController, navigator, lat, lon, postId)
             }
         }
     }
 }
 
 @Composable
-fun PostHeader(navController: NavHostController, navigator: DestinationsNavigator) {
+fun PostHeader(navController: NavHostController, navigator: DestinationsNavigator, username: String, description: String = "Description", image: Bitmap?) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -68,7 +69,7 @@ fun PostHeader(navController: NavHostController, navigator: DestinationsNavigato
             modifier = Modifier
                 .weight(1f)
         ) {
-            CircularImage()
+            CircularImage(image)
         }
 
         Column(
@@ -76,7 +77,7 @@ fun PostHeader(navController: NavHostController, navigator: DestinationsNavigato
                 .weight(5f)
                 .padding(5.dp)
         ) {
-            Text(text = "@username", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            Text(text = "@"+username, fontSize = 14.sp, fontWeight = FontWeight.Bold)
             Text(text = "1 hour ago", fontSize = 10.sp, fontWeight = FontWeight.Light)
         }
     }
@@ -86,23 +87,23 @@ fun PostHeader(navController: NavHostController, navigator: DestinationsNavigato
             .height(20.dp)
             .padding(start = 10.dp)
     ) {
-        Text(text = "Neki test cisto da se popuni prostor", fontSize = 14.sp)
+        Text(text = description, fontSize = 14.sp)
     }
 }
 
 @Composable
-fun PostContent(navController: NavHostController) {
+fun PostContent(navigator: DestinationsNavigator, content: Bitmap, postId: Int) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(330.dp)
+            .heightIn(max = 330.dp)
             .padding(horizontal = 10.dp)
             .clickable {
-                navController.navigate("viewpost")
+                navigator.navigate(ViewPostScreenDestination(postId = postId))
             }
     ) {
         Image(
-            painter = painterResource(id = R.drawable.test_img),
+            content.asImageBitmap(),
             contentDescription = "Image",
             modifier = Modifier
                 .fillMaxWidth()
@@ -113,12 +114,12 @@ fun PostContent(navController: NavHostController) {
 }
 
 @Composable
-fun PostFooter(navController: NavHostController, navigator: DestinationsNavigator) {
+fun PostFooter(navController: NavHostController, navigator: DestinationsNavigator, lat: Double, lon: Double, postId: Int) {
     Spacer(modifier = Modifier.height(10.dp))
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp)
+            .height(60.dp)
     ) {
         Column(
             modifier = Modifier
@@ -136,7 +137,7 @@ fun PostFooter(navController: NavHostController, navigator: DestinationsNavigato
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            IconButton(onClick = { navController.navigate("viewpost") }) {
+            IconButton(onClick = { navigator.navigate(ViewPostScreenDestination(postId = postId)) }) {
                 Icon(imageVector = Icons.Outlined.Comment, contentDescription = "Comment", Modifier.size(30.dp))
             }
         }
@@ -146,7 +147,7 @@ fun PostFooter(navController: NavHostController, navigator: DestinationsNavigato
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            IconButton(onClick = { navigator.navigate(MapScreenDestination(viewingPost = true, longitude = 20.90730f, latitude = 44.01750f)) }) {
+            IconButton(onClick = { navigator.navigate(MapScreenDestination(viewingPost = true, longitude = lon.toFloat(), latitude = lat.toFloat())) }) {
                 Icon(imageVector = Icons.Default.LocationOn, contentDescription = "View Location", Modifier.size(30.dp))
             }
         }
@@ -155,9 +156,9 @@ fun PostFooter(navController: NavHostController, navigator: DestinationsNavigato
 }
 
 @Composable
-fun CircularImage() {
+fun CircularImage(image: Bitmap?) {
     Image(
-        painter = painterResource(id = R.drawable.test_img),
+        image!!.asImageBitmap(),
         contentDescription = "Image",
         modifier = Modifier
             .height(50.dp)

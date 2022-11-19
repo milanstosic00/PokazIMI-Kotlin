@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.pokazimi.data.remote.dto.Post
 import com.example.pokazimi.data.remote.dto.User
 import com.example.pokazimi.data.remote.services.ProfileService
 import com.example.pokazimi.dataStore.Storage
@@ -55,25 +56,33 @@ fun ProfileScreen(userId: Int, navigator: DestinationsNavigator, navController: 
     SideEffect {
         systemUiController.setStatusBarColor(color)
     }
+
+    val profileActivity = ProfileActivity()
+    val user = profileActivity.getUser(1)
+
+
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
     ) {
         Spacer(modifier = Modifier.height(10.dp))
-        ProfileInfo(userId, navigator, following, navController)
+        ProfileInfo(user!!, userId, navigator, following, navController)
         Spacer(modifier = Modifier.height(20.dp))
         ProfileStats()
         Spacer(modifier = Modifier.height(10.dp))
         Divide()
         Spacer(modifier = Modifier.height(10.dp))
-        Post(navController, navigator)
-        Post(navController, navigator)
+        user.posts.forEach {
+            Post(navController, navigator, user.username, it.description, create_image(user), create_content(it), it.lat, it.lon, it.id)
+        }
+//        Post(navController, navigator, user.username, create_image(user))
+//        Post(navController, navigator, user.username, create_image(user))
         Spacer(modifier = Modifier.height(55.dp))
     }
 }
 
 @Composable
-fun ProfileInfo(userId: Int, navigator: DestinationsNavigator, following: Boolean, navController: NavHostController) {
+fun ProfileInfo(user: User, userId: Int, navigator: DestinationsNavigator, following: Boolean, navController: NavHostController) {
 
     val client = ProfileService.create()
     val context = LocalContext.current
@@ -98,7 +107,9 @@ fun ProfileInfo(userId: Int, navigator: DestinationsNavigator, following: Boolea
     val scope = rememberCoroutineScope()
     val dataStore = Storage(context)
 
-    val user = profileActivity.getUser(1)
+
+    //println(user!!.username)
+    //println(user!!.email)
 
     var image: Bitmap? = null
 
@@ -144,7 +155,6 @@ fun ProfileInfo(userId: Int, navigator: DestinationsNavigator, following: Boolea
                 else
                 {
                     Image(
-
                         myImage.asImageBitmap(),
                         contentDescription = "Profile Picture",
                         modifier = Modifier
@@ -321,4 +331,20 @@ fun create_image(user: User?): Bitmap?
     return null
 }
 
+fun create_content(post: Post?): Bitmap?
+{
+    var contentPic: ByteArray
+    var bmp: Bitmap
+    if(post != null) {
+        if(post.image != null) {
+            contentPic = post.image.toByteArray()
+            contentPic = Base64.decode(contentPic, Base64.DEFAULT)
+
+            bmp = BitmapFactory.decodeByteArray(contentPic, 0, contentPic.size)
+            return bmp
+        }
+    }
+
+    return null
+}
 

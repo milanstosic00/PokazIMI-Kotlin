@@ -10,8 +10,8 @@ class PostViewModel: ViewModel() {
 
     private var postsService = PostsService.create()
 
-    fun savePost(userId: Long, description: String, image: ByteArray)
+    fun savePost(userId: Long, description: String, image: ByteArray, lat: Double, lon: Double)
     {
-        viewModelScope.launch { postsService.createPost(PostRequest(image,userId,description)) }
+        viewModelScope.launch { postsService.createPost(PostRequest(image,userId,description,lat,lon)) }
     }
 }

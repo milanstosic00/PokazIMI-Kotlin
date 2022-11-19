@@ -42,6 +42,8 @@ import com.example.pokazimi.ui.composables.PostHeader
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import java.io.File
+import java.io.FileOutputStream
 
 @Destination
 @Composable
@@ -80,7 +82,7 @@ fun PostScreen(navController: NavHostController, navigator: DestinationsNavigato
         modifier = Modifier
             .fillMaxSize()
     ) {
-        PreviewHeader(navController, navigator)
+        PreviewHeader(navController, navigator, desciption.text, result.value)
 
         PostPreview(navController, navigator, result.value, desciption.text)
 
@@ -135,7 +137,8 @@ fun PostScreen(navController: NavHostController, navigator: DestinationsNavigato
 }
 
 @Composable
-fun PreviewHeader(navController: NavHostController, navigator: DestinationsNavigator) {
+fun PreviewHeader(navController: NavHostController, navigator: DestinationsNavigator, description: String, image: Bitmap) {
+    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -176,8 +179,14 @@ fun PreviewHeader(navController: NavHostController, navigator: DestinationsNavig
             horizontalAlignment = Alignment.End
         ) {
             IconButton(
-                onClick = { navigator.navigate(MapScreenDestination(newPost = true, viewingPost = false)) }
-
+                onClick = {
+                    val path = context.getExternalFilesDir(null)!!.absolutePath
+                    val tempFile = File(path, "tempFileName.jpg")
+                    val fOut = FileOutputStream(tempFile)
+                    image.compress(Bitmap.CompressFormat.JPEG, 100, fOut)
+                    fOut.close()
+                    navigator.navigate(MapScreenDestination(newPost = true, viewingPost = false, description = description))
+                }
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowForward,
@@ -202,7 +211,7 @@ fun PostPreviewHeader(desciption: String) {
             modifier = Modifier
                 .weight(1f)
         ) {
-            CircularImage()
+            //CircularImage()
         }
 
         Column(
@@ -243,7 +252,7 @@ fun PostPreview(navController: NavHostController, navigator: DestinationsNavigat
                 PostPreviewHeader(desciption)
                 Spacer(modifier = Modifier.height(10.dp))
                 PostImagePreview(image)
-                PostFooter(navController, navigator)
+                //PostFooter(navController, navigator)
             }
         }
     }

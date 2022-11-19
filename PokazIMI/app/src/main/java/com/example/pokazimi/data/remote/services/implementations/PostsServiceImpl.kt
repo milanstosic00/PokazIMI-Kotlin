@@ -27,6 +27,8 @@ class PostsServiceImpl(private val client: HttpClient): PostsService {
                         append(HttpHeaders.ContentType, "image/jpeg")
                         append(HttpHeaders.ContentDisposition, "filename=image.png")
                     })
+                    append("lat", postRequest.lat)
+                    append("lon", postRequest.lon)
                 }
             )
             true

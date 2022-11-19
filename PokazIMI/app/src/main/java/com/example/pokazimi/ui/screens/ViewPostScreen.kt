@@ -34,7 +34,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Destination
 @Composable
-fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavigator) {
+fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavigator, postId: Int = -1) {
     val systemUiController = rememberSystemUiController()
     val color = MaterialTheme.colors.background
     SideEffect {
@@ -104,7 +104,7 @@ fun PostInfo(navigator: DestinationsNavigator) {
             modifier = Modifier
                 .weight(1f)
         ) {
-            CircularImage()
+            //CircularImage()
         }
 
         Column(
@@ -201,7 +201,7 @@ fun Comment(userId: Int, text : String) {
         Column(
             modifier = Modifier.weight(1f)
         ) {
-            CircularImage()
+            //CircularImage()
         }
         Column(
             modifier = Modifier.weight(4f)

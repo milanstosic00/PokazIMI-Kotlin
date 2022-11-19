@@ -7,7 +7,7 @@ data class User (
     val lastName: String,
     val username: String,
     val email: String,
-    val password: String,
+    val password: String?,
     val profilePicture: String?,
     val posts: Array<Post>,
     val role: String,

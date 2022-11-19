@@ -8,6 +8,8 @@ data class Post (
     val time: String,
     val image: String?,
     val description: String,
-    val likes: Array<Int>,
-    val comments: Array<Int>
+    val lat: Double,
+    val lon: Double,
+    val likes: Array<Int>?,
+    val comments: Array<Int>?,
 )

@@ -64,9 +64,9 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
+        /*Post(navController, navigator)
         Post(navController, navigator)
-        Post(navController, navigator)
-        Post(navController, navigator)
+        Post(navController, navigator)*/
         Spacer(modifier = Modifier.height(115.dp))
     }
 }

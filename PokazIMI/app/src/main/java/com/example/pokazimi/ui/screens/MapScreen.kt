@@ -2,6 +2,7 @@ package com.example.pokazimi.ui.screens
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import com.example.pokazimi.R
+import com.example.pokazimi.ui.activity.PostActivity
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
@@ -35,10 +37,11 @@ import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import java.io.File
 
 @Destination
 @Composable
-fun MapScreen(navController: NavHostController, navigator: DestinationsNavigator, newPost: Boolean = false, viewingPost: Boolean = false, longitude: Float = 0.0f, latitude: Float = 0.0f) {
+fun MapScreen(navController: NavHostController, navigator: DestinationsNavigator, newPost: Boolean = false, viewingPost: Boolean = false, longitude: Float = 0.0f, latitude: Float = 0.0f, description: String?) {
     var mapView: MapView? = null
     Column(
         modifier = Modifier
@@ -82,6 +85,16 @@ fun MapScreen(navController: NavHostController, navigator: DestinationsNavigator
                             onClick = {
                                 if(newPost) {
                                     // Ako je novi post uzmi koordinate centra kamere i posalji request za cuvanje posta
+                                    val postActivity = PostActivity()
+                                    val path = context.getExternalFilesDir(null)!!.absolutePath
+                                    val imagePath = "$path/tempFileName.jpg"
+                                    val image = BitmapFactory.decodeFile(imagePath)
+                                    val position = mapView!!.getMapboxMap().cameraState.center
+                                    val lat = position.latitude()
+                                    val lon = position.longitude()
+                                    postActivity.savePost(1, description!!, image, lat, lon)
+                                    File(imagePath).deleteOnExit()
+                                    //navController.navigate("home")
                                 }
                                 else {
                                     // U suprotnom idi na home stranicu i posalji request za search postova koji su blizu koordinata centra kamere
