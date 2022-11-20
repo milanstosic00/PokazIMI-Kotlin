@@ -9,7 +9,9 @@ import android.widget.ImageView
 import androidx.activity.ComponentActivity
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import com.example.pokazimi.data.remote.dto.UsernameAndProfilePic
 import com.example.pokazimi.viewmodels.PostViewModel
+import kotlinx.coroutines.runBlocking
 import java.io.ByteArrayOutputStream
 
 
@@ -52,5 +54,10 @@ class PostActivity: ComponentActivity() {
         image.compress(Bitmap.CompressFormat.PNG, 90, stream)
         val imageByteArray = stream.toByteArray()
         postViewModel.savePost(1,description,imageByteArray, lat, lon)
+    }
+
+    fun getUsernameAndProfilePic(userId: Long): UsernameAndProfilePic?
+    {
+        return runBlocking { postViewModel.getUsernameAndProfilePic(userId) }
     }
 }

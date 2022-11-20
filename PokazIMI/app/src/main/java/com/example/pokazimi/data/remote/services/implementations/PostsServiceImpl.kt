@@ -1,9 +1,7 @@
 package com.example.pokazimi.data.remote.services.implementations
 
 import com.example.pokazimi.data.remote.HttpRoutes
-import com.example.pokazimi.data.remote.dto.MessageResponse
-import com.example.pokazimi.data.remote.dto.PostRequest
-import com.example.pokazimi.data.remote.dto.PostResponse
+import com.example.pokazimi.data.remote.dto.*
 import com.example.pokazimi.data.remote.services.PostsService
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -35,6 +33,17 @@ class PostsServiceImpl(private val client: HttpClient): PostsService {
         } catch (e: Exception) {
             print("Error : ${e.message}")
             false
+        }
+    }
+
+    override suspend fun getUsernameAndProfilePic(userId: Long): UsernameAndProfilePic? {
+        return try {
+            client.get<UsernameAndProfilePic>{
+                url(HttpRoutes.GET_USERNAME_PROFILEPIC + "/$userId")
+            }
+        } catch (e: Exception) {
+            print("Error : ${e.message}")
+            null
         }
     }
 

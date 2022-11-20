@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
+import com.example.pokazimi.data.remote.dto.UsernameAndProfilePic
 import com.example.pokazimi.destinations.MapScreenDestination
 import com.example.pokazimi.ui.activity.PostActivity
 import com.example.pokazimi.ui.composables.CircularImage
@@ -42,6 +43,7 @@ import com.example.pokazimi.ui.composables.PostHeader
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.io.FileOutputStream
 
@@ -65,6 +67,7 @@ fun PostScreen(navController: NavHostController, navigator: DestinationsNavigato
         }
     }
 
+
     var desciption by remember {
         mutableStateOf(TextFieldValue(""))
     }
@@ -78,13 +81,15 @@ fun PostScreen(navController: NavHostController, navigator: DestinationsNavigato
     val postActivity = PostActivity()
     // treba da se dodaju slika i opis, a automatski se dodaju, username, datum, vreme, lajkovi = 0, ocene = prazno i komentari = prazno
 
+    val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(1) }
+
     Column (
         modifier = Modifier
             .fillMaxSize()
     ) {
         PreviewHeader(navController, navigator, desciption.text, result.value)
 
-        PostPreview(navController, navigator, result.value, desciption.text)
+        PostPreview(navController, navigator, result.value, desciption.text, usernameAndProfilePic)
 
         Column(
             modifier = Modifier
@@ -200,7 +205,8 @@ fun PreviewHeader(navController: NavHostController, navigator: DestinationsNavig
 }
 
 @Composable
-fun PostPreviewHeader(desciption: String) {
+fun PostPreviewHeader(desciption: String, usernameAndProfilePic: UsernameAndProfilePic?) {
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -219,7 +225,9 @@ fun PostPreviewHeader(desciption: String) {
                 .weight(5f)
                 .padding(5.dp)
         ) {
-            Text(text = "@username", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            if (usernameAndProfilePic != null) {
+                Text(text = usernameAndProfilePic.username, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            }
             Text(text = "1 hour ago", fontSize = 10.sp, fontWeight = FontWeight.Light)
         }
     }
@@ -234,7 +242,7 @@ fun PostPreviewHeader(desciption: String) {
 }
 
 @Composable
-fun PostPreview(navController: NavHostController, navigator: DestinationsNavigator, image: Bitmap, desciption: String) {
+fun PostPreview(navController: NavHostController, navigator: DestinationsNavigator, image: Bitmap, desciption: String, usernameAndProfilePic: UsernameAndProfilePic?) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -249,7 +257,7 @@ fun PostPreview(navController: NavHostController, navigator: DestinationsNavigat
             elevation = 5.dp
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                PostPreviewHeader(desciption)
+                PostPreviewHeader(desciption, usernameAndProfilePic)
                 Spacer(modifier = Modifier.height(10.dp))
                 PostImagePreview(image)
                 //PostFooter(navController, navigator)
