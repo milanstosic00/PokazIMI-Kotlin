@@ -1,6 +1,7 @@
 package com.example.pokazimi.data.remote.services.implementations
 
 import com.example.pokazimi.data.remote.HttpRoutes
+import com.example.pokazimi.data.remote.dto.Like
 import com.example.pokazimi.data.remote.dto.MessageResponse
 import com.example.pokazimi.data.remote.dto.PostRequest
 import com.example.pokazimi.data.remote.dto.PostResponse
@@ -33,6 +34,19 @@ class PostsServiceImpl(private val client: HttpClient): PostsService {
         } catch (e: Exception) {
             print("Error : ${e.message}")
             false
+        }
+    }
+
+    override suspend fun like(like: Like): MessageResponse? {
+        return try {
+            client.post<MessageResponse>{
+                url(HttpRoutes.LIKE)
+                contentType(ContentType.Application.Json)
+                body = like
+            }
+        } catch (e: Exception) {
+            print("Error : ${e.message}")
+            null
         }
     }
 
