@@ -17,6 +17,8 @@ interface PostsService {
     suspend fun getPosts(): List<PostResponse>
 
     suspend fun createPost(postRequest: PostRequest): Boolean?
+    suspend fun getUsernameAndProfilePic(userId: Long): UsernameAndProfilePic?
+    suspend fun like(like: Like): MessageResponse?
 
     companion object {
         fun create(): PostsService {
