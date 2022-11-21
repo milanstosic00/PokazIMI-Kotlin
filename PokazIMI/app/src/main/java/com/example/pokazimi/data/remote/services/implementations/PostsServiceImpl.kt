@@ -1,6 +1,5 @@
 package com.example.pokazimi.data.remote.services.implementations
 
-import android.os.Message
 import com.example.pokazimi.data.remote.HttpRoutes
 import com.example.pokazimi.data.remote.dto.MessageResponse
 import com.example.pokazimi.data.remote.dto.PostRequest
@@ -37,27 +36,4 @@ class PostsServiceImpl(private val client: HttpClient): PostsService {
         }
     }
 
-    override suspend fun getUsernameAndProfilePic(userId: Long): UsernameAndProfilePic? {
-        return try {
-            client.get<UsernameAndProfilePic>{
-                url(HttpRoutes.GET_USERNAME_PROFILEPIC + "/$userId")
-            }
-        } catch (e: Exception) {
-            print("Error : ${e.message}")
-            null
-        }
-    }
-
-    override suspend fun like(like: Like): MessageResponse? {
-        return try {
-            client.post<MessageResponse>{
-                url(HttpRoutes.LIKE)
-                contentType(ContentType.Application.Json)
-                body = like
-            }
-        } catch (e: Exception) {
-            print("Error : ${e.message}")
-            null
-        }
-    }
 }
