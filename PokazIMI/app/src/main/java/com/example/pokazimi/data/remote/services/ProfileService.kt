@@ -1,7 +1,7 @@
 package com.example.pokazimi.data.remote.services
 
 import com.example.pokazimi.data.remote.dto.ChangeProfilePictureRequest
-import com.example.pokazimi.data.remote.dto.ChangeProfilePictureResponse
+import com.example.pokazimi.data.remote.dto.MessageResponse
 import com.example.pokazimi.data.remote.dto.User
 import com.example.pokazimi.data.remote.services.implementations.ProfileServiceImpl
 import io.ktor.client.*
@@ -11,7 +11,7 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.features.logging.*
 
 interface ProfileService {
-    suspend fun change(changeRequest: ChangeProfilePictureRequest): ChangeProfilePictureResponse?
+    suspend fun change(changeRequest: ChangeProfilePictureRequest): MessageResponse?
 
     suspend fun getUser(userId: Long): User?
 

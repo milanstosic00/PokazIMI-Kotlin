@@ -17,14 +17,14 @@ class ProfileActivity: ComponentActivity() {
     }
 
 
-    fun changeProfilePicture(userId: Int, image: Bitmap)
+    fun changeProfilePicture(userId: Long, image: Bitmap)
     {
 
         val stream = ByteArrayOutputStream()
         image.compress(Bitmap.CompressFormat.PNG, 90, stream)
         val imageByteArray = stream.toByteArray()
 
-        profileViewModel.changeProfilePicture(1,imageByteArray)
+        profileViewModel.changeProfilePicture(userId,imageByteArray)
     }
 
     fun getUser(userId: Long): User?

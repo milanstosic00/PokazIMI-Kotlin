@@ -15,4 +15,5 @@ object HttpRoutes {
     const val GET_USER = "$BASE_URL/api/getUser"
     const val LIKE = "$BASE_URL/like/save"
 
+    const val GET_USERNAME_PROFILEPIC = "$BASE_URL/api/getUsernameAndPfp"
 }

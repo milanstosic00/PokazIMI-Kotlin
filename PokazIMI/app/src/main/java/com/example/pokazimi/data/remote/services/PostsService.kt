@@ -19,6 +19,7 @@ interface PostsService {
     suspend fun createPost(postRequest: PostRequest): Boolean?
     suspend fun like(like: Like): MessageResponse?
 
+    suspend fun getUsernameAndProfilePic(userId: Long): UsernameAndProfilePic?
 
     companion object {
         fun create(): PostsService {
@@ -26,6 +27,9 @@ interface PostsService {
                 client = HttpClient(Android) {
                     install(Logging) {
                         level = LogLevel.ALL
+                    }
+                    install(JsonFeature) {
+                        serializer = KotlinxSerializer()
                     }
                 }
             )

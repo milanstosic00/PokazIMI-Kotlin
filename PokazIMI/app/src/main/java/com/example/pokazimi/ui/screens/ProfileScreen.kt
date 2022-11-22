@@ -7,6 +7,7 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Base64
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -30,12 +31,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.pokazimi.data.remote.dto.Post
 import com.example.pokazimi.data.remote.dto.User
 import com.example.pokazimi.data.remote.services.ProfileService
-import com.example.pokazimi.ui.composables.Post
 import com.example.pokazimi.dataStore.Storage
 import com.example.pokazimi.destinations.LoginScreenDestination
 import com.example.pokazimi.ui.activity.ProfileActivity
+import com.example.pokazimi.ui.composables.Post
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -54,24 +56,33 @@ fun ProfileScreen(userId: Int, navigator: DestinationsNavigator, navController: 
     SideEffect {
         systemUiController.setStatusBarColor(color)
     }
+
+    val profileActivity = ProfileActivity()
+    val user = profileActivity.getUser(1)
+
+
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
     ) {
         Spacer(modifier = Modifier.height(10.dp))
-        ProfileInfo(userId, navigator, following, navController)
+        ProfileInfo(user!!, userId, navigator, following, navController)
         Spacer(modifier = Modifier.height(20.dp))
         ProfileStats()
         Spacer(modifier = Modifier.height(10.dp))
         Divide()
-        Post(navController, navigator)
-        Post(navController, navigator)
-        Spacer(modifier = Modifier.height(65.dp))
+        Spacer(modifier = Modifier.height(10.dp))
+        user.posts.forEach {
+            Post(navController, navigator, user.username, it.description, create_image(user), create_content(it), it.lat, it.lon, it.id)
+        }
+//        Post(navController, navigator, user.username, create_image(user))
+//        Post(navController, navigator, user.username, create_image(user))
+        Spacer(modifier = Modifier.height(55.dp))
     }
 }
 
 @Composable
-fun ProfileInfo(userId: Int, navigator: DestinationsNavigator, following: Boolean, navController: NavHostController) {
+fun ProfileInfo(user: User, userId: Int, navigator: DestinationsNavigator, following: Boolean, navController: NavHostController) {
 
     val client = ProfileService.create()
     val context = LocalContext.current
@@ -96,7 +107,11 @@ fun ProfileInfo(userId: Int, navigator: DestinationsNavigator, following: Boolea
     val scope = rememberCoroutineScope()
     val dataStore = Storage(context)
 
-    val user = profileActivity.getUser(1)
+
+    //println(user!!.username)
+    //println(user!!.email)
+
+    var image: Bitmap? = null
 
     Row(
         modifier = Modifier
@@ -118,20 +133,42 @@ fun ProfileInfo(userId: Int, navigator: DestinationsNavigator, following: Boolea
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
-                Image(
-                    result.value.asImageBitmap(),
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .width(120.dp)
-                        .height(120.dp)
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colors.onSurface,
-                            shape = CircleShape
-                        )
-                        .padding(3.dp)
-                        .clip(CircleShape),
-                )
+                image = create_image(user)
+                if(image != null)
+                {
+                    Image(
+
+                        image!!.asImageBitmap(),
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier
+                            .width(120.dp)
+                            .height(120.dp)
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colors.onSurface,
+                                shape = CircleShape
+                            )
+                            .padding(3.dp)
+                            .clip(CircleShape),
+                    )
+                }
+                else
+                {
+                    Image(
+                        myImage.asImageBitmap(),
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier
+                            .width(120.dp)
+                            .height(120.dp)
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colors.onSurface,
+                                shape = CircleShape
+                            )
+                            .padding(3.dp)
+                            .clip(CircleShape),
+                    )
+                }
                 Button(
                     onClick = {
                         chooseImage.launch("image/*")
@@ -174,6 +211,7 @@ fun ProfileInfo(userId: Int, navigator: DestinationsNavigator, following: Boolea
             if(userId == 0) {
                 IconButton(onClick = {
                     scope.launch { dataStore.saveAccessToken("") }
+                    scope.launch { dataStore.saveRefreshToken("") }
                     navigator.navigate(LoginScreenDestination) }
                 ) {
                     Icon(imageVector = Icons.Default.Logout, contentDescription = "Logout", modifier = Modifier.size(30.dp))
@@ -199,7 +237,7 @@ fun ProfileInfo(userId: Int, navigator: DestinationsNavigator, following: Boolea
     ) {
         if (user != null) {
             Text(
-                text = user.firstName + " " +  user.lastname,
+                text = user.firstName + " " +  user.lastName,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -276,4 +314,37 @@ fun Divide() {
     }
 }
 
+fun create_image(user: User?): Bitmap?
+{
+    var profilePic: ByteArray
+    var bmp: Bitmap
+    if(user != null) {
+        if(user.profilePicture != null) {
+            profilePic = user.profilePicture.toByteArray()
+            profilePic = Base64.decode(profilePic, Base64.DEFAULT)
+
+            bmp = BitmapFactory.decodeByteArray(profilePic, 0, profilePic.size)
+            return bmp
+        }
+    }
+
+    return null
+}
+
+fun create_content(post: Post?): Bitmap?
+{
+    var contentPic: ByteArray
+    var bmp: Bitmap
+    if(post != null) {
+        if(post.image != null) {
+            contentPic = post.image.toByteArray()
+            contentPic = Base64.decode(contentPic, Base64.DEFAULT)
+
+            bmp = BitmapFactory.decodeByteArray(contentPic, 0, contentPic.size)
+            return bmp
+        }
+    }
+
+    return null
+}
 

@@ -5,6 +5,7 @@ import com.example.pokazimi.data.remote.dto.Like
 import com.example.pokazimi.data.remote.dto.MessageResponse
 import com.example.pokazimi.data.remote.dto.PostRequest
 import com.example.pokazimi.data.remote.dto.PostResponse
+import com.example.pokazimi.data.remote.dto.*
 import com.example.pokazimi.data.remote.services.PostsService
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -28,6 +29,8 @@ class PostsServiceImpl(private val client: HttpClient): PostsService {
                         append(HttpHeaders.ContentType, "image/jpeg")
                         append(HttpHeaders.ContentDisposition, "filename=image.png")
                     })
+                    append("lat", postRequest.lat)
+                    append("lon", postRequest.lon)
                 }
             )
             true
@@ -43,6 +46,10 @@ class PostsServiceImpl(private val client: HttpClient): PostsService {
                 url(HttpRoutes.LIKE)
                 contentType(ContentType.Application.Json)
                 body = like
+    override suspend fun getUsernameAndProfilePic(userId: Long): UsernameAndProfilePic? {
+        return try {
+            client.get<UsernameAndProfilePic>{
+                url(HttpRoutes.GET_USERNAME_PROFILEPIC + "/$userId")
             }
         } catch (e: Exception) {
             print("Error : ${e.message}")

@@ -9,8 +9,7 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,21 +21,35 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
+import com.example.pokazimi.data.remote.dto.UsernameAndProfilePic
+import com.example.pokazimi.destinations.MapScreenDestination
 import com.example.pokazimi.ui.activity.PostActivity
+import com.example.pokazimi.ui.composables.CircularImage
+import com.example.pokazimi.ui.composables.PostContent
+import com.example.pokazimi.ui.composables.PostFooter
+import com.example.pokazimi.ui.composables.PostHeader
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.runBlocking
+import java.io.File
+import java.io.FileOutputStream
 
 @Destination
 @Composable
-fun PostScreen(navController: NavHostController) {
+fun PostScreen(navController: NavHostController, navigator: DestinationsNavigator) {
 
     val context = LocalContext.current
     val myImage: Bitmap = BitmapFactory.decodeResource(Resources.getSystem(), android.R.mipmap.sym_def_app_icon)
@@ -54,8 +67,9 @@ fun PostScreen(navController: NavHostController) {
         }
     }
 
-    var text by remember {
-        mutableStateOf("Write you description here")
+
+    var desciption by remember {
+        mutableStateOf(TextFieldValue(""))
     }
 
     val systemUiController = rememberSystemUiController()
@@ -67,175 +81,208 @@ fun PostScreen(navController: NavHostController) {
     val postActivity = PostActivity()
     // treba da se dodaju slika i opis, a automatski se dodaju, username, datum, vreme, lajkovi = 0, ocene = prazno i komentari = prazno
 
-    Column {
+    val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(1) }
+
+    Column (
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        PreviewHeader(navController, navigator, desciption.text, result.value)
+
+        PostPreview(navController, navigator, result.value, desciption.text, usernameAndProfilePic)
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(PaddingValues(10.dp, 10.dp, 10.dp, 10.dp))
+        ) {
+            Text(text = "Write your comment here", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            BasicTextField(
+                value = desciption,
+                onValueChange = {desciption = it},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp)
+                    .border(
+                    BorderStroke(1.dp, MaterialTheme.colors.onSurface),
+                    shape = RoundedCornerShape(8.dp)
+                ),
+                decorationBox = { innerTextField ->
+                    Row(
+
+                    ) {
+                        if(desciption.text.isEmpty()) {
+                            Text("Description...")
+                        }
+                        innerTextField()
+                    }
+                }
+            )
+        }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(60.dp)
-        ) {
-            Column (
-                modifier = Modifier
-                    .weight(1f)
-            ) {
-                Text(
-                    text = "New Post",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 32.sp,
-                    modifier = Modifier.padding(5.dp)
-                )
-            }
-            Column (
-                modifier = Modifier
-                    .weight(1f),
-                horizontalAlignment = Alignment.End
-            ) {
-                IconButton(
-                    onClick = {
-                         postActivity.savePost(1,text,result.value)
-                    },
-                    modifier = Modifier
-                        .padding(5.dp)
-                ) {
-                    Icon(
-                        Icons.Default.Done,
-                        contentDescription = "Post",
-                        modifier = Modifier
-                            .size(42.dp)
-                    )
-                }
-            }
-        }
-
-
-        Row (
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(470.dp),
+                .padding(horizontal = 10.dp)
+                .absoluteOffset(y = (-10).dp),
+            verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.Center
         ) {
-            Card(
+            Button(
+                onClick = { chooseImage.launch("image/*") },
                 modifier = Modifier
-                    .height(460.dp)
-                    .width(360.dp),
-                shape = RoundedCornerShape(16.dp),
-                backgroundColor = MaterialTheme.colors.surface,
-                elevation = 5.dp
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp),
+                contentPadding = PaddingValues(start = 4.dp, top = 4.dp, end = 4.dp, bottom = 4.dp)
             ) {
-                Column(
-
-                ) {
-                    Row() {
-                        Image(
-                            result.value.asImageBitmap(),
-                            //painter = painterResource(id = R.drawable.test_img),
-                            contentDescription = "Image",
-                            modifier = Modifier
-                                .height(360.dp)
-                                .fillMaxWidth(),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                    ) {
-                            Column(
-                                modifier = Modifier
-                                    .weight(1f)
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.test_img),
-                                    contentDescription = "Image",
-                                    modifier = Modifier
-                                        .height(48.dp)
-                                        .width(48.dp)
-                                        .padding(4.dp)
-                                        .clip(CircleShape)
-                                )
-                            }
-                            Column(
-                                modifier = Modifier
-                                    .weight(3f),
-                                horizontalAlignment = Alignment.Start
-                            ) {
-                                Text(text = "@Username", fontSize = 12.sp, modifier = Modifier.padding(3.dp), fontWeight = FontWeight.Bold)
-                                Text(text = "Lokacija, Neko Mesto", fontSize = 10.sp, modifier = Modifier.padding(start = 3.dp))
-                            }
-                            Column (
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(4.dp),
-                                horizontalAlignment = Alignment.End
-                            ) {
-                                Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = "Like", modifier = Modifier.size(34.dp))
-                            }
-                            Column (
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(6.dp),
-                                horizontalAlignment = Alignment.End
-                            ) {
-                                Icon(imageVector = Icons.Default.ChatBubbleOutline, contentDescription = "Comment", modifier = Modifier.size(32.dp))
-                            }
-                            Column (
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(4.dp),
-                                horizontalAlignment = Alignment.End
-                            ) {
-                                Icon(imageVector = Icons.Default.StarOutline, contentDescription = "Share", modifier = Modifier.size(34.dp))
-                            }
-                    }
-                    Row(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                    ) {
-                        BasicTextField(
-                            modifier = Modifier
-                                .padding(4.dp)
-                                .fillMaxSize()
-                                .background(MaterialTheme.colors.background),
-                            value = text,
-                            onValueChange = {newText -> text = newText}
-                        )
-                    }
-
-                }
+                Text(text = "Tap here to choose image")
             }
         }
-        Row() {
-            Column (
-                modifier = Modifier
-                    .weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally
+    }
+}
+
+@Composable
+fun PreviewHeader(navController: NavHostController, navigator: DestinationsNavigator, description: String, image: Bitmap) {
+    val context = LocalContext.current
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(55.dp)
+            .padding(PaddingValues(0.dp, 10.dp, 10.dp, 10.dp))
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+        ) {
+            IconButton(
+                onClick = { navController.navigateUp() }
             ) {
-                Button(
-                    onClick = { chooseImage.launch("image/*") },
-                    modifier = Modifier
-                        .width(160.dp),
-                    contentPadding = PaddingValues(start = 4.dp, top = 4.dp, end = 4.dp, bottom = 4.dp)
-                ) {
-                    Text(text = "Choose Image")
-                }
-            }
-            Column (
-                modifier = Modifier
-                    .weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Button(
-                    onClick = {  },
-                    modifier = Modifier
-                        .width(160.dp),
-                    contentPadding = PaddingValues(start = 4.dp, top = 4.dp, end = 4.dp, bottom = 4.dp)
-                ) {
-                    Text(text = "Choose Location")
-                }
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back",
+                    Modifier.size(30.dp),
+                    tint = MaterialTheme.colors.onSurface
+                )
             }
         }
+        Column(
+            modifier = Modifier
+                .weight(3f),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "New Post",
+                fontWeight = FontWeight.Bold,
+                fontSize = 26.sp,
+                modifier = Modifier.absoluteOffset(y = (-2).dp)
+            )
+        }
+        Column(
+            modifier = Modifier
+                .weight(1f),
+            horizontalAlignment = Alignment.End
+        ) {
+            IconButton(
+                onClick = {
+                    val path = context.getExternalFilesDir(null)!!.absolutePath
+                    val tempFile = File(path, "tempFileName.jpg")
+                    val fOut = FileOutputStream(tempFile)
+                    image.compress(Bitmap.CompressFormat.JPEG, 100, fOut)
+                    fOut.close()
+                    navigator.navigate(MapScreenDestination(newPost = true, viewingPost = false, description = description))
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowForward,
+                    contentDescription = "Back",
+                    Modifier.size(30.dp),
+                    tint = MaterialTheme.colors.onSurface
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun PostPreviewHeader(desciption: String, usernameAndProfilePic: UsernameAndProfilePic?) {
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(70.dp)
+            .padding(10.dp)
+    ) {
+        Column (
+            modifier = Modifier
+                .weight(1f)
+        ) {
+            //CircularImage()
+        }
+
+        Column(
+            modifier = Modifier
+                .weight(5f)
+                .padding(5.dp)
+        ) {
+            if (usernameAndProfilePic != null) {
+                Text(text = usernameAndProfilePic.username, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            }
+            Text(text = "1 hour ago", fontSize = 10.sp, fontWeight = FontWeight.Light)
+        }
+    }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(20.dp)
+            .padding(start = 10.dp)
+    ) {
+        Text(text = desciption, fontSize = 14.sp)
+    }
+}
+
+@Composable
+fun PostPreview(navController: NavHostController, navigator: DestinationsNavigator, image: Bitmap, desciption: String, usernameAndProfilePic: UsernameAndProfilePic?) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(500.dp)
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 10.dp),
+            shape = RoundedCornerShape(16.dp),
+            backgroundColor = MaterialTheme.colors.surface,
+            elevation = 5.dp
+        ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                PostPreviewHeader(desciption, usernameAndProfilePic)
+                Spacer(modifier = Modifier.height(10.dp))
+                PostImagePreview(image)
+                //PostFooter(navController, navigator)
+            }
+        }
+    }
+}
+
+@Composable
+fun PostImagePreview(image: Bitmap) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(330.dp)
+            .padding(horizontal = 10.dp)
+    ) {
+        Image(
+            image.asImageBitmap(),
+            contentDescription = "Image",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(330.dp)
+                .clip(shape = RoundedCornerShape(16.dp)),
+            contentScale = ContentScale.Crop
+        )
     }
 }
 
