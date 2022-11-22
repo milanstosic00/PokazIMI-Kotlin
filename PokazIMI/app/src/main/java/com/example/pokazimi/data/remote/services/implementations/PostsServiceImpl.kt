@@ -42,10 +42,18 @@ class PostsServiceImpl(private val client: HttpClient): PostsService {
 
     override suspend fun like(like: Like): MessageResponse? {
         return try {
-            client.post<MessageResponse>{
+            client.post<MessageResponse> {
                 url(HttpRoutes.LIKE)
                 contentType(ContentType.Application.Json)
                 body = like
+            }
+        }catch (e: Exception) {
+                print("Error : ${e.message}")
+                null
+        }
+    }
+
+
     override suspend fun getUsernameAndProfilePic(userId: Long): UsernameAndProfilePic? {
         return try {
             client.get<UsernameAndProfilePic>{
