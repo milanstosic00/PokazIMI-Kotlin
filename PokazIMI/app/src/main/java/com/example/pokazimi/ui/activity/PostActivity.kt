@@ -9,6 +9,7 @@ import android.widget.ImageView
 import androidx.activity.ComponentActivity
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import com.example.pokazimi.data.remote.dto.Like
 import com.example.pokazimi.viewmodels.PostViewModel
 import java.io.ByteArrayOutputStream
 
@@ -52,5 +53,10 @@ class PostActivity: ComponentActivity() {
         image.compress(Bitmap.CompressFormat.PNG, 90, stream)
         val imageByteArray = stream.toByteArray()
         postViewModel.savePost(1,description,imageByteArray)
+    }
+
+    fun likePost(like: Like)
+    {
+        postViewModel.likePost(like)
     }
 }
