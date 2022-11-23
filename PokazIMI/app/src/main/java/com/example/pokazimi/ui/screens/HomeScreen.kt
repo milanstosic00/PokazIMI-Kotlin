@@ -1,6 +1,5 @@
 package com.example.pokazimi
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,21 +9,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.pokazimi.ui.composables.Post
-import com.example.pokazimi.dataStore.Storage
-import com.example.pokazimi.destinations.LoginScreenDestination
+import com.example.pokazimi.data.remote.dto.Post
 import com.example.pokazimi.destinations.MapScreenDestination
+import com.example.pokazimi.ui.activity.HomeActivity
+import com.example.pokazimi.ui.activity.PostActivity
+import com.example.pokazimi.ui.composables.Post
+import com.example.pokazimi.ui.screens.create_content
+import com.example.pokazimi.ui.screens.create_image
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 @Destination
 @Composable
@@ -34,6 +33,12 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
     SideEffect {
         systemUiController.setStatusBarColor(color)
     }
+
+    val postActivity = PostActivity()
+    val homeActivity = HomeActivity()
+
+    //var featuredPosts: Array<Post>? = homeActivity.getFeaturedPosts(1)
+    var followingPosts: Array<Post>? = homeActivity.getFollowingPosts(2)
 
     Row(
         modifier = Modifier
@@ -64,9 +69,10 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        /*Post(navController, navigator)
-        Post(navController, navigator)
-        Post(navController, navigator)*/
+        val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(1) }
+        followingPosts!!.forEach {
+            Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_content(it), it.lat, it.lon, it.id)
+        }
         Spacer(modifier = Modifier.height(115.dp))
     }
 }

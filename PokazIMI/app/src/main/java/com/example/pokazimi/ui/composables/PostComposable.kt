@@ -51,7 +51,7 @@ fun Post(navController: NavHostController, navigator: DestinationsNavigator, use
                 PostHeader(navController, navigator, username, description, image)
                 Spacer(modifier = Modifier.height(10.dp))
                 PostContent(navigator, content!!, postId)
-                PostFooter(navController, navigator, lat, lon, postId)
+                PostFooter(navigator, lat, lon, postId)
             }
         }
     }
@@ -114,7 +114,7 @@ fun PostContent(navigator: DestinationsNavigator, content: Bitmap, postId: Int) 
 }
 
 @Composable
-fun PostFooter(navController: NavHostController, navigator: DestinationsNavigator, lat: Double, lon: Double, postId: Int) {
+fun PostFooter(navigator: DestinationsNavigator, lat: Double, lon: Double, postId: Int) {
     Spacer(modifier = Modifier.height(10.dp))
     Row(
         modifier = Modifier

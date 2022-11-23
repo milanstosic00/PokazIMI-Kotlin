@@ -16,4 +16,6 @@ object HttpRoutes {
     const val LIKE = "$BASE_URL/like/save"
 
     const val GET_USERNAME_PROFILEPIC = "$BASE_URL/api/getUsernameAndPfp"
+    const val FEATURED_POSTS = "$BASE_URL/post/getSearchFeedPosts?userId="
+    const val FOLLOWING_POSTS = "$BASE_URL/post/getFeedPosts?userId="
 }

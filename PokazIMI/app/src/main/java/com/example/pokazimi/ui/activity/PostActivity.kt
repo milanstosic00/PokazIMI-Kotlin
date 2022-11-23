@@ -1,9 +1,11 @@
 package com.example.pokazimi.ui.activity
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.util.Base64
 import android.util.Log
 import android.widget.ImageView
 import androidx.activity.ComponentActivity
@@ -21,6 +23,21 @@ class PostActivity: ComponentActivity() {
     private lateinit var image: ByteArray
     private lateinit var imgView: ImageView
     private var postViewModel = PostViewModel()
+
+    fun create_pfp(image: String?): Bitmap?
+    {
+        var profilePic: ByteArray
+        var bmp: Bitmap
+        if(image != null) {
+            profilePic = image.toByteArray()
+            profilePic = Base64.decode(profilePic, Base64.DEFAULT)
+
+            bmp = BitmapFactory.decodeByteArray(profilePic, 0, profilePic.size)
+            return bmp
+        }
+
+        return null
+    }
 
     val pickImage = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) {uri ->
         if (uri != null) {
