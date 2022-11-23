@@ -2,6 +2,7 @@ package com.example.pokazimi.data.remote.services.implementations
 
 import com.example.pokazimi.data.remote.HttpRoutes
 import com.example.pokazimi.data.remote.dto.ChangeProfilePictureRequest
+import com.example.pokazimi.data.remote.dto.FollowRequest
 import com.example.pokazimi.data.remote.dto.MessageResponse
 import com.example.pokazimi.data.remote.dto.User
 import com.example.pokazimi.data.remote.services.ProfileService
@@ -40,4 +41,16 @@ class ProfileServiceImpl(private val client: HttpClient): ProfileService {
         }
     }
 
+    override suspend fun followUser(followRequest: FollowRequest): MessageResponse? {
+        return try {
+            client.post<MessageResponse>{
+                url(HttpRoutes.FOLLOW)
+                contentType(ContentType.Application.Json)
+                body = followRequest
+            }
+        } catch (e: Exception) {
+            print("Error : ${e.message}")
+            null
+        }
+    }
 }

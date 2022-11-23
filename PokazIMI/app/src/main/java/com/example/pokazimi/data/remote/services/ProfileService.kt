@@ -1,6 +1,7 @@
 package com.example.pokazimi.data.remote.services
 
 import com.example.pokazimi.data.remote.dto.ChangeProfilePictureRequest
+import com.example.pokazimi.data.remote.dto.FollowRequest
 import com.example.pokazimi.data.remote.dto.MessageResponse
 import com.example.pokazimi.data.remote.dto.User
 import com.example.pokazimi.data.remote.services.implementations.ProfileServiceImpl
@@ -15,6 +16,7 @@ interface ProfileService {
 
     suspend fun getUser(userId: Long): User?
 
+    suspend fun followUser(followRequest: FollowRequest): MessageResponse?
 
     companion object {
         fun create(): ProfileService {

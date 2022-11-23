@@ -45,7 +45,7 @@ import kotlinx.coroutines.launch
 
 @Destination
 @Composable
-fun ProfileScreen(userId: Int, navigator: DestinationsNavigator, navController: NavHostController) {
+fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController: NavHostController) {
 
     val following by remember {
         mutableStateOf(false)
@@ -58,7 +58,7 @@ fun ProfileScreen(userId: Int, navigator: DestinationsNavigator, navController: 
     }
 
     val profileActivity = ProfileActivity()
-    val user = profileActivity.getUser(1)
+    val user = profileActivity.getUser(userId)
 
 
     Column(
@@ -82,7 +82,7 @@ fun ProfileScreen(userId: Int, navigator: DestinationsNavigator, navController: 
 }
 
 @Composable
-fun ProfileInfo(user: User, userId: Int, navigator: DestinationsNavigator, following: Boolean, navController: NavHostController) {
+fun ProfileInfo(user: User, userId: Long, navigator: DestinationsNavigator, following: Boolean, navController: NavHostController) {
 
     val client = ProfileService.create()
     val context = LocalContext.current
@@ -208,7 +208,7 @@ fun ProfileInfo(user: User, userId: Int, navigator: DestinationsNavigator, follo
             //Ako gleda tudji profil onda se vidi follow dugme
             //Ako gleda svoj profil onda se vidi logout dugme
 
-            if(userId == 0) {
+            if(userId.toInt() == 0) {
                 IconButton(onClick = {
                     scope.launch { dataStore.saveAccessToken("") }
                     scope.launch { dataStore.saveRefreshToken("") }
