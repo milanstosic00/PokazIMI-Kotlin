@@ -59,9 +59,8 @@ class PostsServiceImpl(private val client: HttpClient): PostsService {
     override suspend fun comment(commentRequest: CommentRequest): MessageResponse? {
         return try {
             client.post<MessageResponse> {
-                url(HttpRoutes.COMMENT)
+                url(HttpRoutes.COMMENT + "?post=" + commentRequest.post_id + "&content=" + commentRequest.content + "&commentersId=" + commentRequest.commentersId)
                 contentType(ContentType.Application.Json)
-                body = commentRequest
             }
         }catch (e: Exception) {
             print("Error : ${e.message}")

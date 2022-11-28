@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.pokazimi.data.remote.dto.CommentRequest
+import com.example.pokazimi.data.remote.model.Comment
 import com.example.pokazimi.data.remote.model.ViewPost
 import com.example.pokazimi.destinations.MapScreenDestination
 import com.example.pokazimi.ui.activity.PostActivity
@@ -47,6 +48,7 @@ fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavi
     }
 
     val viewPostActivity = ViewPostActivity()
+    val postActivity = PostActivity()
     val post = viewPostActivity.getPost(postId)
     var likes = 0
     if (post != null) {
@@ -67,7 +69,7 @@ fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavi
         if (post != null) {
             PostInfo(navigator, post.lat, post.lon, likes, post.description, post.user.id)
             Divide()
-            CommentSection(post.id)
+            CommentSection(post.id, post.comments, postActivity)
         }
         Spacer(modifier = Modifier.height(125.dp))
     }
@@ -204,20 +206,28 @@ fun PostInfo(navigator: DestinationsNavigator, lat: Double, lon: Double, likes: 
 }
 
 @Composable
-fun CommentSection(postId: Long) {
+fun CommentSection(postId: Long, comments: Array<Comment>, postActivity: PostActivity) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 10.dp)
     ) {
         Text(text = "Comments", fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.absoluteOffset(y = (-5).dp))
-        CommentComposable(userId = 0, text = "Text text text text text text text text text text text text text text text text text text text text text text")
+        //CommentComposable(userId = 1, text = "Text text text text text text text text text text text text text text text text text text text text text text", postActivity)
+
+        comments.forEach {
+            CommentComposable(userId = it.commentersId, text = it.content, postActivity)
+        }
+
         NewComment(postId)
     }
 }
 
 @Composable
-fun CommentComposable(userId: Int, text : String) {
+fun CommentComposable(userId: Long, text : String, postActivity: PostActivity) {
+
+    val user = postActivity.getUsernameAndProfilePic(userId)
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -226,12 +236,12 @@ fun CommentComposable(userId: Int, text : String) {
         Column(
             modifier = Modifier.weight(1f)
         ) {
-            //CircularImage()
+            CircularImage(convert(user!!.profilePicture))
         }
         Column(
             modifier = Modifier.weight(4f)
         ) {
-            Text(text = "@username", fontSize = 14.sp, fontWeight = FontWeight.Bold, modifier = Modifier.absoluteOffset(y = (-6).dp))
+            Text(text = user!!.username, fontSize = 14.sp, fontWeight = FontWeight.Bold, modifier = Modifier.absoluteOffset(y = (-6).dp))
             Text(text = text, fontSize = 12.sp, fontWeight = FontWeight.Light, modifier = Modifier.absoluteOffset(y = (-7).dp), maxLines = 2)
         }
     }
