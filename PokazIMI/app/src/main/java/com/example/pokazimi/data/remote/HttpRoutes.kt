@@ -14,9 +14,10 @@ object HttpRoutes {
     const val CHANGE_PROFILE_PICTURE = "$BASE_URL/api/changeProfilePicture"
     const val GET_USER = "$BASE_URL/api/getUser"
     const val LIKE = "$BASE_URL/like/save"
+    const val COMMENT = "$BASE_URL/comment/save"
     const val FOLLOW = "$BASE_URL/follow/save"
-
+    const val GET_POST = "$BASE_URL/post/getPost"
     const val GET_USERNAME_PROFILEPIC = "$BASE_URL/api/getUsernameAndPfp"
-    const val FEATURED_POSTS = "$BASE_URL/post/getSearchFeedPosts?userId="
+    const val FEATURED_POSTS = "$BASE_URL/post/getFeaturedPosts?userId="
     const val FOLLOWING_POSTS = "$BASE_URL/post/getFeedPosts?userId="
 }

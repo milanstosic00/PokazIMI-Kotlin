@@ -3,7 +3,7 @@ package com.example.pokazimi.ui.activity
 import android.os.Bundle
 import android.os.PersistableBundle
 import androidx.activity.ComponentActivity
-import com.example.pokazimi.data.remote.dto.Post
+import com.example.pokazimi.data.remote.model.ViewPost
 import com.example.pokazimi.viewmodels.HomeScreenViewModel
 
 class HomeActivity: ComponentActivity() {
@@ -14,12 +14,12 @@ class HomeActivity: ComponentActivity() {
         super.onCreate(savedInstanceState, persistentState)
     }
 
-    fun getFeaturedPosts(userId: Long): Array<Post>?
+    fun getFeaturedPosts(userId: Long): Array<ViewPost>?
     {
         return homeViewModel.getFeaturedPosts(userId)
     }
 
-    fun getFollowingPosts(userId: Long): Array<Post>?
+    fun getFollowingPosts(userId: Long): Array<ViewPost>?
     {
         return homeViewModel.getFollowingPosts(userId)
     }

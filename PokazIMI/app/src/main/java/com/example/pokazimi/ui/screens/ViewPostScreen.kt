@@ -3,13 +3,7 @@ package com.example.pokazimi.ui.screens
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.ImageDecoder
-import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
 import android.util.Base64
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,41 +13,48 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.StarOutline
 import androidx.compose.material.icons.outlined.Comment
 import androidx.compose.material.icons.outlined.Send
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.pokazimi.R
-import com.example.pokazimi.data.remote.dto.User
+import com.example.pokazimi.data.remote.dto.CommentRequest
+import com.example.pokazimi.data.remote.model.ViewPost
 import com.example.pokazimi.destinations.MapScreenDestination
 import com.example.pokazimi.ui.activity.PostActivity
-import com.example.pokazimi.ui.activity.ProfileActivity
+import com.example.pokazimi.ui.activity.ViewPostActivity
 import com.example.pokazimi.ui.composables.CircularImage
-import com.example.pokazimi.viewmodels.PostViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Destination
 @Composable
-fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavigator, postId: Int = -1) {
+fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavigator, postId: Long = -1) {
     val systemUiController = rememberSystemUiController()
     val color = MaterialTheme.colors.background
     SideEffect {
         systemUiController.setStatusBarColor(color)
+    }
+
+    val viewPostActivity = ViewPostActivity()
+    val post = viewPostActivity.getPost(postId)
+    var likes = 0
+    if (post != null) {
+        likes = if(post.likes != null) {
+            post.likes.size
+        } else {
+            0
+        }
     }
 
     Column(
@@ -62,10 +63,12 @@ fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavi
             .fillMaxSize()
     ) {
         Header(navController)
-        PostImage()
-        PostInfo(navigator)
-        Divide()
-        CommentSection()
+        create_img(post)?.let { PostImage(it) }
+        if (post != null) {
+            PostInfo(navigator, post.lat, post.lon, likes, post.description, post.user.id)
+            Divide()
+            CommentSection(post.id)
+        }
         Spacer(modifier = Modifier.height(125.dp))
     }
 }
@@ -92,7 +95,7 @@ fun Header(navController: NavHostController) {
 }
 
 @Composable
-fun PostImage() {
+fun PostImage(image: Bitmap) {
     Row(
         modifier = Modifier
             .padding(horizontal = 10.dp)
@@ -100,27 +103,24 @@ fun PostImage() {
             .clip(shape = RoundedCornerShape(16.dp))
     ) {
         Image(
-            painter = painterResource(id = R.drawable.test_img),
+            bitmap = image.asImageBitmap(),
             contentDescription = "Image",
-            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxWidth(),
+            contentScale = ContentScale.Crop
         )
     }
 }
 
 @Composable
-fun PostInfo(navigator: DestinationsNavigator) {
+fun PostInfo(navigator: DestinationsNavigator, lat: Double, lon: Double, likes: Int, description: String, userId: Long) {
     val context = LocalContext.current
     val myImage: Bitmap = BitmapFactory.decodeResource(Resources.getSystem(), android.R.mipmap.sym_def_app_icon)
     val result = remember {
         mutableStateOf<Bitmap>(myImage)
     }
 
-    val profileActivity = ProfileActivity()
-
     val postActivity = PostActivity()
-
-    val usernameAndProfilePic = postActivity.getUsernameAndProfilePic(1)
-
+    val usernameAndProfilePic = postActivity.getUsernameAndProfilePic(userId)
 
     Row(
         modifier = Modifier
@@ -132,7 +132,7 @@ fun PostInfo(navigator: DestinationsNavigator) {
             modifier = Modifier
                 .weight(1f)
         ) {
-            //CircularImage()
+            CircularImage(convert(usernameAndProfilePic!!.profilePicture))
         }
 
         Column(
@@ -157,7 +157,7 @@ fun PostInfo(navigator: DestinationsNavigator) {
                 modifier = Modifier.height(30.dp))
             {
                 IconButton(
-                    onClick = { navigator.navigate(MapScreenDestination(viewingPost = true, longitude = 20.90730f, latitude = 44.01750f)) }
+                    onClick = { navigator.navigate(MapScreenDestination(viewingPost = true, longitude = lon.toFloat(), latitude = lat.toFloat())) }
                 ) {
                     Icon(
                         imageVector = Icons.Default.LocationOn,
@@ -189,7 +189,7 @@ fun PostInfo(navigator: DestinationsNavigator) {
                     .height(20.dp)
                     .absoluteOffset(y = 2.dp)
             ) {
-                Text(text = "32", fontSize = 12.sp)
+                Text(text = likes.toString(), fontSize = 12.sp)
             }
         }
     }
@@ -199,30 +199,25 @@ fun PostInfo(navigator: DestinationsNavigator) {
             .absoluteOffset(y = (-10).dp)
             .padding(horizontal = 10.dp)
     ) {
-        Text(text = "Neki test cisto da se popuni prostor", fontSize = 14.sp)
+        Text(text = description, fontSize = 14.sp)
     }
 }
 
 @Composable
-fun CommentSection() {
+fun CommentSection(postId: Long) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 10.dp)
     ) {
         Text(text = "Comments", fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.absoluteOffset(y = (-5).dp))
-        Comment(userId = 0, text = "Text text text text text text text text text text text text text text text text text text text text text text")
-        Comment(userId = 0, text = "Text text text text text text text text text text text text text text text text text text text text text text")
-        Comment(userId = 0, text = "Text text text text text text text text text text text text text text text text text text text text text text")
-        Comment(userId = 0, text = "Text text text text text text text text text text text text text text text text text text text text text text")
-        Comment(userId = 0, text = "Text text text text text text text text text text text text text text text text text text text text text text")
-        Comment(userId = 0, text = "Text text text text text text text text text text text text text text text text text text text text text text")
-        NewComment()
+        CommentComposable(userId = 0, text = "Text text text text text text text text text text text text text text text text text text text text text text")
+        NewComment(postId)
     }
 }
 
 @Composable
-fun Comment(userId: Int, text : String) {
+fun CommentComposable(userId: Int, text : String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -243,10 +238,12 @@ fun Comment(userId: Int, text : String) {
 }
 
 @Composable
-fun NewComment() {
+fun NewComment(postId: Long) {
     var commentText by remember {
         mutableStateOf(TextFieldValue(""))
     }
+
+    val postActivity = PostActivity()
 
     Row(
         modifier = Modifier
@@ -278,9 +275,7 @@ fun NewComment() {
                 onValueChange = { commentText = it },
                 singleLine = true,
                 decorationBox = { innerTextField ->
-                    Row(
-
-                    ) {
+                    Row() {
                         if(commentText.text.isEmpty()) {
                             Text("Write your comment")
                         }
@@ -296,7 +291,11 @@ fun NewComment() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = {
+                val comment = CommentRequest(post_id = postId, content = commentText.text, commentersId = 2)
+                println(comment)
+                postActivity.comment(comment)
+            }) {
                 Icon(imageVector = Icons.Outlined.Send, contentDescription = "Send Comment", Modifier.size(30.dp))
             }
         }
@@ -305,4 +304,31 @@ fun NewComment() {
     }
 }
 
+fun create_img(post: ViewPost?): Bitmap?
+{
+    var contentPic: ByteArray
+    val bmp: Bitmap
+    if(post != null) {
+        if(post.image != null) {
+            contentPic = post.image.toByteArray()
+            contentPic = Base64.decode(contentPic, Base64.DEFAULT)
 
+            bmp = BitmapFactory.decodeByteArray(contentPic, 0, contentPic.size)
+            return bmp
+        }
+    }
+
+    return null
+}
+
+fun convert(img: String?): Bitmap?
+{
+    var pic: ByteArray
+    val bmp:Bitmap
+
+    pic = img!!.toByteArray()
+    pic = Base64.decode(pic, Base64.DEFAULT)
+
+    bmp = BitmapFactory.decodeByteArray(pic, 0, pic.size)
+    return bmp
+}

@@ -9,18 +9,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.pokazimi.data.remote.dto.Post
+import com.example.pokazimi.data.remote.model.ViewPost
 import com.example.pokazimi.destinations.MapScreenDestination
 import com.example.pokazimi.ui.activity.HomeActivity
 import com.example.pokazimi.ui.activity.PostActivity
 import com.example.pokazimi.ui.composables.Post
-import com.example.pokazimi.ui.screens.create_content
-import com.example.pokazimi.ui.screens.create_image
+import com.example.pokazimi.ui.screens.create_img
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -42,14 +40,14 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
     val postActivity = PostActivity()
     val homeActivity = HomeActivity()
 
-    var followingPosts: Array<Post>? = null
-    var featuredPosts: Array<Post>? = null
+    var followingPosts: Array<ViewPost>? = null
+    var featuredPosts: Array<ViewPost>? = null
 
     if(following.value) {
         followingPosts= homeActivity.getFollowingPosts(2)
     }
     else {
-        //featuredPosts = homeActivity.getFeaturedPosts(1)
+        featuredPosts = homeActivity.getFeaturedPosts(2)
     }
 
     /*Row(
@@ -129,17 +127,19 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(1) }
+
 
         if(following.value) {
             followingPosts!!.forEach {
-                Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_content(it), it.lat, it.lon, it.id)
+                val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(it.user.id) }
+                Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_img(it), it.lat, it.lon, it.id)
             }
         }
         else {
-            /*featuredPosts!!.forEach {
-                Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_content(it), it.lat, it.lon, it.id)
-            }*/
+            featuredPosts!!.forEach {
+                val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(it.user.id) }
+                Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_img(it), it.lat, it.lon, it.id)
+            }
         }
 
         Spacer(modifier = Modifier.height(115.dp))

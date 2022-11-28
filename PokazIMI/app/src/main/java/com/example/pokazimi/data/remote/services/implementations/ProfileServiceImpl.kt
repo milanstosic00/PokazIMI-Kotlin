@@ -4,7 +4,7 @@ import com.example.pokazimi.data.remote.HttpRoutes
 import com.example.pokazimi.data.remote.dto.ChangeProfilePictureRequest
 import com.example.pokazimi.data.remote.dto.FollowRequest
 import com.example.pokazimi.data.remote.dto.MessageResponse
-import com.example.pokazimi.data.remote.dto.User
+import com.example.pokazimi.data.remote.model.User
 import com.example.pokazimi.data.remote.services.ProfileService
 import io.ktor.client.*
 import io.ktor.client.request.*

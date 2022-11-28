@@ -1,6 +1,6 @@
 package com.example.pokazimi.data.remote.services
 
-import com.example.pokazimi.data.remote.dto.Post
+import com.example.pokazimi.data.remote.model.ViewPost
 import com.example.pokazimi.data.remote.services.implementations.HomeServiceImpl
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
@@ -10,9 +10,9 @@ import io.ktor.client.features.logging.*
 
 interface HomeService {
 
-    suspend fun getFeaturedPosts(userId: Long): Array<Post>?
+    suspend fun getFeaturedPosts(userId: Long): Array<ViewPost>?
 
-    suspend fun getFollowingPosts(userId: Long): Array<Post>?
+    suspend fun getFollowingPosts(userId: Long): Array<ViewPost>?
 
     companion object {
         fun create(): HomeService {

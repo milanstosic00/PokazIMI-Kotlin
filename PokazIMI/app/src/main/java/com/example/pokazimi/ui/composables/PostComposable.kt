@@ -31,7 +31,7 @@ import com.example.pokazimi.ui.screens.ViewPostScreen
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Composable
-fun Post(navController: NavHostController, navigator: DestinationsNavigator, username: String = "username", description: String = "Description", image: Bitmap?, content: Bitmap?, lat: Double, lon: Double, postId: Int) {
+fun Post(navController: NavHostController, navigator: DestinationsNavigator, username: String = "username", description: String = "Description", image: Bitmap?, content: Bitmap?, lat: Double, lon: Double, postId: Long) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -39,10 +39,7 @@ fun Post(navController: NavHostController, navigator: DestinationsNavigator, use
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(PaddingValues(10.dp, 0.dp, 10.dp, 10.dp))
-                .clickable {
-                    navController.navigate("viewpost")
-                },
+                .padding(PaddingValues(10.dp, 0.dp, 10.dp, 10.dp)),
             shape = RoundedCornerShape(16.dp),
             backgroundColor = MaterialTheme.colors.surface,
             elevation = 5.dp
@@ -92,7 +89,7 @@ fun PostHeader(navController: NavHostController, navigator: DestinationsNavigato
 }
 
 @Composable
-fun PostContent(navigator: DestinationsNavigator, content: Bitmap, postId: Int) {
+fun PostContent(navigator: DestinationsNavigator, content: Bitmap, postId: Long) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -114,7 +111,7 @@ fun PostContent(navigator: DestinationsNavigator, content: Bitmap, postId: Int) 
 }
 
 @Composable
-fun PostFooter(navigator: DestinationsNavigator, lat: Double, lon: Double, postId: Int) {
+fun PostFooter(navigator: DestinationsNavigator, lat: Double, lon: Double, postId: Long) {
     Spacer(modifier = Modifier.height(10.dp))
     Row(
         modifier = Modifier

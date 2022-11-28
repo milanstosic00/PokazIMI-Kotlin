@@ -4,11 +4,8 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.PersistableBundle
 import androidx.activity.ComponentActivity
-import androidx.lifecycle.viewModelScope
-import com.example.pokazimi.data.remote.dto.FollowRequest
-import com.example.pokazimi.data.remote.dto.User
+import com.example.pokazimi.data.remote.model.User
 import com.example.pokazimi.viewmodels.ProfileScreenViewModel
-import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
 class ProfileActivity: ComponentActivity() {

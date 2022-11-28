@@ -3,7 +3,7 @@ package com.example.pokazimi.data.remote.services
 import com.example.pokazimi.data.remote.dto.ChangeProfilePictureRequest
 import com.example.pokazimi.data.remote.dto.FollowRequest
 import com.example.pokazimi.data.remote.dto.MessageResponse
-import com.example.pokazimi.data.remote.dto.User
+import com.example.pokazimi.data.remote.model.User
 import com.example.pokazimi.data.remote.services.implementations.ProfileServiceImpl
 import io.ktor.client.*
 import io.ktor.client.engine.android.*

@@ -1,11 +1,14 @@
 package com.example.pokazimi.data.remote.services.implementations
 
 import com.example.pokazimi.data.remote.HttpRoutes
-import com.example.pokazimi.data.remote.dto.Like
+import com.example.pokazimi.data.remote.dto.CommentRequest
+import com.example.pokazimi.data.remote.model.Like
 import com.example.pokazimi.data.remote.dto.MessageResponse
 import com.example.pokazimi.data.remote.dto.PostRequest
 import com.example.pokazimi.data.remote.dto.PostResponse
-import com.example.pokazimi.data.remote.dto.*
+import com.example.pokazimi.data.remote.model.Comment
+import com.example.pokazimi.data.remote.model.UsernameAndProfilePic
+import com.example.pokazimi.data.remote.model.ViewPost
 import com.example.pokazimi.data.remote.services.PostsService
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -53,6 +56,18 @@ class PostsServiceImpl(private val client: HttpClient): PostsService {
         }
     }
 
+    override suspend fun comment(commentRequest: CommentRequest): MessageResponse? {
+        return try {
+            client.post<MessageResponse> {
+                url(HttpRoutes.COMMENT)
+                contentType(ContentType.Application.Json)
+                body = commentRequest
+            }
+        }catch (e: Exception) {
+            print("Error : ${e.message}")
+            null
+        }
+    }
 
     override suspend fun getUsernameAndProfilePic(userId: Long): UsernameAndProfilePic? {
         return try {
@@ -61,6 +76,18 @@ class PostsServiceImpl(private val client: HttpClient): PostsService {
             }
         } catch (e: Exception) {
             print("Error : ${e.message}")
+            null
+        }
+    }
+
+    override suspend fun getPost(postId: Long): ViewPost? {
+        return try {
+            client.get<ViewPost>{
+                url(HttpRoutes.GET_POST + "/$postId")
+            }
+        }
+        catch (e: Exception) {
+            print("Error")
             null
         }
     }

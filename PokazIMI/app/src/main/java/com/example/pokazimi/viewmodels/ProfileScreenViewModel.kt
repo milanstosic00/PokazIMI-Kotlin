@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokazimi.data.remote.dto.ChangeProfilePictureRequest
 import com.example.pokazimi.data.remote.dto.FollowRequest
-import com.example.pokazimi.data.remote.dto.User
+import com.example.pokazimi.data.remote.model.User
 import com.example.pokazimi.data.remote.services.ProfileService
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking

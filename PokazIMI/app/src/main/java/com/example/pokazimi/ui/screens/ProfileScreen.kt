@@ -31,8 +31,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.pokazimi.data.remote.dto.Post
-import com.example.pokazimi.data.remote.dto.User
+import com.example.pokazimi.data.remote.model.Post
+import com.example.pokazimi.data.remote.model.User
 import com.example.pokazimi.data.remote.services.ProfileService
 import com.example.pokazimi.dataStore.Storage
 import com.example.pokazimi.destinations.LoginScreenDestination
@@ -101,7 +101,7 @@ fun ProfileInfo(user: User, userId: Long, navigator: DestinationsNavigator, foll
             val source = ImageDecoder.createSource(context.contentResolver, it as Uri)
             result.value = ImageDecoder.decodeBitmap(source)
         }
-        profileActivity.changeProfilePicture(1, result.value)
+        profileActivity.changeProfilePicture(userId, result.value)
     }
 
     val scope = rememberCoroutineScope()
@@ -208,7 +208,7 @@ fun ProfileInfo(user: User, userId: Long, navigator: DestinationsNavigator, foll
             //Ako gleda tudji profil onda se vidi follow dugme
             //Ako gleda svoj profil onda se vidi logout dugme
 
-            if(userId.toInt() == 0) {
+            if(userId.toInt() == 2) {
                 IconButton(onClick = {
                     scope.launch { dataStore.saveAccessToken("") }
                     scope.launch { dataStore.saveRefreshToken("") }

@@ -2,9 +2,11 @@ package com.example.pokazimi.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.pokazimi.data.remote.dto.Like
+import com.example.pokazimi.data.remote.dto.CommentRequest
+import com.example.pokazimi.data.remote.model.Comment
+import com.example.pokazimi.data.remote.model.Like
 import com.example.pokazimi.data.remote.dto.PostRequest
-import com.example.pokazimi.data.remote.dto.UsernameAndProfilePic
+import com.example.pokazimi.data.remote.model.UsernameAndProfilePic
 import com.example.pokazimi.data.remote.services.PostsService
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -27,4 +29,10 @@ class PostViewModel: ViewModel() {
     {
         viewModelScope.launch { postsService.like(like) }
     }
+
+    fun comment(commentRequest: CommentRequest)
+    {
+        viewModelScope.launch { postsService.comment(commentRequest) }
+    }
+
 }

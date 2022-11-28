@@ -1,4 +1,4 @@
-package com.example.pokazimi.data.remote.dto
+package com.example.pokazimi.data.remote.model
 
 @kotlinx.serialization.Serializable
 data class User (
@@ -7,7 +7,6 @@ data class User (
     val lastName: String,
     val username: String,
     val email: String,
-    val password: String?,
     val profilePicture: String?,
     val posts: Array<Post>,
     val role: String,
