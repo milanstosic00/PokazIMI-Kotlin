@@ -102,6 +102,7 @@ fun ProfileInfo(user: User, userId: Long, navigator: DestinationsNavigator, foll
             result.value = ImageDecoder.decodeBitmap(source)
         }
         profileActivity.changeProfilePicture(userId, result.value)
+        navController.navigate("profile")
     }
 
     val scope = rememberCoroutineScope()

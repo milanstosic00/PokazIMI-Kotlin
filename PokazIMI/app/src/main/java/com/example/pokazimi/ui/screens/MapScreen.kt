@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import com.example.pokazimi.R
+import com.example.pokazimi.destinations.HomeScreenDestination
 import com.example.pokazimi.ui.activity.PostActivity
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
@@ -94,11 +95,11 @@ fun MapScreen(navController: NavHostController, navigator: DestinationsNavigator
                                     val lon = position.longitude()
                                     postActivity.savePost(3, description!!, image, lat, lon)
                                     File(imagePath).deleteOnExit()
-                                    //navController.navigate("home")
+                                    navigator.navigate(HomeScreenDestination)
                                 }
                                 else {
                                     // U suprotnom idi na home stranicu i posalji request za search postova koji su blizu koordinata centra kamere
-                                    navController.navigate("home")
+                                    navigator.navigate(HomeScreenDestination)
                                 }
                             }
                         ) {

@@ -31,6 +31,7 @@ import com.example.pokazimi.data.remote.dto.CommentRequest
 import com.example.pokazimi.data.remote.model.Comment
 import com.example.pokazimi.data.remote.model.ViewPost
 import com.example.pokazimi.destinations.MapScreenDestination
+import com.example.pokazimi.destinations.ViewPostScreenDestination
 import com.example.pokazimi.ui.activity.PostActivity
 import com.example.pokazimi.ui.activity.ViewPostActivity
 import com.example.pokazimi.ui.composables.CircularImage
@@ -69,7 +70,7 @@ fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavi
         if (post != null) {
             PostInfo(navigator, post.lat, post.lon, likes, post.description, post.user.id)
             Divide()
-            CommentSection(post.id, post.comments, postActivity)
+            CommentSection(post.id, post.comments, postActivity, navigator)
         }
         Spacer(modifier = Modifier.height(125.dp))
     }
@@ -85,7 +86,7 @@ fun Header(navController: NavHostController) {
         horizontalArrangement = Arrangement.Start
     ) {
         IconButton(
-            onClick = { navController.navigateUp() }
+            onClick = { navController.navigate("home") }
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
@@ -206,20 +207,20 @@ fun PostInfo(navigator: DestinationsNavigator, lat: Double, lon: Double, likes: 
 }
 
 @Composable
-fun CommentSection(postId: Long, comments: Array<Comment>, postActivity: PostActivity) {
+fun CommentSection(postId: Long, comments: Array<Comment>?, postActivity: PostActivity, navigator: DestinationsNavigator) {
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 10.dp)
     ) {
         Text(text = "Comments", fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.absoluteOffset(y = (-5).dp))
-        //CommentComposable(userId = 1, text = "Text text text text text text text text text text text text text text text text text text text text text text", postActivity)
 
-        comments.forEach {
+        comments!!.forEach {
             CommentComposable(userId = it.commentersId, text = it.content, postActivity)
         }
 
-        NewComment(postId)
+        NewComment(postId, navigator)
     }
 }
 
@@ -248,7 +249,7 @@ fun CommentComposable(userId: Long, text : String, postActivity: PostActivity) {
 }
 
 @Composable
-fun NewComment(postId: Long) {
+fun NewComment(postId: Long, navigator: DestinationsNavigator) {
     var commentText by remember {
         mutableStateOf(TextFieldValue(""))
     }
@@ -305,6 +306,7 @@ fun NewComment(postId: Long) {
                 val comment = CommentRequest(post_id = postId, content = commentText.text, commentersId = 2)
                 println(comment)
                 postActivity.comment(comment)
+                navigator.navigate(ViewPostScreenDestination(postId = postId))
             }) {
                 Icon(imageVector = Icons.Outlined.Send, contentDescription = "Send Comment", Modifier.size(30.dp))
             }
