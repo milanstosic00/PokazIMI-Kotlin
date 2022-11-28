@@ -9,11 +9,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.pokazimi.data.remote.model.ViewPost
+import com.example.pokazimi.dataStore.Storage
 import com.example.pokazimi.destinations.MapScreenDestination
 import com.example.pokazimi.ui.activity.HomeActivity
 import com.example.pokazimi.ui.activity.PostActivity
@@ -37,17 +39,25 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
         mutableStateOf(true)
     }
 
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val dataStore = Storage(context)
+    val accessToken = dataStore.getAccessToken.collectAsState(initial = "token").value
+    val refreshToken = dataStore.getRefreshToken.collectAsState(initial = "token").value
+
+    print("access = " + accessToken)
+    print("refresh = " + refreshToken)
     val postActivity = PostActivity()
-    val homeActivity = HomeActivity()
+    val homeActivity = HomeActivity(accessToken as String, refreshToken as String)
 
     var followingPosts: Array<ViewPost>? = null
     var featuredPosts: Array<ViewPost>? = null
 
     if(following.value) {
-        followingPosts= homeActivity.getFollowingPosts(2)
+        followingPosts= homeActivity.getFollowingPosts(1)
     }
     else {
-        featuredPosts = homeActivity.getFeaturedPosts(2)
+        featuredPosts = homeActivity.getFeaturedPosts(1)
     }
 
     /*Row(

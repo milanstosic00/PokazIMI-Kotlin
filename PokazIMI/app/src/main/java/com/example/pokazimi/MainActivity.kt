@@ -1,5 +1,6 @@
 package com.example.pokazimi
 
+import android.content.Context
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
@@ -23,9 +24,12 @@ import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
 
+    lateinit var context: Context
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        context = applicationContext
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         setContent {
             PokazIMITheme {
@@ -68,5 +72,7 @@ fun LoadingScreen(navigator: DestinationsNavigator){
         }
     }
 }
+
+
 
 
