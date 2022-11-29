@@ -32,6 +32,7 @@ import com.example.pokazimi.data.remote.model.Comment
 import com.example.pokazimi.data.remote.model.ViewPost
 import com.example.pokazimi.destinations.MapScreenDestination
 import com.example.pokazimi.destinations.ViewPostScreenDestination
+import com.example.pokazimi.getUserId
 import com.example.pokazimi.readFileAsLinesUsingUseLines
 import com.example.pokazimi.ui.activity.PostActivity
 import com.example.pokazimi.ui.activity.ViewPostActivity
@@ -273,6 +274,7 @@ fun CommentComposable(userId: Long, text : String, postActivity: PostActivity) {
 
 @Composable
 fun NewComment(postId: Long, navigator: DestinationsNavigator) {
+    var userIdfromJWT = getUserId()
     val context = LocalContext.current
     var commentText by remember {
         mutableStateOf(TextFieldValue(""))
@@ -336,7 +338,7 @@ fun NewComment(postId: Long, navigator: DestinationsNavigator) {
             verticalArrangement = Arrangement.Center
         ) {
             IconButton(onClick = {
-                val comment = CommentRequest(post_id = postId, content = commentText.text, commentersId = 2)
+                val comment = CommentRequest(post_id = postId, content = commentText.text, commentersId = userIdfromJWT)
                 println(comment)
                 postActivity.comment(comment)
                 navigator.navigate(ViewPostScreenDestination(postId = postId))
