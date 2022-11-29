@@ -31,6 +31,8 @@ import androidx.navigation.NavHostController
 import com.example.pokazimi.data.remote.model.UsernameAndProfilePic
 import com.example.pokazimi.destinations.MapScreenDestination
 import com.example.pokazimi.ui.activity.PostActivity
+import com.example.pokazimi.ui.composables.CircularImage
+import com.example.pokazimi.ui.screens.convert
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -81,7 +83,8 @@ fun PostScreen(navController: NavHostController, navigator: DestinationsNavigato
     val postActivity = PostActivity(accessToken as String, refreshToken as String)
     // treba da se dodaju slika i opis, a automatski se dodaju, username, datum, vreme, lajkovi = 0, ocene = prazno i komentari = prazno
 
-    val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(1) }
+    var userIdfromJWT = getUserId()
+    val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(userIdfromJWT) }
 
     Column (
         modifier = Modifier
@@ -104,9 +107,9 @@ fun PostScreen(navController: NavHostController, navigator: DestinationsNavigato
                     .fillMaxWidth()
                     .height(40.dp)
                     .border(
-                    BorderStroke(1.dp, MaterialTheme.colors.onSurface),
-                    shape = RoundedCornerShape(8.dp)
-                ),
+                        BorderStroke(1.dp, MaterialTheme.colors.onSurface),
+                        shape = RoundedCornerShape(8.dp)
+                    ),
                 decorationBox = { innerTextField ->
                     Row(
 
@@ -207,6 +210,8 @@ fun PreviewHeader(navController: NavHostController, navigator: DestinationsNavig
 @Composable
 fun PostPreviewHeader(desciption: String, usernameAndProfilePic: UsernameAndProfilePic?) {
 
+
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -217,7 +222,7 @@ fun PostPreviewHeader(desciption: String, usernameAndProfilePic: UsernameAndProf
             modifier = Modifier
                 .weight(1f)
         ) {
-            //CircularImage()
+            CircularImage(convert(usernameAndProfilePic!!.profilePicture))
         }
 
         Column(

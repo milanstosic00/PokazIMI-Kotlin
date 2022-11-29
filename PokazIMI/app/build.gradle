@@ -115,4 +115,7 @@ dependencies {
 
     //MapBox
     implementation 'com.mapbox.maps:android:10.5.0'
+
+    // JWT
+    implementation 'com.auth0.android:jwtdecode:2.0.1'
 }

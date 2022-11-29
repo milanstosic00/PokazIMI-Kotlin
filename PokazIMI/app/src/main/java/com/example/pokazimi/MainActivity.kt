@@ -14,6 +14,7 @@ import com.example.pokazimi.data.remote.dto.RefreshTokenRequest
 import com.example.pokazimi.data.remote.services.AuthService
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import com.auth0.android.jwt.JWT
 import com.example.pokazimi.destinations.MainScreenDestination
 import com.example.pokazimi.ui.theme.PokazIMITheme
 import com.google.accompanist.insets.ProvideWindowInsets
@@ -104,3 +105,13 @@ fun readFromFile() : List<String>?
     }
     return lines
 }
+
+@Composable
+fun getUserId(): Long
+{
+    var lines = readFromFile()
+    var jwt: JWT = JWT(lines!!.get(0))
+    var claim: String? = jwt.getClaim("userId").asString()
+    return claim!!.toLong()
+}
+

@@ -61,6 +61,8 @@ fun MainScreen(navigator: DestinationsNavigator) {
 
 @Composable
 fun Navigation(navController: NavHostController, navigator: DestinationsNavigator) {
+    var userIdfromJWT = getUserId()
+
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
             HomeScreen(navController, navigator)
@@ -69,7 +71,7 @@ fun Navigation(navController: NavHostController, navigator: DestinationsNavigato
             PostScreen(navController, navigator)
         }
         composable("profile") {
-            ProfileScreen(1, navigator, navController) // 0 znaci da gleda svoj profil - u navbaru ostaje hardkodovana 0
+            ProfileScreen(userIdfromJWT, navigator, navController) // 0 znaci da gleda svoj profil - u navbaru ostaje hardkodovana 0
         }
         composable("viewpost") {
             ViewPostScreen(navController = navController, navigator)

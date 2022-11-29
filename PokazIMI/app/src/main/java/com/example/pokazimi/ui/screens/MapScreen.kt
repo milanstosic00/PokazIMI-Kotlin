@@ -28,7 +28,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import com.example.pokazimi.R
 import com.example.pokazimi.destinations.HomeScreenDestination
-import com.example.pokazimi.readFileAsLinesUsingUseLines
+import com.example.pokazimi.destinations.MainScreenDestination
+import com.example.pokazimi.getUserId
 import com.example.pokazimi.readFromFile
 import com.example.pokazimi.ui.activity.PostActivity
 import com.mapbox.geojson.Point
@@ -48,6 +49,7 @@ fun MapScreen(navController: NavHostController, navigator: DestinationsNavigator
     var mapView: MapView? = null
 
     var lines = readFromFile()
+    var userIdfromJWT = getUserId()
 
     val refreshToken = lines?.get(0)
     val accessToken = lines?.get(1)
@@ -102,13 +104,13 @@ fun MapScreen(navController: NavHostController, navigator: DestinationsNavigator
                                     val position = mapView!!.getMapboxMap().cameraState.center
                                     val lat = position.latitude()
                                     val lon = position.longitude()
-                                    postActivity.savePost(2, description!!, image, lat, lon)
+                                    postActivity.savePost(userIdfromJWT, description!!, image, lat, lon)
                                     File(imagePath).deleteOnExit()
                                     navigator.navigate(HomeScreenDestination)
                                 }
                                 else {
                                     // U suprotnom idi na home stranicu i posalji request za search postova koji su blizu koordinata centra kamere
-                                    navigator.navigate(HomeScreenDestination)
+                                    navigator.navigate(MainScreenDestination)
                                 }
                             }
                         ) {

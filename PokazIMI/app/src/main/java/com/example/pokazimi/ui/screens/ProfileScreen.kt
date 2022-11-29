@@ -36,6 +36,7 @@ import com.example.pokazimi.data.remote.model.User
 import com.example.pokazimi.data.remote.services.ProfileService
 import com.example.pokazimi.dataStore.Storage
 import com.example.pokazimi.destinations.LoginScreenDestination
+import com.example.pokazimi.getUserId
 import com.example.pokazimi.readFileAsLinesUsingUseLines
 import com.example.pokazimi.ui.activity.ProfileActivity
 import com.example.pokazimi.ui.composables.Post
@@ -96,6 +97,7 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
 @Composable
 fun ProfileInfo(user: User, userId: Long, navigator: DestinationsNavigator, following: Boolean, navController: NavHostController) {
 
+    var userIdfromJWT = getUserId()
     val context = LocalContext.current
     val path = context.getExternalFilesDir(null)!!.absolutePath
     val tempFile = File(path, "tokens.txt")
@@ -190,32 +192,34 @@ fun ProfileInfo(user: User, userId: Long, navigator: DestinationsNavigator, foll
                             .clip(CircleShape),
                     )
                 }
-                Button(
-                    onClick = {
-                        chooseImage.launch("image/*")
+                if(userId == userIdfromJWT) {
+                    Button(
+                        onClick = {
+                            chooseImage.launch("image/*")
 
-                    },
-                    shape = CircleShape,
-                    modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp)
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colors.onSurface,
-                            shape = CircleShape
-                        )
-                        .align(Alignment.BottomEnd),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface),
-                    contentPadding = PaddingValues(0.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.PhotoCamera,
-                        contentDescription = "Change profile picture",
+                        },
+                        shape = CircleShape,
                         modifier = Modifier
-                            .clip(CircleShape)
-                            .padding(PaddingValues(0.dp)),
-                        tint = MaterialTheme.colors.onSurface
-                    )
+                            .width(50.dp)
+                            .height(50.dp)
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colors.onSurface,
+                                shape = CircleShape
+                            )
+                            .align(Alignment.BottomEnd),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface),
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.PhotoCamera,
+                            contentDescription = "Change profile picture",
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .padding(PaddingValues(0.dp)),
+                            tint = MaterialTheme.colors.onSurface
+                        )
+                    }
                 }
             }
         }
@@ -229,7 +233,7 @@ fun ProfileInfo(user: User, userId: Long, navigator: DestinationsNavigator, foll
             //Ako gleda tudji profil onda se vidi follow dugme
             //Ako gleda svoj profil onda se vidi logout dugme
 
-            if(userId.toInt() == 2) {
+            if(userId == userIdfromJWT) {
                 IconButton(onClick = {
                     scope.launch { dataStore.saveAccessToken("") }
                     scope.launch { dataStore.saveRefreshToken("") }
