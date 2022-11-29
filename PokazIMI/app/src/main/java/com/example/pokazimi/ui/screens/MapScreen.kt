@@ -28,6 +28,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import com.example.pokazimi.R
 import com.example.pokazimi.destinations.HomeScreenDestination
+import com.example.pokazimi.readFileAsLinesUsingUseLines
+import com.example.pokazimi.readFromFile
 import com.example.pokazimi.ui.activity.PostActivity
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
@@ -44,6 +46,12 @@ import java.io.File
 @Composable
 fun MapScreen(navController: NavHostController, navigator: DestinationsNavigator, newPost: Boolean = false, viewingPost: Boolean = false, longitude: Float = 0.0f, latitude: Float = 0.0f, description: String?) {
     var mapView: MapView? = null
+
+    var lines = readFromFile()
+
+    val refreshToken = lines?.get(0)
+    val accessToken = lines?.get(1)
+    val postActivity = PostActivity(accessToken as String, refreshToken as String)
     Column(
         modifier = Modifier
             .background(color = MaterialTheme.colors.background)
@@ -78,7 +86,9 @@ fun MapScreen(navController: NavHostController, navigator: DestinationsNavigator
                 if(!viewingPost) {
                     Icon(imageVector = Icons.Default.LocationOn, contentDescription = "Icon", modifier = Modifier.absoluteOffset(y = (-12).dp))
                     Row(
-                        modifier = Modifier.fillMaxSize().padding(10.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(10.dp),
                         horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.Bottom
                     ) {
@@ -86,14 +96,13 @@ fun MapScreen(navController: NavHostController, navigator: DestinationsNavigator
                             onClick = {
                                 if(newPost) {
                                     // Ako je novi post uzmi koordinate centra kamere i posalji request za cuvanje posta
-                                    val postActivity = PostActivity()
                                     val path = context.getExternalFilesDir(null)!!.absolutePath
                                     val imagePath = "$path/tempFileName.jpg"
                                     val image = BitmapFactory.decodeFile(imagePath)
                                     val position = mapView!!.getMapboxMap().cameraState.center
                                     val lat = position.latitude()
                                     val lon = position.longitude()
-                                    postActivity.savePost(3, description!!, image, lat, lon)
+                                    postActivity.savePost(2, description!!, image, lat, lon)
                                     File(imagePath).deleteOnExit()
                                     navigator.navigate(HomeScreenDestination)
                                 }

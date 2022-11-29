@@ -45,7 +45,20 @@ class Storage(private val context: Context) {
     }
 
     fun returnAccessToken(): String {
-        val user_token = runBlocking { getAccessToken.collect() }
+        var user_token: String? = ""
+        runBlocking { getAccessToken.collect { token ->
+                user_token = token
+            }
+        }
+        return user_token as String
+    }
+
+    fun returnRefreshToken(): String {
+        var user_token: String? = ""
+        runBlocking { getRefreshToken.collect { token ->
+                user_token = token
+            }
+        }
         return user_token as String
     }
 }

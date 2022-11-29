@@ -18,6 +18,6 @@ object HttpRoutes {
     const val FOLLOW = "$BASE_URL/follow/save"
     const val GET_POST = "$BASE_URL/post/getPost"
     const val GET_USERNAME_PROFILEPIC = "$BASE_URL/api/getUsernameAndPfp"
-    const val FEATURED_POSTS = "$BASE_URL/post/getFeaturedPosts?userId="
-    const val FOLLOWING_POSTS = "$BASE_URL/post/getFeedPosts?userId="
+    const val FEATURED_POSTS = "$BASE_URL/post/getFeaturedPosts"
+    const val FOLLOWING_POSTS = "$BASE_URL/post/getFeedPosts"
 }

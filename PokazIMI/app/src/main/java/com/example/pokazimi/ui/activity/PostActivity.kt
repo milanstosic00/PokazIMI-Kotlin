@@ -15,8 +15,8 @@ import kotlinx.coroutines.runBlocking
 import java.io.ByteArrayOutputStream
 
 
-class PostActivity: ComponentActivity() {
-    private var postViewModel = PostViewModel()
+class PostActivity(accessToken: String, refreshToken: String): ComponentActivity() {
+    private var postViewModel = PostViewModel(accessToken, refreshToken)
 
     fun create_pfp(image: String?): Bitmap?
     {

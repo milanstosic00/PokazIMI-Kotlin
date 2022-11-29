@@ -35,6 +35,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.io.File
 
 @Destination
 @Composable
@@ -191,6 +192,9 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                                     val loginResponse = login(email, password)
                                     if(loginResponse != null) {
 
+                                        val path = context.getExternalFilesDir(null)!!.absolutePath
+                                        val tempFile = File(path, "tokens.txt")
+                                        tempFile.writeText(loginResponse.refreshToken + "\n" + loginResponse.accessToken)
                                         scope.launch { dataStore.saveAccessToken(loginResponse.accessToken) }
                                         scope.launch { dataStore.saveRefreshToken(loginResponse.refreshToken) }
                                         navigator.navigate(MainScreenDestination)

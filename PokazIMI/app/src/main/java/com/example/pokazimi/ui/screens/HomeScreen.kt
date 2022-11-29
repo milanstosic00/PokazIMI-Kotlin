@@ -9,11 +9,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.pokazimi.data.remote.model.ViewPost
+import com.example.pokazimi.dataStore.Storage
 import com.example.pokazimi.destinations.MapScreenDestination
 import com.example.pokazimi.ui.activity.HomeActivity
 import com.example.pokazimi.ui.activity.PostActivity
@@ -23,6 +25,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.runBlocking
+import java.io.File
 
 @Destination
 @Composable
@@ -37,17 +40,28 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
         mutableStateOf(true)
     }
 
-    val postActivity = PostActivity()
-    val homeActivity = HomeActivity()
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val dataStore = Storage(context)
+    val path = context.getExternalFilesDir(null)!!.absolutePath
+    val tempFile = File(path, "tokens.txt")
+    var lines: List<String>? = null
+    if(tempFile.isFile) {
+        lines = readFileAsLinesUsingUseLines(tempFile)
+    }
+    val refreshToken = lines?.get(0)
+    val accessToken = lines?.get(1)
+    val postActivity = PostActivity(accessToken as String, refreshToken as String)
+    val homeActivity = HomeActivity(accessToken as String, refreshToken as String)
 
     var followingPosts: Array<ViewPost>? = null
     var featuredPosts: Array<ViewPost>? = null
 
     if(following.value) {
-        followingPosts= homeActivity.getFollowingPosts(2)
+        followingPosts= homeActivity.getFollowingPosts()
     }
     else {
-        featuredPosts = homeActivity.getFeaturedPosts(2)
+        featuredPosts = homeActivity.getFeaturedPosts()
     }
 
     /*Row(

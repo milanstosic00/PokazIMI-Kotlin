@@ -8,10 +8,10 @@ import io.ktor.client.request.*
 
 class HomeServiceImpl(private val client: HttpClient): HomeService {
 
-    override suspend fun getFeaturedPosts(userId: Long): Array<ViewPost>? {
+    override suspend fun getFeaturedPosts(): Array<ViewPost>? {
         return try {
             client.get<Array<ViewPost>>{
-                url(HttpRoutes.FEATURED_POSTS + userId)
+                url(HttpRoutes.FEATURED_POSTS)
             }
         } catch (e: Exception) {
             print("Error : ${e.message}")
@@ -19,10 +19,10 @@ class HomeServiceImpl(private val client: HttpClient): HomeService {
         }
     }
 
-    override suspend fun getFollowingPosts(userId: Long): Array<ViewPost>? {
+    override suspend fun getFollowingPosts(): Array<ViewPost>? {
         return try {
             client.get<Array<ViewPost>>{
-                url(HttpRoutes.FOLLOWING_POSTS + userId)
+                url(HttpRoutes.FOLLOWING_POSTS)
             }
         } catch (e: Exception) {
             print("Error : ${e.message}")

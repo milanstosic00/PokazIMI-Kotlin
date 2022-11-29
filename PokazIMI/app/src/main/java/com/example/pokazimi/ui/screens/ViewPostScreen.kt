@@ -32,24 +32,37 @@ import com.example.pokazimi.data.remote.model.Comment
 import com.example.pokazimi.data.remote.model.ViewPost
 import com.example.pokazimi.destinations.MapScreenDestination
 import com.example.pokazimi.destinations.ViewPostScreenDestination
+import com.example.pokazimi.readFileAsLinesUsingUseLines
 import com.example.pokazimi.ui.activity.PostActivity
 import com.example.pokazimi.ui.activity.ViewPostActivity
 import com.example.pokazimi.ui.composables.CircularImage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import java.io.File
 
 @Destination
 @Composable
 fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavigator, postId: Long = -1) {
+    val context = LocalContext.current
     val systemUiController = rememberSystemUiController()
     val color = MaterialTheme.colors.background
     SideEffect {
         systemUiController.setStatusBarColor(color)
     }
 
-    val viewPostActivity = ViewPostActivity()
-    val postActivity = PostActivity()
+    val path = context.getExternalFilesDir(null)!!.absolutePath
+    val tempFile = File(path, "tokens.txt")
+    var lines: List<String>? = null
+    if(tempFile.isFile) {
+        lines = readFileAsLinesUsingUseLines(tempFile)
+    }
+
+    val refreshToken = lines?.get(0)
+    val accessToken = lines?.get(1)
+
+    val postActivity = PostActivity(accessToken as String, refreshToken as String)
+    val viewPostActivity = ViewPostActivity(accessToken as String, refreshToken as String)
     val post = viewPostActivity.getPost(postId)
     var likes = 0
     if (post != null) {
@@ -122,7 +135,17 @@ fun PostInfo(navigator: DestinationsNavigator, lat: Double, lon: Double, likes: 
         mutableStateOf<Bitmap>(myImage)
     }
 
-    val postActivity = PostActivity()
+    val path = context.getExternalFilesDir(null)!!.absolutePath
+    val tempFile = File(path, "tokens.txt")
+    var lines: List<String>? = null
+    if(tempFile.isFile) {
+        lines = readFileAsLinesUsingUseLines(tempFile)
+    }
+
+    val refreshToken = lines?.get(0)
+    val accessToken = lines?.get(1)
+
+    val postActivity = PostActivity(accessToken as String, refreshToken as String)
     val usernameAndProfilePic = postActivity.getUsernameAndProfilePic(userId)
 
     Row(
@@ -250,11 +273,21 @@ fun CommentComposable(userId: Long, text : String, postActivity: PostActivity) {
 
 @Composable
 fun NewComment(postId: Long, navigator: DestinationsNavigator) {
+    val context = LocalContext.current
     var commentText by remember {
         mutableStateOf(TextFieldValue(""))
     }
+    val path = context.getExternalFilesDir(null)!!.absolutePath
+    val tempFile = File(path, "tokens.txt")
+    var lines: List<String>? = null
+    if(tempFile.isFile) {
+        lines = readFileAsLinesUsingUseLines(tempFile)
+    }
 
-    val postActivity = PostActivity()
+    val refreshToken = lines?.get(0)
+    val accessToken = lines?.get(1)
+
+    val postActivity = PostActivity(accessToken as String, refreshToken as String)
 
     Row(
         modifier = Modifier

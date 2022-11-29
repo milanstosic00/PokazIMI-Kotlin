@@ -36,16 +36,28 @@ import com.example.pokazimi.data.remote.model.User
 import com.example.pokazimi.data.remote.services.ProfileService
 import com.example.pokazimi.dataStore.Storage
 import com.example.pokazimi.destinations.LoginScreenDestination
+import com.example.pokazimi.readFileAsLinesUsingUseLines
 import com.example.pokazimi.ui.activity.ProfileActivity
 import com.example.pokazimi.ui.composables.Post
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
+import java.io.File
 
 @Destination
 @Composable
 fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController: NavHostController) {
+
+    val context = LocalContext.current
+    val path = context.getExternalFilesDir(null)!!.absolutePath
+    val tempFile = File(path, "tokens.txt")
+    var lines: List<String>? = null
+    if(tempFile.isFile) {
+        lines = readFileAsLinesUsingUseLines(tempFile)
+    }
+    val refreshToken = lines?.get(0)
+    val accessToken = lines?.get(1)
 
     val following by remember {
         mutableStateOf(false)
@@ -57,7 +69,7 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
         systemUiController.setStatusBarColor(color)
     }
 
-    val profileActivity = ProfileActivity()
+    val profileActivity = ProfileActivity(accessToken as String, refreshToken as String)
     val user = profileActivity.getUser(userId)
 
 
@@ -84,14 +96,22 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
 @Composable
 fun ProfileInfo(user: User, userId: Long, navigator: DestinationsNavigator, following: Boolean, navController: NavHostController) {
 
-    val client = ProfileService.create()
     val context = LocalContext.current
+    val path = context.getExternalFilesDir(null)!!.absolutePath
+    val tempFile = File(path, "tokens.txt")
+    var lines: List<String>? = null
+    if(tempFile.isFile) {
+        lines = readFileAsLinesUsingUseLines(tempFile)
+    }
+    val refreshToken = lines?.get(0)
+    val accessToken = lines?.get(1)
+    val client = ProfileService.create(accessToken as String, refreshToken as String)
     val myImage: Bitmap = BitmapFactory.decodeResource(Resources.getSystem(), android.R.mipmap.sym_def_app_icon)
     val result = remember {
         mutableStateOf<Bitmap>(myImage)
     }
 
-    val profileActivity = ProfileActivity()
+    val profileActivity = ProfileActivity(accessToken, refreshToken)
 
     val chooseImage = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()){
         if (Build.VERSION.SDK_INT < 29) {

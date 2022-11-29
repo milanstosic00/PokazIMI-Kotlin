@@ -9,8 +9,8 @@ import com.example.pokazimi.data.remote.services.ProfileService
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-class ProfileScreenViewModel: ViewModel() {
-    private var profileService = ProfileService.create()
+class ProfileScreenViewModel(accessToken: String, refreshToken: String): ViewModel() {
+    private var profileService = ProfileService.create(accessToken, refreshToken)
 
     fun changeProfilePicture( userId: Long, image: ByteArray)
     {
