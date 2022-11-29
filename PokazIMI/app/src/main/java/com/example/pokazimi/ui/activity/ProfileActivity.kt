@@ -8,8 +8,8 @@ import com.example.pokazimi.data.remote.model.User
 import com.example.pokazimi.viewmodels.ProfileScreenViewModel
 import java.io.ByteArrayOutputStream
 
-class ProfileActivity: ComponentActivity() {
-    private var profileViewModel = ProfileScreenViewModel()
+class ProfileActivity(accessToken: String, refreshToken: String): ComponentActivity() {
+    private var profileViewModel = ProfileScreenViewModel(accessToken, refreshToken)
 
     @Override
     override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {

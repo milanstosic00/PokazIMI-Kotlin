@@ -101,7 +101,7 @@ fun MapScreen(navController: NavHostController, navigator: DestinationsNavigator
                                     val position = mapView!!.getMapboxMap().cameraState.center
                                     val lat = position.latitude()
                                     val lon = position.longitude()
-                                    postActivity.savePost(3, description!!, image, lat, lon)
+                                    postActivity.savePost(2, description!!, image, lat, lon)
                                     File(imagePath).deleteOnExit()
                                     //navController.navigate("home")
                                 }

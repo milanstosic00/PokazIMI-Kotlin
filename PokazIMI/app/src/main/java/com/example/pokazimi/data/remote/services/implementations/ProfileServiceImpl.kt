@@ -33,7 +33,7 @@ class ProfileServiceImpl(private val client: HttpClient): ProfileService {
     override suspend fun getUser(userId: Long): User? {
         return try {
             client.get<User>{
-                url(HttpRoutes.GET_USER + "/$userId")
+                url(HttpRoutes.GET_USER)
             }
         } catch (e: Exception) {
             print("Error : ${e.message}")
