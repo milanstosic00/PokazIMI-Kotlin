@@ -90,3 +90,17 @@ fun LoadingScreen(navigator: DestinationsNavigator){
 
 fun readFileAsLinesUsingUseLines(file: File): List<String>
         = file.useLines { it.toList() }
+
+
+@Composable
+fun readFromFile() : List<String>?
+{
+    val context = LocalContext.current
+    val path = context.getExternalFilesDir(null)!!.absolutePath
+    val tempFile = File(path, "tokens.txt")
+    var lines: List<String>? = null
+    if(tempFile.isFile) {
+        lines = readFileAsLinesUsingUseLines(tempFile)
+    }
+    return lines
+}

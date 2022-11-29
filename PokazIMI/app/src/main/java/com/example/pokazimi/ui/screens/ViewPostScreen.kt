@@ -50,7 +50,6 @@ fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavi
         systemUiController.setStatusBarColor(color)
     }
 
-    val viewPostActivity = ViewPostActivity()
     val path = context.getExternalFilesDir(null)!!.absolutePath
     val tempFile = File(path, "tokens.txt")
     var lines: List<String>? = null
@@ -62,6 +61,7 @@ fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavi
     val accessToken = lines?.get(1)
 
     val postActivity = PostActivity(accessToken as String, refreshToken as String)
+    val viewPostActivity = ViewPostActivity(accessToken as String, refreshToken as String)
     val post = viewPostActivity.getPost(postId)
     var likes = 0
     if (post != null) {

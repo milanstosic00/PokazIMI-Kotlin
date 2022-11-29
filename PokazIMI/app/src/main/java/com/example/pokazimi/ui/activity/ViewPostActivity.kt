@@ -6,8 +6,8 @@ import androidx.activity.ComponentActivity
 import com.example.pokazimi.data.remote.model.ViewPost
 import com.example.pokazimi.viewmodels.ViewPostViewModel
 
-class ViewPostActivity: ComponentActivity() {
-    private var viewPostViewModel = ViewPostViewModel()
+class ViewPostActivity(accessToken: String, refreshToken: String): ComponentActivity() {
+    private var viewPostViewModel = ViewPostViewModel(accessToken, refreshToken)
 
     @Override
     override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
