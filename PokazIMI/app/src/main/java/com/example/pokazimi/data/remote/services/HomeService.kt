@@ -20,9 +20,9 @@ import kotlinx.coroutines.runBlocking
 
 interface HomeService {
 
-    suspend fun getFeaturedPosts(userId: Long): Array<ViewPost>?
+    suspend fun getFeaturedPosts(): Array<ViewPost>?
 
-    suspend fun getFollowingPosts(userId: Long): Array<ViewPost>?
+    suspend fun getFollowingPosts(): Array<ViewPost>?
 
     companion object {
         fun create(accessToken: String, refreshToken: String): HomeService {

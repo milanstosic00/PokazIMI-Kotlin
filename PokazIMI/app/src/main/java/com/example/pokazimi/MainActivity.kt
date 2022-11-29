@@ -21,6 +21,8 @@ import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.io.File
+import java.io.FileOutputStream
 
 class MainActivity : ComponentActivity() {
 
@@ -46,6 +48,13 @@ fun LoadingScreen(navigator: DestinationsNavigator){
     val scope = rememberCoroutineScope()
     val dataStore = Storage(context)
     val token = dataStore.getAccessToken.collectAsState(initial = "token").value
+    val path = context.getExternalFilesDir(null)!!.absolutePath
+    val tempFile = File(path, "tokens.txt")
+    var lines: List<String>? = null
+    if(tempFile.isFile) {
+        lines = readFileAsLinesUsingUseLines(tempFile)
+    }
+    print("linije + " + lines)
 
     if(token == "") {
         navigator.navigate(LoginScreenDestination)
@@ -58,12 +67,16 @@ fun LoadingScreen(navigator: DestinationsNavigator){
             val logInResponse =
                 runBlocking { authService.refresh(RefreshTokenRequest(refreshToken as String)) }
 
-            if (logInResponse == null || logInResponse.accessToken == "Refresh token expired") {
+            if (logInResponse == null || logInResponse.refreshToken == "Refresh token expired") {
 
                 navigator.navigate(LoginScreenDestination)
             }
             runBlocking {
                 if (logInResponse != null) {
+
+                    val path = context.getExternalFilesDir(null)!!.absolutePath
+                    val tempFile = File(path, "tokens.txt")
+                    tempFile.writeText(logInResponse.refreshToken + "\n" + logInResponse.accessToken)
                     dataStore.saveRefreshToken(logInResponse.refreshToken)
                     dataStore.saveAccessToken(logInResponse.accessToken)
                 }
@@ -75,4 +88,5 @@ fun LoadingScreen(navigator: DestinationsNavigator){
 
 
 
-
+fun readFileAsLinesUsingUseLines(file: File): List<String>
+        = file.useLines { it.toList() }

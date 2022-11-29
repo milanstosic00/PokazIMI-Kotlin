@@ -11,9 +11,11 @@ import com.example.pokazimi.data.remote.services.PostsService
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-class PostViewModel: ViewModel() {
+class PostViewModel(accessToken: String, refreshToken: String): ViewModel() {
 
-    private var postsService = PostsService.create()
+
+
+    private var postsService = PostsService.create(accessToken, refreshToken)
 
     fun savePost(userId: Long, description: String, image: ByteArray, lat: Double, lon: Double)
     {

@@ -25,6 +25,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.runBlocking
+import java.io.File
 
 @Destination
 @Composable
@@ -42,22 +43,25 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val dataStore = Storage(context)
-    val accessToken = dataStore.getAccessToken.collectAsState(initial = "token").value
-    val refreshToken = dataStore.getRefreshToken.collectAsState(initial = "token").value
-
-    print("access = " + accessToken)
-    print("refresh = " + refreshToken)
-    val postActivity = PostActivity()
+    val path = context.getExternalFilesDir(null)!!.absolutePath
+    val tempFile = File(path, "tokens.txt")
+    var lines: List<String>? = null
+    if(tempFile.isFile) {
+        lines = readFileAsLinesUsingUseLines(tempFile)
+    }
+    val refreshToken = lines?.get(0)
+    val accessToken = lines?.get(1)
+    val postActivity = PostActivity(accessToken as String, refreshToken as String)
     val homeActivity = HomeActivity(accessToken as String, refreshToken as String)
 
     var followingPosts: Array<ViewPost>? = null
     var featuredPosts: Array<ViewPost>? = null
 
     if(following.value) {
-        followingPosts= homeActivity.getFollowingPosts(1)
+        followingPosts= homeActivity.getFollowingPosts()
     }
     else {
-        featuredPosts = homeActivity.getFeaturedPosts(1)
+        featuredPosts = homeActivity.getFeaturedPosts()
     }
 
     /*Row(

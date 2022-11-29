@@ -69,7 +69,16 @@ fun PostScreen(navController: NavHostController, navigator: DestinationsNavigato
         systemUiController.setStatusBarColor(color)
     }
 //
-    val postActivity = PostActivity()
+    val path = context.getExternalFilesDir(null)!!.absolutePath
+    val tempFile = File(path, "tokens.txt")
+    var lines: List<String>? = null
+    if(tempFile.isFile) {
+        lines = readFileAsLinesUsingUseLines(tempFile)
+    }
+
+    val refreshToken = lines?.get(0)
+    val accessToken = lines?.get(1)
+    val postActivity = PostActivity(accessToken as String, refreshToken as String)
     // treba da se dodaju slika i opis, a automatski se dodaju, username, datum, vreme, lajkovi = 0, ocene = prazno i komentari = prazno
 
     val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(1) }

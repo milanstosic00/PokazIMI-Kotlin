@@ -9,13 +9,13 @@ import kotlinx.coroutines.runBlocking
 class HomeScreenViewModel(accessToken: String, refreshToken: String): ViewModel() {
     private var homeService = HomeService.create(accessToken, refreshToken)
 
-    fun getFeaturedPosts(userId: Long): Array<ViewPost>?
+    fun getFeaturedPosts(): Array<ViewPost>?
     {
-        return runBlocking { homeService.getFeaturedPosts(userId) }
+        return runBlocking { homeService.getFeaturedPosts() }
     }
 
-    fun getFollowingPosts(userId: Long): Array<ViewPost>?
+    fun getFollowingPosts(): Array<ViewPost>?
     {
-        return runBlocking { homeService.getFollowingPosts(userId) }
+        return runBlocking { homeService.getFollowingPosts() }
     }
 }

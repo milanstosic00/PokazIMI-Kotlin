@@ -10,6 +10,8 @@ import io.ktor.client.engine.android.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import com.example.pokazimi.data.remote.services.implementations.PostsServiceImpl
+import io.ktor.client.features.auth.*
+import io.ktor.client.features.auth.providers.*
 import io.ktor.client.features.logging.*
 
 interface PostsService {
@@ -27,7 +29,7 @@ interface PostsService {
     suspend fun getPost(postId: Long): ViewPost?
 
     companion object {
-        fun create(): PostsService {
+        fun create(accessToken: String, refreshToken: String): PostsService {
             return PostsServiceImpl(
                 client = HttpClient(Android) {
                     install(Logging) {
@@ -35,6 +37,22 @@ interface PostsService {
                     }
                     install(JsonFeature) {
                         serializer = KotlinxSerializer()
+                    }
+                    install(Auth){
+                        bearer{
+                            loadTokens {
+                                BearerTokens(accessToken, refreshToken)
+                            }
+                            refreshTokens {
+                                /*val dataStore = Storage(context)
+                                val refreshToken = dataStore.returnRefreshToken()
+                                val authService = AuthService.create()
+                                val logInResponse =
+                                    runBlocking { authService.refresh(RefreshTokenRequest(refreshToken)) }
+                                logInResponse?.let { it1 -> BearerTokens(it1.accessToken, logInResponse.accessToken) }*/
+                                BearerTokens("asd", "asd")
+                            }
+                        }
                     }
                 }
             )
