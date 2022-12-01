@@ -283,10 +283,10 @@ fun login(username: String, password: String) : LogInResponse {
     val response = runBlocking { service.login(LoginRequest(username, password)) }
 
     if(response.accessToken.contains("Email not found"))
-        return LogInResponse("wrongemail", "asd")
+        return LogInResponse("wrongemail", "")
 
     else if(response.accessToken.contains(("Wrong password")))
-        return LogInResponse("wrongpassword", "asd")
+        return LogInResponse("wrongpassword", "")
 
     return response
 }

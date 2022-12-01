@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Base64
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -125,6 +126,7 @@ fun ProfileInfo(user: User, userId: Long, navigator: DestinationsNavigator, foll
         }
         profileActivity.changeProfilePicture(userId, result.value)
         navController.navigate("profile")
+        Toast.makeText(context, "Profile picture changed.", Toast.LENGTH_SHORT).show()
     }
 
     val scope = rememberCoroutineScope()
