@@ -233,7 +233,7 @@ fun PostPreviewHeader(desciption: String, usernameAndProfilePic: UsernameAndProf
             if (usernameAndProfilePic != null) {
                 Text(text = usernameAndProfilePic.username, fontSize = 14.sp, fontWeight = FontWeight.Bold)
             }
-            Text(text = "1 hour ago", fontSize = 10.sp, fontWeight = FontWeight.Light)
+            Text(text = "Time of posting", fontSize = 10.sp, fontWeight = FontWeight.Light)
         }
     }
     Row(

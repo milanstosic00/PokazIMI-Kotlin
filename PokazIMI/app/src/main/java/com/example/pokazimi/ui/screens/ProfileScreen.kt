@@ -87,7 +87,7 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
         Divide()
         Spacer(modifier = Modifier.height(10.dp))
         user.posts.forEach {
-            Post(navController, navigator, user.username, it.description, create_image(user), create_content(it), it.lat, it.lon, it.id)
+            Post(navController, navigator, user.username, it.description, create_image(user), create_content(it), it.lat, it.lon, it.id, it.time)
         }
 //        Post(navController, navigator, user.username, create_image(user))
 //        Post(navController, navigator, user.username, create_image(user))

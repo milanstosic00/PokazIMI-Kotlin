@@ -1,6 +1,8 @@
 package com.example.pokazimi.ui.composables
 
 import android.graphics.Bitmap
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -29,9 +31,14 @@ import com.example.pokazimi.destinations.MapScreenDestination
 import com.example.pokazimi.destinations.ViewPostScreenDestination
 import com.example.pokazimi.ui.screens.ViewPostScreen
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.datetime.LocalDateTime
+import java.time.Instant
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
+import java.util.concurrent.TimeUnit
 
 @Composable
-fun Post(navController: NavHostController, navigator: DestinationsNavigator, username: String = "username", description: String = "Description", image: Bitmap?, content: Bitmap?, lat: Double, lon: Double, postId: Long) {
+fun Post(navController: NavHostController, navigator: DestinationsNavigator, username: String = "username", description: String = "Description", image: Bitmap?, content: Bitmap?, lat: Double, lon: Double, postId: Long, time: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -45,7 +52,7 @@ fun Post(navController: NavHostController, navigator: DestinationsNavigator, use
             elevation = 5.dp
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                PostHeader(navController, navigator, username, description, image)
+                PostHeader(navController, navigator, username, description, image, time)
                 Spacer(modifier = Modifier.height(10.dp))
                 PostContent(navigator, content!!, postId)
                 PostFooter(navigator, lat, lon, postId)
@@ -55,7 +62,10 @@ fun Post(navController: NavHostController, navigator: DestinationsNavigator, use
 }
 
 @Composable
-fun PostHeader(navController: NavHostController, navigator: DestinationsNavigator, username: String, description: String = "Description", image: Bitmap?) {
+fun PostHeader(navController: NavHostController, navigator: DestinationsNavigator, username: String, description: String = "Description", image: Bitmap?, time: String) {
+
+    var time1 = time.replaceAfter("T", "").replace("T", "")
+    val timestamp = LocalDateTime.parse(time)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -75,7 +85,8 @@ fun PostHeader(navController: NavHostController, navigator: DestinationsNavigato
                 .padding(5.dp)
         ) {
             Text(text = "@"+username, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-            Text(text = "1 hour ago", fontSize = 10.sp, fontWeight = FontWeight.Light)
+            Text(text = timestamp.dayOfMonth.toString() + "." + timestamp.monthNumber + "." + timestamp.year + ". " + timestamp.hour + ":" + timestamp.minute, fontSize = 10.sp, fontWeight = FontWeight.Light)
+
         }
     }
     Row(
