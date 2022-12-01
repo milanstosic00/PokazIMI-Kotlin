@@ -1,7 +1,8 @@
 package com.example.pokazimi.data.remote
 
 object HttpRoutes {
-    private const val BASE_URL = "http://10.0.2.2:8080"
+    //http://10.0.2.2:8080   147.91.204.115:10042
+    private const val BASE_URL = "http://147.91.204.115:10042"
 
     private const val TEST_URL = "https://jsonplaceholder.typicode.com"
     const val POSTS = "$TEST_URL/posts"

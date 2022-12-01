@@ -14,6 +14,7 @@ import com.example.pokazimi.data.remote.dto.RefreshTokenRequest
 import com.example.pokazimi.data.remote.services.AuthService
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.navigation.NavHostController
 import com.auth0.android.jwt.JWT
 import com.example.pokazimi.destinations.MainScreenDestination
 import com.example.pokazimi.ui.theme.PokazIMITheme
@@ -32,6 +33,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         context = applicationContext
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         setContent {
@@ -44,7 +46,7 @@ class MainActivity : ComponentActivity() {
 
 @com.ramcosta.composedestinations.annotation.Destination(start = true)
 @Composable
-fun LoadingScreen(navigator: DestinationsNavigator){
+fun LoadingScreen(navController: NavHostController, navigator: DestinationsNavigator){
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val dataStore = Storage(context)

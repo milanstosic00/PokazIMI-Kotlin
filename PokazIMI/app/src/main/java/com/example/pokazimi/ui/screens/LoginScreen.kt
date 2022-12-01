@@ -198,7 +198,6 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                                         scope.launch { dataStore.saveAccessToken(loginResponse.accessToken) }
                                         scope.launch { dataStore.saveRefreshToken(loginResponse.refreshToken) }
                                         navigator.navigate(MainScreenDestination)
-
                                     }
                                     else {
                                         //navigator.navigate(MainScreenDestination)

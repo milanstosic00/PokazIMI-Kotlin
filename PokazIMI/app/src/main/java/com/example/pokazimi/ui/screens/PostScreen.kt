@@ -208,7 +208,7 @@ fun PreviewHeader(navController: NavHostController, navigator: DestinationsNavig
 }
 
 @Composable
-fun PostPreviewHeader(desciption: String, usernameAndProfilePic: UsernameAndProfilePic?) {
+fun PostPreviewHeader(desciption: String, usernameAndProfilePic: UsernameAndProfilePic?, navController: NavHostController) {
 
 
 
@@ -222,7 +222,7 @@ fun PostPreviewHeader(desciption: String, usernameAndProfilePic: UsernameAndProf
             modifier = Modifier
                 .weight(1f)
         ) {
-            CircularImage(convert(usernameAndProfilePic!!.profilePicture))
+            CircularImage(navController, convert(usernameAndProfilePic!!.profilePicture), 0)
         }
 
         Column(
@@ -262,7 +262,7 @@ fun PostPreview(navController: NavHostController, navigator: DestinationsNavigat
             elevation = 5.dp
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                PostPreviewHeader(desciption, usernameAndProfilePic)
+                PostPreviewHeader(desciption, usernameAndProfilePic, navController)
                 Spacer(modifier = Modifier.height(10.dp))
                 PostImagePreview(image)
                 //PostFooter(navController, navigator)

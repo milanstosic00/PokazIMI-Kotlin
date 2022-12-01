@@ -19,7 +19,7 @@ class ProfileScreenViewModel(accessToken: String, refreshToken: String): ViewMod
 
     fun getUser(userId: Long): User?
     {
-
+        println("2 USER ID JE : $userId")
         return  runBlocking{ profileService.getUser(userId) }
     }
 

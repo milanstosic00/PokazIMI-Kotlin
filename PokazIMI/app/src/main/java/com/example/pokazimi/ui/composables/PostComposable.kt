@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.Comment
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,11 +28,13 @@ import androidx.navigation.compose.composable
 import com.example.pokazimi.R
 import com.example.pokazimi.destinations.MapScreenDestination
 import com.example.pokazimi.destinations.ViewPostScreenDestination
+import com.example.pokazimi.getUserId
+import com.example.pokazimi.ui.screens.ProfileScreen
 import com.example.pokazimi.ui.screens.ViewPostScreen
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Composable
-fun Post(navController: NavHostController, navigator: DestinationsNavigator, username: String = "username", description: String = "Description", image: Bitmap?, content: Bitmap?, lat: Double, lon: Double, postId: Long) {
+fun Post(navController: NavHostController, navigator: DestinationsNavigator, username: String = "username", description: String = "Description", image: Bitmap?, content: Bitmap?, lat: Double, lon: Double, postId: Long, userId: Long) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -45,7 +48,7 @@ fun Post(navController: NavHostController, navigator: DestinationsNavigator, use
             elevation = 5.dp
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                PostHeader(navController, navigator, username, description, image)
+                PostHeader(navController, navigator, username, description, image, userId)
                 Spacer(modifier = Modifier.height(10.dp))
                 PostContent(navigator, content!!, postId)
                 PostFooter(navigator, lat, lon, postId)
@@ -55,7 +58,7 @@ fun Post(navController: NavHostController, navigator: DestinationsNavigator, use
 }
 
 @Composable
-fun PostHeader(navController: NavHostController, navigator: DestinationsNavigator, username: String, description: String = "Description", image: Bitmap?) {
+fun PostHeader(navController: NavHostController, navigator: DestinationsNavigator, username: String, description: String = "Description", image: Bitmap?, userId: Long) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -66,16 +69,28 @@ fun PostHeader(navController: NavHostController, navigator: DestinationsNavigato
             modifier = Modifier
                 .weight(1f)
         ) {
-            CircularImage(image)
+            CircularImage(navController, image, userId)
         }
 
         Column(
             modifier = Modifier
-                .weight(5f)
+                .weight(4f)
                 .padding(5.dp)
         ) {
             Text(text = "@"+username, fontSize = 14.sp, fontWeight = FontWeight.Bold)
             Text(text = "1 hour ago", fontSize = 10.sp, fontWeight = FontWeight.Light)
+        }
+        Column(
+            modifier = Modifier
+                .weight(1f)
+        ) {
+            if(userId == getUserId()) {
+                IconButton(onClick = {
+                    // OBRISI POST
+                }) {
+                    Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete", Modifier.size(30.dp))
+                }
+            }
         }
     }
     Row(
@@ -153,7 +168,7 @@ fun PostFooter(navigator: DestinationsNavigator, lat: Double, lon: Double, postI
 }
 
 @Composable
-fun CircularImage(image: Bitmap?) {
+fun CircularImage(navController: NavHostController, image: Bitmap?, userId: Long) {
     Image(
         image!!.asImageBitmap(),
         contentDescription = "Image",
@@ -161,5 +176,6 @@ fun CircularImage(image: Bitmap?) {
             .height(50.dp)
             .width(50.dp)
             .clip(CircleShape)
+            .clickable { navController.navigate("profile/$userId") }
     )
 }

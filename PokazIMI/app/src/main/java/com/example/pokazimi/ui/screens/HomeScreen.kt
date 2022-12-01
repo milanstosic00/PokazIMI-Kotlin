@@ -95,7 +95,7 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
     ) {
         TextButton(
             modifier = Modifier.weight(1f),
-            onClick = { following.value = !following.value; println(following.value) },
+            onClick = { if(!following.value) following.value = !following.value; println(following.value) },
             colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background, contentColor = MaterialTheme.colors.onSurface),
             contentPadding = PaddingValues(horizontal = 2.dp)
         ) {
@@ -104,7 +104,7 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
 
         TextButton(
             modifier = Modifier.weight(1f),
-            onClick = { following.value = !following.value; println(following.value) },
+            onClick = { if(following.value) following.value = !following.value; println(following.value) },
             colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background, contentColor = MaterialTheme.colors.onSurface),
             contentPadding = PaddingValues(horizontal = 2.dp)
         ) {
@@ -146,13 +146,13 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
         if(following.value) {
             followingPosts!!.forEach {
                 val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(it.user.id) }
-                Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_img(it), it.lat, it.lon, it.id)
+                Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_img(it), it.lat, it.lon, it.id, it.user.id)
             }
         }
         else {
             featuredPosts!!.forEach {
                 val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(it.user.id) }
-                Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_img(it), it.lat, it.lon, it.id)
+                Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_img(it), it.lat, it.lon, it.id, it.user.id)
             }
         }
 

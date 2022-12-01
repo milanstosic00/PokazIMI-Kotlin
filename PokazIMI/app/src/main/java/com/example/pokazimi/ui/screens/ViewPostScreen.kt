@@ -82,9 +82,9 @@ fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavi
         Header(navController)
         create_img(post)?.let { PostImage(it) }
         if (post != null) {
-            PostInfo(navigator, post.lat, post.lon, likes, post.description, post.user.id)
+            PostInfo(navController, navigator, post.lat, post.lon, likes, post.description, post.user.id)
             Divide()
-            CommentSection(post.id, post.comments, postActivity, navigator)
+            CommentSection(post.id, post.comments, postActivity, navigator, navController)
         }
         Spacer(modifier = Modifier.height(125.dp))
     }
@@ -100,7 +100,7 @@ fun Header(navController: NavHostController) {
         horizontalArrangement = Arrangement.Start
     ) {
         IconButton(
-            onClick = { navController.navigate("home") }
+            onClick = { navController.navigateUp() }
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
@@ -129,7 +129,7 @@ fun PostImage(image: Bitmap) {
 }
 
 @Composable
-fun PostInfo(navigator: DestinationsNavigator, lat: Double, lon: Double, likes: Int, description: String, userId: Long) {
+fun PostInfo(navController: NavHostController, navigator: DestinationsNavigator, lat: Double, lon: Double, likes: Int, description: String, userId: Long) {
     val context = LocalContext.current
     val myImage: Bitmap = BitmapFactory.decodeResource(Resources.getSystem(), android.R.mipmap.sym_def_app_icon)
     val result = remember {
@@ -159,7 +159,7 @@ fun PostInfo(navigator: DestinationsNavigator, lat: Double, lon: Double, likes: 
             modifier = Modifier
                 .weight(1f)
         ) {
-            CircularImage(convert(usernameAndProfilePic!!.profilePicture))
+            CircularImage(navController, convert(usernameAndProfilePic!!.profilePicture), userId)
         }
 
         Column(
@@ -231,7 +231,7 @@ fun PostInfo(navigator: DestinationsNavigator, lat: Double, lon: Double, likes: 
 }
 
 @Composable
-fun CommentSection(postId: Long, comments: Array<Comment>?, postActivity: PostActivity, navigator: DestinationsNavigator) {
+fun CommentSection(postId: Long, comments: Array<Comment>?, postActivity: PostActivity, navigator: DestinationsNavigator, navController: NavHostController) {
 
     Column(
         modifier = Modifier
@@ -241,7 +241,7 @@ fun CommentSection(postId: Long, comments: Array<Comment>?, postActivity: PostAc
         Text(text = "Comments", fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.absoluteOffset(y = (-5).dp))
 
         comments!!.forEach {
-            CommentComposable(userId = it.commentersId, text = it.content, postActivity)
+            CommentComposable(userId = it.commentersId, text = it.content, postActivity = postActivity, navController = navController)
         }
 
         NewComment(postId, navigator)
@@ -249,7 +249,7 @@ fun CommentSection(postId: Long, comments: Array<Comment>?, postActivity: PostAc
 }
 
 @Composable
-fun CommentComposable(userId: Long, text : String, postActivity: PostActivity) {
+fun CommentComposable(navController: NavHostController, userId: Long, text : String, postActivity: PostActivity) {
 
     val user = postActivity.getUsernameAndProfilePic(userId)
 
@@ -261,7 +261,7 @@ fun CommentComposable(userId: Long, text : String, postActivity: PostActivity) {
         Column(
             modifier = Modifier.weight(1f)
         ) {
-            CircularImage(convert(user!!.profilePicture))
+            CircularImage(navController, convert(user!!.profilePicture), userId)
         }
         Column(
             modifier = Modifier.weight(4f)

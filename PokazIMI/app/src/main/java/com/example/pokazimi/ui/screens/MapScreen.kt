@@ -8,6 +8,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.annotation.DrawableRes
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -29,19 +30,39 @@ import androidx.navigation.NavHostController
 import com.example.pokazimi.R
 import com.example.pokazimi.destinations.HomeScreenDestination
 import com.example.pokazimi.destinations.MainScreenDestination
+import com.example.pokazimi.destinations.ViewPostScreenDestination
 import com.example.pokazimi.getUserId
 import com.example.pokazimi.readFromFile
 import com.example.pokazimi.ui.activity.PostActivity
+import com.google.gson.Gson
+import com.google.gson.JsonElement
+import com.mapbox.android.core.crashreporter.CrashReportBuilder.fromJson
+import com.mapbox.bindgen.Value.fromJson
+import com.mapbox.common.ValueConverter.fromJson
+import com.mapbox.geojson.BoundingBox.fromJson
+import com.mapbox.geojson.Feature.fromJson
+import com.mapbox.geojson.FeatureCollection.fromJson
+import com.mapbox.geojson.LineString.fromJson
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
+import com.mapbox.maps.MapboxMap
 import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.annotation.annotations
+import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
+import com.mapbox.maps.viewannotation.ViewAnnotationManager
+import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import org.json.JSONObject
 import java.io.File
+
+
+private lateinit var mapboxMap: MapboxMap
+private lateinit var viewAnnotationManager: ViewAnnotationManager
 
 @Destination
 @Composable
@@ -76,7 +97,7 @@ fun MapScreen(navController: NavHostController, navigator: DestinationsNavigator
                             object : Style.OnStyleLoaded {
                                 override fun onStyleLoaded(style: Style) {
                                     if(viewingPost) {
-                                        addAnnotationToMap(context, mapView!!, longitude, latitude)
+                                        addAnnotationToMap(context, mapView!!, longitude, latitude, -1, navigator)
                                         val cameraOptions = CameraOptions.Builder().center(Point.fromLngLat(longitude.toDouble(), latitude.toDouble())).zoom(12.0).build()
                                         mapView!!.getMapboxMap().setCamera(cameraOptions)
                                     }
@@ -106,7 +127,8 @@ fun MapScreen(navController: NavHostController, navigator: DestinationsNavigator
                                     val lon = position.longitude()
                                     postActivity.savePost(userIdfromJWT, description!!, image, lat, lon)
                                     File(imagePath).deleteOnExit()
-                                    navigator.navigate(HomeScreenDestination)
+                                    Thread.sleep(300)
+                                    navigator.navigate(MainScreenDestination)
                                 }
                                 else {
                                     // U suprotnom idi na home stranicu i posalji request za search postova koji su blizu koordinata centra kamere
@@ -124,15 +146,25 @@ fun MapScreen(navController: NavHostController, navigator: DestinationsNavigator
     }
 }
 
-private fun addAnnotationToMap(context : Context,mapView: MapView, longitude: Float, latitude: Float) {
+fun addAnnotationToMap(context : Context,mapView: MapView, longitude: Float, latitude: Float, postId: Long, navigator: DestinationsNavigator) {
+
     // Create an instance of the Annotation API and get the PointAnnotationManager.
     bitmapFromDrawableRes(
         context = context,
         R.drawable.red_marker
     )?.let {
+        // Set options for the resulting symbol layer.
         val annotationApi = mapView?.annotations
         val pointAnnotationManager = annotationApi.createPointAnnotationManager()
-        // Set options for the resulting symbol layer.
+        if(postId > -1) {
+            pointAnnotationManager.addClickListener(OnPointAnnotationClickListener {
+                    annotation: PointAnnotation ->
+                onMarkerItemClick(annotation, postId, navigator)
+            })
+        }
+
+        var jsonObject = JSONObject();
+        jsonObject.put("somevalue", 1)
         val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
         // Define a geographic coordinate.
             .withPoint(Point.fromLngLat(longitude.toDouble(), latitude.toDouble()))
@@ -140,7 +172,8 @@ private fun addAnnotationToMap(context : Context,mapView: MapView, longitude: Fl
         // The bitmap will be added to map style automatically.
             .withIconImage(it)
         // Add the resulting pointAnnotation to the map.
-        pointAnnotationManager?.create(pointAnnotationOptions)
+
+        pointAnnotationManager.create(pointAnnotationOptions)
         println(pointAnnotationManager.annotations.size)
     }
 }
@@ -167,6 +200,11 @@ private fun convertDrawableToBitmap(sourceDrawable: Drawable?): Bitmap? {
         drawable.draw(canvas)
         bitmap
     }
+}
+
+private fun onMarkerItemClick(marker: PointAnnotation, postId: Long, navigator: DestinationsNavigator): Boolean {
+    navigator.navigate(ViewPostScreenDestination(postId = postId))
+    return true
 }
 
 @Composable

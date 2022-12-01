@@ -8,6 +8,8 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Base64
+import android.view.View
+import android.widget.ListView
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -15,10 +17,12 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -30,7 +34,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
+import com.example.pokazimi.R
+import com.example.pokazimi.data.remote.model.Coordinates
 import com.example.pokazimi.data.remote.model.Post
 import com.example.pokazimi.data.remote.model.User
 import com.example.pokazimi.data.remote.services.ProfileService
@@ -41,6 +48,13 @@ import com.example.pokazimi.readFileAsLinesUsingUseLines
 import com.example.pokazimi.ui.activity.ProfileActivity
 import com.example.pokazimi.ui.composables.Post
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.mapbox.geojson.Feature
+import com.mapbox.geojson.Point
+import com.mapbox.maps.CameraOptions
+import com.mapbox.maps.MapView
+import com.mapbox.maps.Style
+import com.mapbox.maps.ViewAnnotationOptions
+import com.mapbox.maps.extension.style.sources.generated.vectorSource
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
@@ -64,6 +78,10 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
         mutableStateOf(false)
     }
 
+    val listView = remember {
+        mutableStateOf(true)
+    }
+
     val systemUiController = rememberSystemUiController()
     val color = MaterialTheme.colors.background
     SideEffect {
@@ -73,6 +91,11 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
     val profileActivity = ProfileActivity(accessToken as String, refreshToken as String)
     val user = profileActivity.getUser(userId)
 
+    var postCoordinates = arrayOfNulls<Coordinates>(user!!.posts.size)
+    for(i in 0 until user!!.posts.size) {
+        postCoordinates[i] = Coordinates(user.posts[i].id, user.posts[i].lon, user.posts[i].lat)
+    }
+    println(postCoordinates)
 
     Column(
         modifier = Modifier
@@ -84,12 +107,45 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
         ProfileStats()
         Spacer(modifier = Modifier.height(10.dp))
         Divide()
-        Spacer(modifier = Modifier.height(10.dp))
-        user.posts.forEach {
-            Post(navController, navigator, user.username, it.description, create_image(user), create_content(it), it.lat, it.lon, it.id)
+
+        Row(
+            modifier = Modifier
+                .height(40.dp)
+                .fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                IconButton(onClick = { if(!listView.value) listView.value = !listView.value }) {
+                    Icon(imageVector = Icons.Default.FormatListBulleted, contentDescription = "List", tint = isListView(listView.value))
+                }
+            }
+            Column(
+                modifier = Modifier
+                    .weight(1f),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                IconButton(onClick = { if(listView.value) listView.value = !listView.value }) {
+                    Icon(imageVector = Icons.Outlined.Map, contentDescription = "List", tint = isListView(!listView.value))
+                }
+            }
         }
-//        Post(navController, navigator, user.username, create_image(user))
-//        Post(navController, navigator, user.username, create_image(user))
+
+        Spacer(modifier = Modifier.height(10.dp))
+        
+        if(listView.value) {
+            user.posts.forEach {
+                Post(navController, navigator, user.username, it.description, create_image(user), create_content(it), it.lat, it.lon, it.id, userId)
+            }
+        }
+        else {
+            viewPostsOnMap(postCoordinates, navigator)
+        }
+
         Spacer(modifier = Modifier.height(55.dp))
     }
 }
@@ -328,6 +384,14 @@ fun isFollowing(following: Boolean): Color {
 }
 
 @Composable
+fun isListView(listView: Boolean): Color {
+    if(listView) {
+        return MaterialTheme.colors.onSurface
+    }
+    return Color.Gray
+}
+
+@Composable
 fun Divide() {
     Row(
         modifier = Modifier
@@ -373,3 +437,38 @@ fun create_content(post: Post?): Bitmap?
     return null
 }
 
+@Composable
+fun viewPostsOnMap(posts: Array<Coordinates?>, navigator: DestinationsNavigator) {
+    val context = LocalContext.current
+    var mapView: MapView? = null
+
+    Card(
+        modifier = Modifier
+            .height(460.dp)
+            .fillMaxWidth()
+            .padding(PaddingValues(10.dp, 0.dp, 10.dp, 10.dp)),
+        shape = RoundedCornerShape(16.dp),
+        backgroundColor = MaterialTheme.colors.surface,
+        elevation = 5.dp
+    ) {
+        AndroidView(
+            factory = { View.inflate(it, R.layout.map_layout, null)},
+            modifier = Modifier.fillMaxSize(),
+            update = { it ->
+                mapView = it.findViewById(R.id.mapView)
+                mapView?.getMapboxMap()?.loadStyleUri(
+                    Style.MAPBOX_STREETS,
+                    object : Style.OnStyleLoaded {
+                        override fun onStyleLoaded(style: Style) {
+                            posts.forEach { post ->
+                                if (post != null) {
+                                    addAnnotationToMap(context, mapView!!, post.longitude.toFloat(), post.latitude.toFloat(), post.postId, navigator)
+                                }
+                            }
+                        }
+                    }
+                )
+            }
+        )
+    }
+}

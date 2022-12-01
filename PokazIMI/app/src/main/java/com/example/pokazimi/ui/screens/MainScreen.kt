@@ -10,13 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.pokazimi.data.item.BottomNavItem
-import com.example.pokazimi.destinations.ViewPostScreenDestination
-import com.example.pokazimi.ui.screens.MapScreen
 import com.example.pokazimi.ui.screens.ProfileScreen
 import com.example.pokazimi.ui.screens.ViewPostScreen
 import com.ramcosta.composedestinations.annotation.Destination
@@ -71,12 +71,17 @@ fun Navigation(navController: NavHostController, navigator: DestinationsNavigato
             PostScreen(navController, navigator)
         }
         composable("profile") {
-            ProfileScreen(userIdfromJWT, navigator, navController) // 0 znaci da gleda svoj profil - u navbaru ostaje hardkodovana 0
+            ProfileScreen(userIdfromJWT, navigator, navController)
+        }
+        composable(route = "profile/{userId}", arguments = listOf(navArgument(name = "userId"){ type = NavType.LongType })) {
+            println("#################" + it.arguments!!.getLong("userId"))
+            ProfileScreen(userId = it.arguments!!.getLong("userId"), navigator, navController)
         }
         composable("viewpost") {
             ViewPostScreen(navController = navController, navigator)
         }
     }
+
 }
 
 @Composable
