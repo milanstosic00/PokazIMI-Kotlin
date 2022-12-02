@@ -74,11 +74,10 @@ fun Navigation(navController: NavHostController, navigator: DestinationsNavigato
             ProfileScreen(userIdfromJWT, navigator, navController)
         }
         composable(route = "profile/{userId}", arguments = listOf(navArgument(name = "userId"){ type = NavType.LongType })) {
-            println("#################" + it.arguments!!.getLong("userId"))
             ProfileScreen(userId = it.arguments!!.getLong("userId"), navigator, navController)
         }
-        composable("viewpost") {
-            ViewPostScreen(navController = navController, navigator)
+        composable("viewpost/{postId}", arguments = listOf(navArgument(name = "postId"){ type = NavType.LongType })) {
+            ViewPostScreen(navController, navigator, postId = it.arguments!!.getLong("postId"))
         }
     }
 

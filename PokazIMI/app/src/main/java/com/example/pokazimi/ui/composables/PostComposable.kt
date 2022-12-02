@@ -50,8 +50,8 @@ fun Post(navController: NavHostController, navigator: DestinationsNavigator, use
             Column(modifier = Modifier.fillMaxSize()) {
                 PostHeader(navController, navigator, username, description, image, userId)
                 Spacer(modifier = Modifier.height(10.dp))
-                PostContent(navigator, content!!, postId)
-                PostFooter(navigator, lat, lon, postId)
+                PostContent(navController, content!!, postId)
+                PostFooter(navController, navigator, lat, lon, postId)
             }
         }
     }
@@ -104,14 +104,14 @@ fun PostHeader(navController: NavHostController, navigator: DestinationsNavigato
 }
 
 @Composable
-fun PostContent(navigator: DestinationsNavigator, content: Bitmap, postId: Long) {
+fun PostContent(navController: NavHostController, content: Bitmap, postId: Long) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(max = 330.dp)
             .padding(horizontal = 10.dp)
             .clickable {
-                navigator.navigate(ViewPostScreenDestination(postId = postId))
+                navController.navigate("viewpost/$postId")
             }
     ) {
         Image(
@@ -126,7 +126,7 @@ fun PostContent(navigator: DestinationsNavigator, content: Bitmap, postId: Long)
 }
 
 @Composable
-fun PostFooter(navigator: DestinationsNavigator, lat: Double, lon: Double, postId: Long) {
+fun PostFooter(navController: NavHostController, navigator: DestinationsNavigator, lat: Double, lon: Double, postId: Long) {
     Spacer(modifier = Modifier.height(10.dp))
     Row(
         modifier = Modifier
@@ -149,7 +149,10 @@ fun PostFooter(navigator: DestinationsNavigator, lat: Double, lon: Double, postI
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            IconButton(onClick = { navigator.navigate(ViewPostScreenDestination(postId = postId)) }) {
+            IconButton(onClick = {
+                //navigator.navigate(ViewPostScreenDestination(postId = postId))
+                navController.navigate("viewpost/$postId")}
+            ) {
                 Icon(imageVector = Icons.Outlined.Comment, contentDescription = "Comment", Modifier.size(30.dp))
             }
         }

@@ -204,7 +204,7 @@ fun ProfileInfo(user: User, userId: Long, navigator: DestinationsNavigator, foll
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            IconButton(onClick = { navController.navigate("home") }) {
+            IconButton(onClick = { navController.navigateUp() }) {
                 Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", modifier = Modifier.size(30.dp))
             }
         }

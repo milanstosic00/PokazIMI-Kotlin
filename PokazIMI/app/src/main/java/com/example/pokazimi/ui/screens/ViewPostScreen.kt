@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.Comment
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Send
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -79,7 +80,7 @@ fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavi
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
     ) {
-        Header(navController)
+        Header(navController, post!!.user.id)
         create_img(post)?.let { PostImage(it) }
         if (post != null) {
             PostInfo(navController, navigator, post.lat, post.lon, likes, post.description, post.user.id)
@@ -91,22 +92,42 @@ fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavi
 }
 
 @Composable
-fun Header(navController: NavHostController) {
+fun Header(navController: NavHostController, userId: Long) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(55.dp)
-            .padding(PaddingValues(0.dp, 10.dp, 10.dp, 10.dp)),
+            .padding(vertical = 10.dp),
         horizontalArrangement = Arrangement.Start
     ) {
-        IconButton(
-            onClick = { navController.navigateUp() }
+        Column(
+            modifier = Modifier.weight(1f)
         ) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Back",
-                Modifier.size(30.dp)
-            )
+            IconButton(
+                onClick = { navController.navigateUp() }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back",
+                    Modifier.size(30.dp)
+                )
+            }
+        }
+        Column(
+            modifier = Modifier.weight(1f),
+            horizontalAlignment = Alignment.End
+        ) {
+            if(userId == getUserId()) {
+                IconButton(
+                    onClick = { navController.navigateUp() }
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = "Delete",
+                        Modifier.size(30.dp)
+                    )
+                }
+            }
         }
     }
 }
@@ -266,8 +287,21 @@ fun CommentComposable(navController: NavHostController, userId: Long, text : Str
         Column(
             modifier = Modifier.weight(4f)
         ) {
+
             Text(text = user!!.username, fontSize = 14.sp, fontWeight = FontWeight.Bold, modifier = Modifier.absoluteOffset(y = (-6).dp))
             Text(text = text, fontSize = 12.sp, fontWeight = FontWeight.Light, modifier = Modifier.absoluteOffset(y = (-7).dp), maxLines = 2)
+        }
+        Column {
+            if(userId == getUserId()) {
+                IconButton(
+                    onClick = { navController.navigateUp() }
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = "Delete"
+                    )
+                }
+            }
         }
     }
 }
