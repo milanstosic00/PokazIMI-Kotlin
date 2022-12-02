@@ -74,10 +74,6 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
     val refreshToken = lines?.get(0)
     val accessToken = lines?.get(1)
 
-    val following by remember {
-        mutableStateOf(false)
-    }
-
     val listView = remember {
         mutableStateOf(true)
     }
@@ -102,7 +98,7 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
             .verticalScroll(rememberScrollState())
     ) {
         Spacer(modifier = Modifier.height(10.dp))
-        ProfileInfo(user!!, userId, navigator, following, navController)
+        ProfileInfo(user!!, userId, navigator, navController)
         Spacer(modifier = Modifier.height(20.dp))
         ProfileStats()
         Spacer(modifier = Modifier.height(10.dp))
@@ -151,7 +147,11 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
 }
 
 @Composable
-fun ProfileInfo(user: User, userId: Long, navigator: DestinationsNavigator, following: Boolean, navController: NavHostController) {
+fun ProfileInfo(user: User, userId: Long, navigator: DestinationsNavigator, navController: NavHostController) {
+
+    val following = remember {
+        mutableStateOf(false)
+    }
 
     var userIdfromJWT = getUserId()
     val context = LocalContext.current
@@ -299,12 +299,12 @@ fun ProfileInfo(user: User, userId: Long, navigator: DestinationsNavigator, foll
                 }
             }
             else {
-                IconButton(onClick = { !following }) {
+                IconButton(onClick = { following.value = !following.value }) {
                     Icon(
                         imageVector = Icons.Default.AddCircleOutline,
                         contentDescription = "Follow",
                         modifier = Modifier.size(30.dp),
-                        tint = isFollowing(following)
+                        tint = isFollowing(following.value)
                     )
                 }
             }

@@ -8,33 +8,29 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.Comment
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.composable
-import com.example.pokazimi.R
 import com.example.pokazimi.destinations.MapScreenDestination
-import com.example.pokazimi.destinations.ViewPostScreenDestination
 import com.example.pokazimi.getUserId
 import com.example.pokazimi.readFileAsLinesUsingUseLines
 import com.example.pokazimi.ui.activity.PostActivity
-import com.example.pokazimi.ui.screens.ProfileScreen
-import com.example.pokazimi.ui.screens.ViewPostScreen
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import java.io.File
 
@@ -53,17 +49,17 @@ fun Post(navController: NavHostController, navigator: DestinationsNavigator, use
             elevation = 5.dp
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                PostHeader(navController, navigator, username, description, image, userId, postId)
+                PostHeader(navController, username, description, image, userId, postId)
                 Spacer(modifier = Modifier.height(10.dp))
                 PostContent(navController, content!!, postId)
-                PostFooter(navController, navigator, lat, lon, postId)
+                PostFooter(navController, navigator, lat, lon, postId, false)
             }
         }
     }
 }
 
 @Composable
-fun PostHeader(navController: NavHostController, navigator: DestinationsNavigator, username: String, description: String = "Description", image: Bitmap?, userId: Long, postId: Long) {
+fun PostHeader(navController: NavHostController, username: String, description: String = "Description", image: Bitmap?, userId: Long, postId: Long) {
     val context = LocalContext.current
     val path = context.getExternalFilesDir(null)!!.absolutePath
     val tempFile = File(path, "tokens.txt")
@@ -93,7 +89,7 @@ fun PostHeader(navController: NavHostController, navigator: DestinationsNavigato
                 .weight(4f)
                 .padding(5.dp)
         ) {
-            Text(text = "@"+username, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            Text(text = "@$username", fontSize = 14.sp, fontWeight = FontWeight.Bold, modifier = Modifier.clickable { navController.navigate("profile/$userId") })
             Text(text = "1 hour ago", fontSize = 10.sp, fontWeight = FontWeight.Light)
         }
         Column(
@@ -144,7 +140,10 @@ fun PostContent(navController: NavHostController, content: Bitmap, postId: Long)
 }
 
 @Composable
-fun PostFooter(navController: NavHostController, navigator: DestinationsNavigator, lat: Double, lon: Double, postId: Long) {
+fun PostFooter(navController: NavHostController, navigator: DestinationsNavigator, lat: Double, lon: Double, postId: Long, liked: Boolean) {
+    val like = remember {
+        mutableStateOf(liked)
+    }
     Spacer(modifier = Modifier.height(10.dp))
     Row(
         modifier = Modifier
@@ -157,8 +156,15 @@ fun PostFooter(navController: NavHostController, navigator: DestinationsNavigato
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = "Like", Modifier.size(30.dp))
+            if(!like.value) {
+                IconButton(onClick = { like.value = !like.value }) {
+                    Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = "Like", Modifier.size(30.dp))
+                }
+            }
+            else {
+                IconButton(onClick = { like.value = !like.value }) {
+                    Icon(imageVector = Icons.Default.Favorite, contentDescription = "Like", Modifier.size(30.dp), tint = Color.Red)
+                }
             }
         }
         Column(
@@ -168,7 +174,6 @@ fun PostFooter(navController: NavHostController, navigator: DestinationsNavigato
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             IconButton(onClick = {
-                //navigator.navigate(ViewPostScreenDestination(postId = postId))
                 navController.navigate("viewpost/$postId")}
             ) {
                 Icon(imageVector = Icons.Outlined.Comment, contentDescription = "Comment", Modifier.size(30.dp))
