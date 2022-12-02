@@ -21,4 +21,5 @@ object HttpRoutes {
     const val GET_USERNAME_PROFILEPIC = "$BASE_URL/api/getUsernameAndPfp"
     const val FEATURED_POSTS = "$BASE_URL/post/getFeaturedPosts"
     const val FOLLOWING_POSTS = "$BASE_URL/post/getFeedPosts"
+    const val DELETE_POST = "$BASE_URL/post/delete"
 }

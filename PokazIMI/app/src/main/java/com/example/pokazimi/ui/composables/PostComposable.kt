@@ -19,19 +19,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.example.pokazimi.R
 import com.example.pokazimi.destinations.MapScreenDestination
 import com.example.pokazimi.destinations.ViewPostScreenDestination
 import com.example.pokazimi.getUserId
+import com.example.pokazimi.readFileAsLinesUsingUseLines
+import com.example.pokazimi.ui.activity.PostActivity
 import com.example.pokazimi.ui.screens.ProfileScreen
 import com.example.pokazimi.ui.screens.ViewPostScreen
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import java.io.File
 
 @Composable
 fun Post(navController: NavHostController, navigator: DestinationsNavigator, username: String = "username", description: String = "Description", image: Bitmap?, content: Bitmap?, lat: Double, lon: Double, postId: Long, userId: Long) {
@@ -48,7 +53,7 @@ fun Post(navController: NavHostController, navigator: DestinationsNavigator, use
             elevation = 5.dp
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                PostHeader(navController, navigator, username, description, image, userId)
+                PostHeader(navController, navigator, username, description, image, userId, postId)
                 Spacer(modifier = Modifier.height(10.dp))
                 PostContent(navController, content!!, postId)
                 PostFooter(navController, navigator, lat, lon, postId)
@@ -58,7 +63,18 @@ fun Post(navController: NavHostController, navigator: DestinationsNavigator, use
 }
 
 @Composable
-fun PostHeader(navController: NavHostController, navigator: DestinationsNavigator, username: String, description: String = "Description", image: Bitmap?, userId: Long) {
+fun PostHeader(navController: NavHostController, navigator: DestinationsNavigator, username: String, description: String = "Description", image: Bitmap?, userId: Long, postId: Long) {
+    val context = LocalContext.current
+    val path = context.getExternalFilesDir(null)!!.absolutePath
+    val tempFile = File(path, "tokens.txt")
+    var lines: List<String>? = null
+    if(tempFile.isFile) {
+        lines = readFileAsLinesUsingUseLines(tempFile)
+    }
+
+    val refreshToken = lines?.get(0)
+    val accessToken = lines?.get(1)
+    val postActivity = PostActivity(accessToken as String, refreshToken as String)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -87,6 +103,8 @@ fun PostHeader(navController: NavHostController, navigator: DestinationsNavigato
             if(userId == getUserId()) {
                 IconButton(onClick = {
                     // OBRISI POST
+                    postActivity.deletePost(postId)
+                    navController.navigate("profile")
                 }) {
                     Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete", Modifier.size(30.dp))
                 }

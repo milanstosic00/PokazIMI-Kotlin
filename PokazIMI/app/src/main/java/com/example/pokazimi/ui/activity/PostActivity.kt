@@ -60,4 +60,9 @@ class PostActivity(accessToken: String, refreshToken: String): ComponentActivity
     {
         postViewModel.comment(commentRequest)
     }
+
+    fun deletePost(postId: Long)
+    {
+        postViewModel.deletePost(postId)
+    }
 }
