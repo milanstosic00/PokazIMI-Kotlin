@@ -42,4 +42,8 @@ class PostViewModel(accessToken: String, refreshToken: String): ViewModel() {
         viewModelScope.launch { postsService.deletePost(postId) }
     }
 
+    fun deleteComment(commentId: Long)
+    {
+        viewModelScope.launch { postsService.deleteComment(commentId) }
+    }
 }

@@ -22,4 +22,5 @@ object HttpRoutes {
     const val FEATURED_POSTS = "$BASE_URL/post/getFeaturedPosts"
     const val FOLLOWING_POSTS = "$BASE_URL/post/getFeedPosts"
     const val DELETE_POST = "$BASE_URL/post/delete"
+    const val DELETE_COMMENT = "$BASE_URL/comment/delete"
 }

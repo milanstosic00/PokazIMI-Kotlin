@@ -80,7 +80,7 @@ fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavi
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
     ) {
-        Header(navController, post!!.user.id)
+        Header(navController, post!!.user.id, postActivity, post.id)
         create_img(post)?.let { PostImage(it) }
         if (post != null) {
             PostInfo(navController, navigator, post.lat, post.lon, likes, post.description, post.user.id)
@@ -92,7 +92,7 @@ fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavi
 }
 
 @Composable
-fun Header(navController: NavHostController, userId: Long) {
+fun Header(navController: NavHostController, userId: Long, postActivity: PostActivity, postId: Long) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -119,7 +119,9 @@ fun Header(navController: NavHostController, userId: Long) {
         ) {
             if(userId == getUserId()) {
                 IconButton(
-                    onClick = { navController.navigateUp() }
+                    onClick = {
+                        postActivity.deletePost(postId)
+                        navController.navigateUp() }
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Delete,
@@ -262,7 +264,7 @@ fun CommentSection(postId: Long, comments: Array<Comment>?, postActivity: PostAc
         Text(text = "Comments", fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.absoluteOffset(y = (-5).dp))
 
         comments!!.forEach {
-            CommentComposable(userId = it.commentersId, text = it.content, postActivity = postActivity, navController = navController)
+            CommentComposable(userId = it.commentersId, text = it.content, postActivity = postActivity, navController = navController, commentId = it.id)
         }
 
         NewComment(postId, navigator)
@@ -270,7 +272,7 @@ fun CommentSection(postId: Long, comments: Array<Comment>?, postActivity: PostAc
 }
 
 @Composable
-fun CommentComposable(navController: NavHostController, userId: Long, text : String, postActivity: PostActivity) {
+fun CommentComposable(navController: NavHostController, userId: Long, text : String, postActivity: PostActivity, commentId: Long) {
 
     val user = postActivity.getUsernameAndProfilePic(userId)
 
@@ -294,7 +296,10 @@ fun CommentComposable(navController: NavHostController, userId: Long, text : Str
         Column {
             if(userId == getUserId()) {
                 IconButton(
-                    onClick = { navController.navigateUp() }
+                    onClick = {
+                        postActivity.deleteComment(commentId)
+                        navController.navigateUp()
+                    }
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Delete,

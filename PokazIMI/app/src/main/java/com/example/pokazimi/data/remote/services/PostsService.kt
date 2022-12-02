@@ -30,6 +30,8 @@ interface PostsService {
 
     suspend fun deletePost(postId: Long): MessageResponse?
 
+    suspend fun deleteComment(commentId: Long): MessageResponse?
+
     companion object {
         fun create(accessToken: String, refreshToken: String): PostsService {
             return PostsServiceImpl(
