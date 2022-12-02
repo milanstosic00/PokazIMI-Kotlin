@@ -28,6 +28,8 @@ interface PostsService {
 
     suspend fun getPost(postId: Long): ViewPost?
 
+    suspend fun deletePost(postId: Long): MessageResponse?
+
     companion object {
         fun create(accessToken: String, refreshToken: String): PostsService {
             return PostsServiceImpl(

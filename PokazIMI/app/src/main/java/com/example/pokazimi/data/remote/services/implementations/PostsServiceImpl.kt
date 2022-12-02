@@ -91,4 +91,14 @@ class PostsServiceImpl(private val client: HttpClient): PostsService {
         }
     }
 
+    override suspend fun deletePost(postId: Long): MessageResponse? {
+        return try {
+            client.delete<MessageResponse>{
+                url(HttpRoutes.DELETE_POST + "/$postId")
+            }
+        } catch (e: Exception) {
+            print("Error : ${e.message}")
+            null
+        }
+    }
 }
