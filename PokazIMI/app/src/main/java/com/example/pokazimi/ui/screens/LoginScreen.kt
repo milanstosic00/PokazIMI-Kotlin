@@ -1,5 +1,6 @@
 package com.example.pokazimi.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -190,7 +191,15 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                                 if(!expandedState)
                                 {
                                     val loginResponse = login(email, password)
-                                    if(loginResponse != null) {
+                                    if(loginResponse.accessToken.contains("Email not found"))
+                                    {
+                                        Toast.makeText(context, "Wrong email", Toast.LENGTH_SHORT).show()
+                                    }
+                                    else if(loginResponse.accessToken.contains(("Wrong password")))
+                                    {
+                                        Toast.makeText(context, "Wrong password", Toast.LENGTH_SHORT).show()
+                                    }
+                                    else {
 
                                         val path = context.getExternalFilesDir(null)!!.absolutePath
                                         val tempFile = File(path, "tokens.txt")
@@ -199,20 +208,26 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                                         scope.launch { dataStore.saveRefreshToken(loginResponse.refreshToken) }
                                         navigator.navigate(MainScreenDestination)
                                     }
-                                    else {
-                                        //navigator.navigate(MainScreenDestination)
-                                    }
                                 }
                                 else
                                 {
-                                    if(register(username, password, firstName, lastName, email)) {
+                                    val response = register(username, password, firstName, lastName, email)
+                                    if(response == "success") {
                                         username = ""
                                         password = ""
                                         firstName = ""
                                         lastName = ""
                                         expandedState = false
+                                        Toast.makeText(context, "Successfully registered!", Toast.LENGTH_SHORT).show()
                                     }
-
+                                    else if(response == "takenemail")
+                                    {
+                                        Toast.makeText(context, "The email is already taken", Toast.LENGTH_SHORT).show()
+                                    }
+                                    else if(response == "takenusername")
+                                    {
+                                        Toast.makeText(context, "The username is already taken", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                             },
                             enabled = isFormValid,
@@ -250,22 +265,28 @@ fun LoginScreen(navigator: DestinationsNavigator) {
     }
 }
 
-fun register(username: String, password: String, firstName: String, lastName: String, email: String): Boolean {
+fun register(username: String, password: String, firstName: String, lastName: String, email: String): String {
     val service = RegistrationService.create()
-
-    if(runBlocking { service.registration(RegistrationRequest(firstName, lastName, username, email, password)) }  == null)
-    {
-        return false
-    }
-    return true
+    val response = runBlocking { service.registration(RegistrationRequest(firstName, lastName, username, email, password)) }
+    if(response.message.contains("There is an account with that email address:"))
+        return "takenemail"
+    else if(response.message.contains("There is an account with that username:"))
+        return "takenusername"
+    return "success"
 }
 
-fun login(username: String, password: String) : LogInResponse? {
+
+fun login(username: String, password: String) : LogInResponse {
 
     val service = LogInService.create()
-    val response = runBlocking { service.login(LoginRequest(username, password)) } ?: return null
+    val response = runBlocking { service.login(LoginRequest(username, password)) }
 
-    println("access token je: asdasdasd " + response.accessToken)
+    if(response.accessToken.contains("Email not found"))
+        return LogInResponse("wrongemail", "")
+
+    else if(response.accessToken.contains(("Wrong password")))
+        return LogInResponse("wrongpassword", "")
+
     return response
 }
 

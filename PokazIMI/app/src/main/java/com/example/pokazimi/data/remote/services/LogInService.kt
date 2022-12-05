@@ -14,7 +14,7 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.features.logging.*
 
 interface LogInService {
-    suspend fun login(loginRequest: LoginRequest): LogInResponse?
+    suspend fun login(loginRequest: LoginRequest): LogInResponse
 
 
     companion object {

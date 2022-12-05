@@ -1,6 +1,8 @@
 package com.example.pokazimi.ui.composables
 
 import android.graphics.Bitmap
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -33,9 +35,14 @@ import com.example.pokazimi.readFileAsLinesUsingUseLines
 import com.example.pokazimi.ui.activity.PostActivity
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import java.io.File
+import kotlinx.datetime.LocalDateTime
+import java.time.Instant
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
+import java.util.concurrent.TimeUnit
 
 @Composable
-fun Post(navController: NavHostController, navigator: DestinationsNavigator, username: String = "username", description: String = "Description", image: Bitmap?, content: Bitmap?, lat: Double, lon: Double, postId: Long, userId: Long) {
+fun Post(navController: NavHostController, navigator: DestinationsNavigator, username: String = "username", description: String = "Description", image: Bitmap?, content: Bitmap?, lat: Double, lon: Double, postId: Long, userId: Long, time: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -49,7 +56,7 @@ fun Post(navController: NavHostController, navigator: DestinationsNavigator, use
             elevation = 5.dp
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                PostHeader(navController, username, description, image, userId, postId)
+                PostHeader(navController, username, description, image, userId, postId, time)
                 Spacer(modifier = Modifier.height(10.dp))
                 PostContent(navController, content!!, postId)
                 PostFooter(navController, navigator, lat, lon, postId, false)
@@ -59,7 +66,7 @@ fun Post(navController: NavHostController, navigator: DestinationsNavigator, use
 }
 
 @Composable
-fun PostHeader(navController: NavHostController, username: String, description: String = "Description", image: Bitmap?, userId: Long, postId: Long) {
+fun PostHeader(navController: NavHostController, username: String, description: String = "Description", image: Bitmap?, userId: Long, postId: Long, time: String) {
     val context = LocalContext.current
     val path = context.getExternalFilesDir(null)!!.absolutePath
     val tempFile = File(path, "tokens.txt")
@@ -71,6 +78,8 @@ fun PostHeader(navController: NavHostController, username: String, description: 
     val refreshToken = lines?.get(0)
     val accessToken = lines?.get(1)
     val postActivity = PostActivity(accessToken as String, refreshToken as String)
+    var time1 = time.replaceAfter("T", "").replace("T", "")
+    val timestamp = LocalDateTime.parse(time)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -90,7 +99,8 @@ fun PostHeader(navController: NavHostController, username: String, description: 
                 .padding(5.dp)
         ) {
             Text(text = "@$username", fontSize = 14.sp, fontWeight = FontWeight.Bold, modifier = Modifier.clickable { navController.navigate("profile/$userId") })
-            Text(text = "1 hour ago", fontSize = 10.sp, fontWeight = FontWeight.Light)
+            Text(text = timestamp.dayOfMonth.toString() + "." + timestamp.monthNumber + "." + timestamp.year + ". " + timestamp.hour + ":" + timestamp.minute, fontSize = 10.sp, fontWeight = FontWeight.Light)
+
         }
         Column(
             modifier = Modifier

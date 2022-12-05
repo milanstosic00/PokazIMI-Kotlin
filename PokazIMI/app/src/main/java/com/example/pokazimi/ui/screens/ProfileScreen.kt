@@ -10,6 +10,7 @@ import android.provider.MediaStore
 import android.util.Base64
 import android.view.View
 import android.widget.ListView
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -135,7 +136,7 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
         
         if(listView.value) {
             user.posts.forEach {
-                Post(navController, navigator, user.username, it.description, create_image(user), create_content(it), it.lat, it.lon, it.id, userId)
+                Post(navController, navigator, user.username, it.description, create_image(user), create_content(it), it.lat, it.lon, it.id, userId, it.time)
             }
         }
         else {
@@ -181,6 +182,7 @@ fun ProfileInfo(user: User, userId: Long, navigator: DestinationsNavigator, navC
         }
         profileActivity.changeProfilePicture(userId, result.value)
         navController.navigate("profile")
+        Toast.makeText(context, "Profile picture changed.", Toast.LENGTH_SHORT).show()
     }
 
     val scope = rememberCoroutineScope()

@@ -12,7 +12,7 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.features.logging.*
 
 interface RegistrationService {
-    suspend fun registration(registrationRequest: RegistrationRequest): MessageResponse?
+    suspend fun registration(registrationRequest: RegistrationRequest): MessageResponse
 
 
 
