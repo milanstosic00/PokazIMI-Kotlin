@@ -19,6 +19,7 @@ interface ProfileService {
     suspend fun getUser(userId: Long): User?
 
     suspend fun followUser(followRequest: FollowRequest): MessageResponse?
+    suspend fun unfollowUser(followRequest: FollowRequest): MessageResponse?
 
     companion object {
         fun create(accessToken: String, refreshToken: String): ProfileService {

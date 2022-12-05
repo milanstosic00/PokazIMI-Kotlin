@@ -36,4 +36,9 @@ class ProfileActivity(accessToken: String, refreshToken: String): ComponentActiv
     {
         profileViewModel.followUser(userId, followerId)
     }
+
+    fun unfollowUser(userId: Long, followerId: Long) {
+
+        profileViewModel.unfollowUser(userId, followerId)
+    }
 }

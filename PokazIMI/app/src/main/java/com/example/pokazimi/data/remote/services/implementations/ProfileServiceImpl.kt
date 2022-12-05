@@ -44,9 +44,22 @@ class ProfileServiceImpl(private val client: HttpClient): ProfileService {
     override suspend fun followUser(followRequest: FollowRequest): MessageResponse? {
         return try {
             client.post<MessageResponse>{
-                url(HttpRoutes.FOLLOW)
+                url(HttpRoutes.FOLLOW + "?userId=${followRequest.userId}&followerId=${followRequest.followerId}")
                 contentType(ContentType.Application.Json)
-                body = followRequest
+                //body = followRequest
+            }
+        } catch (e: Exception) {
+            print("Error : ${e.message}")
+            null
+        }
+    }
+
+    override suspend fun unfollowUser(followRequest: FollowRequest): MessageResponse? {
+        return try {
+            client.delete<MessageResponse>{
+                url(HttpRoutes.UNFOLLOW + "/${followRequest.userId}")
+                contentType(ContentType.Application.Json)
+                //body = followRequest
             }
         } catch (e: Exception) {
             print("Error : ${e.message}")
