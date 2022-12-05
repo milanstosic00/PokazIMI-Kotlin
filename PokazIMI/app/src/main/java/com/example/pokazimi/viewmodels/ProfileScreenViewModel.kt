@@ -27,4 +27,9 @@ class ProfileScreenViewModel(accessToken: String, refreshToken: String): ViewMod
     {
         viewModelScope.launch { profileService.followUser(FollowRequest(userId, followerId)) }
     }
+
+    fun unfollowUser(userId: Long, followerId: Long) {
+
+        viewModelScope.launch { profileService.unfollowUser(FollowRequest(userId, followerId)) }
+    }
 }

@@ -92,9 +92,8 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
         modifier = Modifier
             .verticalScroll(rememberScrollState())
     ) {
-        ProfileHeader(navigator, navController, false, user.username, user.id)
-        ProfileInfo(user, userId, navigator, navController)
-        Spacer(modifier = Modifier.height(5.dp))
+        ProfileInfo(user!!, userId, navigator, navController, user.followedByUser)
+        Spacer(modifier = Modifier.height(20.dp))
         ProfileStats()
         Spacer(modifier = Modifier.height(5.dp))
         Divide()
@@ -143,10 +142,10 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
 }
 
 @Composable
-fun ProfileInfo(user: User, userId: Long, navigator: DestinationsNavigator, navController: NavHostController) {
+fun ProfileInfo(user: User, userId: Long, navigator: DestinationsNavigator, navController: NavHostController, isFollowing: Boolean) {
 
     val following = remember {
-        mutableStateOf(false)
+        mutableStateOf(isFollowing)
     }
 
     val userIdfromJWT = getUserId()
@@ -323,14 +322,24 @@ fun ProfileHeader(navigator: DestinationsNavigator, navController: NavHostContro
                 }
             }
             else {
-                IconButton(onClick = { following.value = !following.value }) {
-                    Icon(
-                        imageVector = Icons.Default.AddCircleOutline,
-                        contentDescription = "Follow",
-                        modifier = Modifier.size(30.dp),
-                        tint = isFollowing(following.value)
-                    )
-                }
+                    IconButton(onClick = {
+                        if(!following.value) {
+                            following.value = !following.value
+                            profileActivity.followUser(userId, userIdfromJWT)
+                        }
+                        else {
+
+                            following.value = !following.value
+                            profileActivity.unfollowUser(userId, userIdfromJWT)
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.AddCircleOutline,
+                            contentDescription = "Follow",
+                            modifier = Modifier.size(30.dp),
+                            tint = isFollowing(following.value)
+                        )
+                    }
             }
         }
     }
