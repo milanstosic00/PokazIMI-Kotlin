@@ -76,8 +76,8 @@ fun Navigation(navController: NavHostController, navigator: DestinationsNavigato
         composable(route = "profile/{userId}", arguments = listOf(navArgument(name = "userId"){ type = NavType.LongType })) {
             ProfileScreen(userId = it.arguments!!.getLong("userId"), navigator, navController)
         }
-        composable("viewpost/{postId}", arguments = listOf(navArgument(name = "postId"){ type = NavType.LongType })) {
-            ViewPostScreen(navController, navigator, postId = it.arguments!!.getLong("postId"))
+        composable("viewpost/{postId}/{userId}", arguments = listOf(navArgument(name = "postId"){ type = NavType.LongType }, navArgument(name = "userId"){ type = NavType.LongType })) {
+            ViewPostScreen(navController, navigator, postId = it.arguments!!.getLong("postId"), userId = it.arguments!!.getLong("userId"))
         }
     }
 

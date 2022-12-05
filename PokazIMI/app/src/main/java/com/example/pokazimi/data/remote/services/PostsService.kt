@@ -22,11 +22,13 @@ interface PostsService {
 
     suspend fun like(like: Like): MessageResponse?
 
+    suspend fun deleteLike(postId: Long): MessageResponse?
+
     suspend fun comment(commentRequest: CommentRequest): MessageResponse?
 
     suspend fun getUsernameAndProfilePic(userId: Long): UsernameAndProfilePic?
 
-    suspend fun getPost(postId: Long): ViewPost?
+    suspend fun getPost(postId: Long, userId: Long): ViewPost?
 
     suspend fun deletePost(postId: Long): MessageResponse?
 

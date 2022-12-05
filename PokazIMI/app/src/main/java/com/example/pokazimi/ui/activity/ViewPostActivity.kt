@@ -14,7 +14,7 @@ class ViewPostActivity(accessToken: String, refreshToken: String): ComponentActi
         super.onCreate(savedInstanceState, persistentState)
     }
 
-    fun getPost(postId: Long): ViewPost? {
-        return viewPostViewModel.getPost(postId);
+    fun getPost(postId: Long, userId: Long): ViewPost? {
+        return viewPostViewModel.getPost(postId, userId);
     }
 }

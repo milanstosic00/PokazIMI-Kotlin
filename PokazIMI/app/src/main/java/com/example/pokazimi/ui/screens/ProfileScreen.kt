@@ -136,11 +136,11 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
         
         if(listView.value) {
             user.posts.forEach {
-                Post(navController, navigator, user.username, it.description, create_image(user), create_content(it), it.lat, it.lon, it.id, userId, it.time)
+                Post(navController, navigator, user.username, it.description, create_image(user), create_content(it), it.lat, it.lon, it.id, userId, it.time, it.likedByUser)
             }
         }
         else {
-            viewPostsOnMap(postCoordinates, navigator)
+            viewPostsOnMap(postCoordinates, userId, navigator)
         }
 
         Spacer(modifier = Modifier.height(55.dp))
@@ -440,7 +440,7 @@ fun create_content(post: Post?): Bitmap?
 }
 
 @Composable
-fun viewPostsOnMap(posts: Array<Coordinates?>, navigator: DestinationsNavigator) {
+fun viewPostsOnMap(posts: Array<Coordinates?>, userId: Long, navigator: DestinationsNavigator) {
     val context = LocalContext.current
     var mapView: MapView? = null
 
@@ -464,7 +464,7 @@ fun viewPostsOnMap(posts: Array<Coordinates?>, navigator: DestinationsNavigator)
                         override fun onStyleLoaded(style: Style) {
                             posts.forEach { post ->
                                 if (post != null) {
-                                    addAnnotationToMap(context, mapView!!, post.longitude.toFloat(), post.latitude.toFloat(), post.postId, navigator)
+                                    addAnnotationToMap(context, mapView!!, post.longitude.toFloat(), post.latitude.toFloat(), post.postId, userId, navigator)
                                 }
                             }
                         }

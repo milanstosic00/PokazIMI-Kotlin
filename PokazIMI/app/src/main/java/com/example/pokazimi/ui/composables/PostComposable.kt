@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.pokazimi.data.remote.model.Like
 import com.example.pokazimi.destinations.MapScreenDestination
 import com.example.pokazimi.getUserId
 import com.example.pokazimi.readFileAsLinesUsingUseLines
@@ -42,7 +43,7 @@ import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 
 @Composable
-fun Post(navController: NavHostController, navigator: DestinationsNavigator, username: String = "username", description: String = "Description", image: Bitmap?, content: Bitmap?, lat: Double, lon: Double, postId: Long, userId: Long, time: String) {
+fun Post(navController: NavHostController, navigator: DestinationsNavigator, username: String = "username", description: String = "Description", image: Bitmap?, content: Bitmap?, lat: Double, lon: Double, postId: Long, userId: Long, time: String, likedByUser: Boolean) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -58,8 +59,8 @@ fun Post(navController: NavHostController, navigator: DestinationsNavigator, use
             Column(modifier = Modifier.fillMaxSize()) {
                 PostHeader(navController, username, description, image, userId, postId, time)
                 Spacer(modifier = Modifier.height(10.dp))
-                PostContent(navController, content!!, postId)
-                PostFooter(navController, navigator, lat, lon, postId, false)
+                PostContent(navController, content!!, postId, userId)
+                PostFooter(navController, navigator, lat, lon, postId, likedByUser)
             }
         }
     }
@@ -128,14 +129,14 @@ fun PostHeader(navController: NavHostController, username: String, description: 
 }
 
 @Composable
-fun PostContent(navController: NavHostController, content: Bitmap, postId: Long) {
+fun PostContent(navController: NavHostController, content: Bitmap, postId: Long, userId: Long) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(max = 330.dp)
             .padding(horizontal = 10.dp)
             .clickable {
-                navController.navigate("viewpost/$postId")
+                navController.navigate("viewpost/$postId/$userId")
             }
     ) {
         Image(
@@ -151,6 +152,20 @@ fun PostContent(navController: NavHostController, content: Bitmap, postId: Long)
 
 @Composable
 fun PostFooter(navController: NavHostController, navigator: DestinationsNavigator, lat: Double, lon: Double, postId: Long, liked: Boolean) {
+    val context = LocalContext.current
+    val path = context.getExternalFilesDir(null)!!.absolutePath
+    val tempFile = File(path, "tokens.txt")
+    var lines: List<String>? = null
+    if(tempFile.isFile) {
+        lines = readFileAsLinesUsingUseLines(tempFile)
+    }
+
+    val refreshToken = lines?.get(0)
+    val accessToken = lines?.get(1)
+    val postActivity = PostActivity(accessToken as String, refreshToken as String)
+
+    var userIdfromJWT = getUserId()
+
     val like = remember {
         mutableStateOf(liked)
     }
@@ -167,12 +182,18 @@ fun PostFooter(navController: NavHostController, navigator: DestinationsNavigato
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if(!like.value) {
-                IconButton(onClick = { like.value = !like.value }) {
+                IconButton(onClick = {
+                    like.value = !like.value
+                    postActivity.likePost(Like(postId, userIdfromJWT))
+                }) {
                     Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = "Like", Modifier.size(30.dp))
                 }
             }
             else {
-                IconButton(onClick = { like.value = !like.value }) {
+                IconButton(onClick = {
+                    like.value = !like.value
+                    postActivity.deleteLike(postId)
+                }) {
                     Icon(imageVector = Icons.Default.Favorite, contentDescription = "Like", Modifier.size(30.dp), tint = Color.Red)
                 }
             }
@@ -184,7 +205,7 @@ fun PostFooter(navController: NavHostController, navigator: DestinationsNavigato
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             IconButton(onClick = {
-                navController.navigate("viewpost/$postId")}
+                navController.navigate("viewpost/$postId/$userIdfromJWT")}
             ) {
                 Icon(imageVector = Icons.Outlined.Comment, contentDescription = "Comment", Modifier.size(30.dp))
             }

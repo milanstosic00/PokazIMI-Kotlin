@@ -70,4 +70,9 @@ class PostActivity(accessToken: String, refreshToken: String): ComponentActivity
     {
         postViewModel.deleteComment(commentId)
     }
+
+    fun deleteLike(postId: Long)
+    {
+        postViewModel.deleteLike(postId)
+    }
 }

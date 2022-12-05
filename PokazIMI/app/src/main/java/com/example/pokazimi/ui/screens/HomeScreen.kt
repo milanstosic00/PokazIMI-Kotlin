@@ -146,13 +146,13 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
         if(following.value) {
             followingPosts!!.forEach {
                 val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(it.user.id) }
-                Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_img(it), it.lat, it.lon, it.id, it.user.id, it.time)
+                Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_img(it), it.lat, it.lon, it.id, it.user.id, it.time, it.likedByUser)
             }
         }
         else {
             featuredPosts!!.forEach {
                 val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(it.user.id) }
-                Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_img(it), it.lat, it.lon, it.id, it.user.id, it.time)
+                Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_img(it), it.lat, it.lon, it.id, it.user.id, it.time, it.likedByUser)
             }
         }
 

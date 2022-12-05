@@ -10,6 +10,7 @@ data class User (
     val profilePicture: String?,
     val posts: Array<Post>,
     val role: String,
-    val jwtVersion: Int
+    val jwtVersion: Int,
+    val followedByUser: Boolean
 
 )

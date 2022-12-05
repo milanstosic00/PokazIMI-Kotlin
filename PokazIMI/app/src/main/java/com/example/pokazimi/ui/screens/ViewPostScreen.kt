@@ -45,7 +45,7 @@ import java.io.File
 
 @Destination
 @Composable
-fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavigator, postId: Long = -1) {
+fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavigator, postId: Long = -1, userId: Long) {
     val context = LocalContext.current
     val systemUiController = rememberSystemUiController()
     val color = MaterialTheme.colors.background
@@ -65,7 +65,7 @@ fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavi
 
     val postActivity = PostActivity(accessToken as String, refreshToken as String)
     val viewPostActivity = ViewPostActivity(accessToken as String, refreshToken as String)
-    val post = viewPostActivity.getPost(postId)
+    val post = viewPostActivity.getPost(postId, userId)
     var likes = 0
     if (post != null) {
         likes = if(post.likes != null) {
@@ -85,7 +85,7 @@ fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavi
         if (post != null) {
             PostInfo(navController, navigator, post.lat, post.lon, likes, post.description, post.user.id)
             Divide()
-            CommentSection(post.id, post.comments, postActivity, navigator, navController)
+            CommentSection(post.id, userId, post.comments, postActivity, navigator, navController)
         }
         Spacer(modifier = Modifier.height(125.dp))
     }
@@ -254,7 +254,7 @@ fun PostInfo(navController: NavHostController, navigator: DestinationsNavigator,
 }
 
 @Composable
-fun CommentSection(postId: Long, comments: Array<Comment>?, postActivity: PostActivity, navigator: DestinationsNavigator, navController: NavHostController) {
+fun CommentSection(postId: Long, userId:Long, comments: Array<Comment>?, postActivity: PostActivity, navigator: DestinationsNavigator, navController: NavHostController) {
 
     Column(
         modifier = Modifier
@@ -267,7 +267,7 @@ fun CommentSection(postId: Long, comments: Array<Comment>?, postActivity: PostAc
             CommentComposable(userId = it.commentersId, text = it.content, postActivity = postActivity, navController = navController, commentId = it.id)
         }
 
-        NewComment(postId, navigator)
+        NewComment(postId, userId, navigator)
     }
 }
 
@@ -312,7 +312,7 @@ fun CommentComposable(navController: NavHostController, userId: Long, text : Str
 }
 
 @Composable
-fun NewComment(postId: Long, navigator: DestinationsNavigator) {
+fun NewComment(postId: Long, userId: Long, navigator: DestinationsNavigator) {
     var userIdfromJWT = getUserId()
     val context = LocalContext.current
     var commentText by remember {
@@ -380,7 +380,7 @@ fun NewComment(postId: Long, navigator: DestinationsNavigator) {
                 val comment = CommentRequest(post_id = postId, content = commentText.text, commentersId = userIdfromJWT)
                 println(comment)
                 postActivity.comment(comment)
-                navigator.navigate(ViewPostScreenDestination(postId = postId))
+                navigator.navigate(ViewPostScreenDestination(postId = postId, userId = userId))
             }) {
                 Icon(imageVector = Icons.Outlined.Send, contentDescription = "Send Comment", Modifier.size(30.dp))
             }

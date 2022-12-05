@@ -13,4 +13,5 @@ data class Post (
     val lon: Double,
     val likes: Array<Like>?,
     val comments: Array<Comment>?,
+    val likedByUser: Boolean
 )

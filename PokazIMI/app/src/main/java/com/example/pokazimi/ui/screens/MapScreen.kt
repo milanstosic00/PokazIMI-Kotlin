@@ -97,7 +97,7 @@ fun MapScreen(navController: NavHostController, navigator: DestinationsNavigator
                             object : Style.OnStyleLoaded {
                                 override fun onStyleLoaded(style: Style) {
                                     if(viewingPost) {
-                                        addAnnotationToMap(context, mapView!!, longitude, latitude, -1, navigator)
+                                        addAnnotationToMap(context, mapView!!, longitude, latitude, -1, -1, navigator)
                                         val cameraOptions = CameraOptions.Builder().center(Point.fromLngLat(longitude.toDouble(), latitude.toDouble())).zoom(12.0).build()
                                         mapView!!.getMapboxMap().setCamera(cameraOptions)
                                     }
@@ -146,7 +146,7 @@ fun MapScreen(navController: NavHostController, navigator: DestinationsNavigator
     }
 }
 
-fun addAnnotationToMap(context : Context,mapView: MapView, longitude: Float, latitude: Float, postId: Long, navigator: DestinationsNavigator) {
+fun addAnnotationToMap(context : Context,mapView: MapView, longitude: Float, latitude: Float, postId: Long, userId: Long, navigator: DestinationsNavigator) {
 
     // Create an instance of the Annotation API and get the PointAnnotationManager.
     bitmapFromDrawableRes(
@@ -159,7 +159,7 @@ fun addAnnotationToMap(context : Context,mapView: MapView, longitude: Float, lat
         if(postId > -1) {
             pointAnnotationManager.addClickListener(OnPointAnnotationClickListener {
                     annotation: PointAnnotation ->
-                onMarkerItemClick(annotation, postId, navigator)
+                onMarkerItemClick(annotation, postId, userId, navigator)
             })
         }
 
@@ -202,8 +202,8 @@ private fun convertDrawableToBitmap(sourceDrawable: Drawable?): Bitmap? {
     }
 }
 
-private fun onMarkerItemClick(marker: PointAnnotation, postId: Long, navigator: DestinationsNavigator): Boolean {
-    navigator.navigate(ViewPostScreenDestination(postId = postId))
+private fun onMarkerItemClick(marker: PointAnnotation, postId: Long, userId: Long, navigator: DestinationsNavigator): Boolean {
+    navigator.navigate(ViewPostScreenDestination(postId = postId, userId = userId))
     return true
 }
 

@@ -8,7 +8,7 @@ import kotlinx.coroutines.runBlocking
 class ViewPostViewModel(accessToken: String, refreshToken: String): ViewModel() {
     private var postsService = PostsService.create(accessToken, refreshToken)
 
-    fun getPost(postId: Long): ViewPost? {
-        return runBlocking { postsService.getPost(postId) }
+    fun getPost(postId: Long, userId: Long): ViewPost? {
+        return runBlocking { postsService.getPost(postId, userId) }
     }
 }

@@ -46,9 +46,8 @@ class PostsServiceImpl(private val client: HttpClient): PostsService {
     override suspend fun like(like: Like): MessageResponse? {
         return try {
             client.post<MessageResponse> {
-                url(HttpRoutes.LIKE)
+                url(HttpRoutes.LIKE + "?post=${like.post}&likersId=${like.likersId}")
                 contentType(ContentType.Application.Json)
-                body = like
             }
         }catch (e: Exception) {
                 print("Error : ${e.message}")
@@ -79,10 +78,10 @@ class PostsServiceImpl(private val client: HttpClient): PostsService {
         }
     }
 
-    override suspend fun getPost(postId: Long): ViewPost? {
+    override suspend fun getPost(postId: Long, userId: Long): ViewPost? {
         return try {
             client.get<ViewPost>{
-                url(HttpRoutes.GET_POST + "/$postId")
+                url(HttpRoutes.GET_POST + "/postId=$postId/userId=$userId")
             }
         }
         catch (e: Exception) {
@@ -106,6 +105,17 @@ class PostsServiceImpl(private val client: HttpClient): PostsService {
         return try {
             client.delete<MessageResponse>{
                 url(HttpRoutes.DELETE_COMMENT + "/$commentId")
+            }
+        } catch (e: Exception) {
+            print("Error : ${e.message}")
+            null
+        }
+    }
+
+    override suspend fun deleteLike(postId: Long): MessageResponse? {
+        return try {
+            client.delete<MessageResponse>{
+                url(HttpRoutes.DELETE_LIKE + "/$postId")
             }
         } catch (e: Exception) {
             print("Error : ${e.message}")
