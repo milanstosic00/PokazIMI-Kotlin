@@ -30,4 +30,15 @@ class HomeServiceImpl(private val client: HttpClient): HomeService {
         }
     }
 
+    override suspend fun getSearchPosts(latitude: Double, longitude: Double, radius: Double): Array<ViewPost>? {
+        return try {
+            client.get<Array<ViewPost>>{
+                url(HttpRoutes.SEARCH_POSTS + "?latitude=$latitude&longitude=$longitude&radius=$radius")
+            }
+        } catch (e: Exception) {
+            print("Error : ${e.message}")
+            null
+        }
+    }
+
 }

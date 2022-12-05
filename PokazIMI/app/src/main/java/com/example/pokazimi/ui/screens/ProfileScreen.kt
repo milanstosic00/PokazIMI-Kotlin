@@ -9,7 +9,6 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Base64
 import android.view.View
-import android.widget.ListView
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -49,13 +48,8 @@ import com.example.pokazimi.readFileAsLinesUsingUseLines
 import com.example.pokazimi.ui.activity.ProfileActivity
 import com.example.pokazimi.ui.composables.Post
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.Point
-import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
-import com.mapbox.maps.ViewAnnotationOptions
-import com.mapbox.maps.extension.style.sources.generated.vectorSource
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
@@ -88,8 +82,8 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
     val profileActivity = ProfileActivity(accessToken as String, refreshToken as String)
     val user = profileActivity.getUser(userId)
 
-    var postCoordinates = arrayOfNulls<Coordinates>(user!!.posts.size)
-    for(i in 0 until user!!.posts.size) {
+    val postCoordinates = arrayOfNulls<Coordinates>(user!!.posts.size)
+    for(i in 0 until user.posts.size) {
         postCoordinates[i] = Coordinates(user.posts[i].id, user.posts[i].lon, user.posts[i].lat)
     }
     println(postCoordinates)
@@ -98,16 +92,16 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
         modifier = Modifier
             .verticalScroll(rememberScrollState())
     ) {
-        Spacer(modifier = Modifier.height(10.dp))
-        ProfileInfo(user!!, userId, navigator, navController)
-        Spacer(modifier = Modifier.height(20.dp))
+        ProfileHeader(navigator, navController, false, user.username, user.id)
+        ProfileInfo(user, userId, navigator, navController)
+        Spacer(modifier = Modifier.height(5.dp))
         ProfileStats()
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(5.dp))
         Divide()
 
         Row(
             modifier = Modifier
-                .height(40.dp)
+                .height(30.dp)
                 .fillMaxWidth()
         ) {
             Column(
@@ -133,18 +127,19 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
         }
 
         Spacer(modifier = Modifier.height(10.dp))
-        
+
         if(listView.value) {
             user.posts.forEach {
                 Post(navController, navigator, user.username, it.description, create_image(user), create_content(it), it.lat, it.lon, it.id, userId, it.time, it.likedByUser)
             }
         }
         else {
-            viewPostsOnMap(postCoordinates, userId, navigator)
+            viewPostsOnMap(postCoordinates, userId, navController)
         }
 
         Spacer(modifier = Modifier.height(55.dp))
     }
+
 }
 
 @Composable
@@ -154,7 +149,7 @@ fun ProfileInfo(user: User, userId: Long, navigator: DestinationsNavigator, navC
         mutableStateOf(false)
     }
 
-    var userIdfromJWT = getUserId()
+    val userIdfromJWT = getUserId()
     val context = LocalContext.current
     val path = context.getExternalFilesDir(null)!!.absolutePath
     val tempFile = File(path, "tokens.txt")
@@ -185,113 +180,140 @@ fun ProfileInfo(user: User, userId: Long, navigator: DestinationsNavigator, navC
         Toast.makeText(context, "Profile picture changed.", Toast.LENGTH_SHORT).show()
     }
 
+    var image: Bitmap?
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .width(120.dp)
+                .height(130.dp)
+        ) {
+            image = create_image(user)
+            if(image != null)
+            {
+                Image(
+
+                    image!!.asImageBitmap(),
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier
+                        .width(120.dp)
+                        .height(120.dp)
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colors.onSurface,
+                            shape = CircleShape
+                        )
+                        .padding(3.dp)
+                        .clip(CircleShape),
+                )
+            }
+            else
+            {
+                Image(
+                    myImage.asImageBitmap(),
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier
+                        .width(120.dp)
+                        .height(120.dp)
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colors.onSurface,
+                            shape = CircleShape
+                        )
+                        .padding(3.dp)
+                        .clip(CircleShape),
+                )
+            }
+            if(userId == userIdfromJWT) {
+                Button(
+                    onClick = {
+                        chooseImage.launch("image/*")
+
+                    },
+                    shape = CircleShape,
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(50.dp)
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colors.onSurface,
+                            shape = CircleShape
+                        )
+                        .align(Alignment.BottomEnd),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface),
+                    contentPadding = PaddingValues(0.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.PhotoCamera,
+                        contentDescription = "Change profile picture",
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .padding(PaddingValues(0.dp)),
+                        tint = MaterialTheme.colors.onSurface
+                    )
+                }
+            }
+        }
+    }
+    Spacer(modifier = Modifier.height(20.dp))
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = user.firstName + " " +  user.lastName,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+fun ProfileHeader(navigator: DestinationsNavigator, navController: NavHostController, follow: Boolean, username: String, userId: Int) {
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val dataStore = Storage(context)
 
-
-    //println(user!!.username)
-    //println(user!!.email)
-
-    var image: Bitmap? = null
+    val following = remember {
+        mutableStateOf(follow)
+    }
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(140.dp)
+            .height(55.dp)
+            .padding(PaddingValues(0.dp, 10.dp, 0.dp, 10.dp))
     ) {
         Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxHeight(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.weight(1f)
         ) {
-            IconButton(onClick = { navController.navigateUp() }) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", modifier = Modifier.size(30.dp))
-            }
-        }
-        Column(modifier = Modifier.weight(1f)) {
-            Box(
-                modifier = Modifier.fillMaxSize()
+            IconButton(
+                onClick = { navController.navigateUp() }
             ) {
-                image = create_image(user)
-                if(image != null)
-                {
-                    Image(
-
-                        image!!.asImageBitmap(),
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier
-                            .width(120.dp)
-                            .height(120.dp)
-                            .border(
-                                width = 1.dp,
-                                color = MaterialTheme.colors.onSurface,
-                                shape = CircleShape
-                            )
-                            .padding(3.dp)
-                            .clip(CircleShape),
-                    )
-                }
-                else
-                {
-                    Image(
-                        myImage.asImageBitmap(),
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier
-                            .width(120.dp)
-                            .height(120.dp)
-                            .border(
-                                width = 1.dp,
-                                color = MaterialTheme.colors.onSurface,
-                                shape = CircleShape
-                            )
-                            .padding(3.dp)
-                            .clip(CircleShape),
-                    )
-                }
-                if(userId == userIdfromJWT) {
-                    Button(
-                        onClick = {
-                            chooseImage.launch("image/*")
-
-                        },
-                        shape = CircleShape,
-                        modifier = Modifier
-                            .width(50.dp)
-                            .height(50.dp)
-                            .border(
-                                width = 1.dp,
-                                color = MaterialTheme.colors.onSurface,
-                                shape = CircleShape
-                            )
-                            .align(Alignment.BottomEnd),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface),
-                        contentPadding = PaddingValues(0.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.PhotoCamera,
-                            contentDescription = "Change profile picture",
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .padding(PaddingValues(0.dp)),
-                            tint = MaterialTheme.colors.onSurface
-                        )
-                    }
-                }
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back",
+                    Modifier.size(30.dp)
+                )
             }
         }
         Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxHeight(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.weight(1f),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            //Ako gleda tudji profil onda se vidi follow dugme
-            //Ako gleda svoj profil onda se vidi logout dugme
-
-            if(userId == userIdfromJWT) {
+            Text(text = "@$username")
+        }
+        Column(
+            modifier = Modifier.weight(1f),
+            horizontalAlignment = Alignment.End
+        ) {
+            if(userId.toLong() == getUserId()) {
                 IconButton(onClick = {
                     scope.launch { dataStore.saveAccessToken("") }
                     scope.launch { dataStore.saveRefreshToken("") }
@@ -310,33 +332,6 @@ fun ProfileInfo(user: User, userId: Long, navigator: DestinationsNavigator, navC
                     )
                 }
             }
-        }
-    }
-    Spacer(modifier = Modifier.height(20.dp))
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (user != null) {
-            Text(
-                text = user.firstName + " " +  user.lastName,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-    }
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (user != null) {
-            Text(
-                text = "@" + user.username,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium
-            )
         }
     }
 }
@@ -408,7 +403,7 @@ fun Divide() {
 fun create_image(user: User?): Bitmap?
 {
     var profilePic: ByteArray
-    var bmp: Bitmap
+    val bmp: Bitmap
     if(user != null) {
         if(user.profilePicture != null) {
             profilePic = user.profilePicture.toByteArray()
@@ -425,7 +420,7 @@ fun create_image(user: User?): Bitmap?
 fun create_content(post: Post?): Bitmap?
 {
     var contentPic: ByteArray
-    var bmp: Bitmap
+    val bmp: Bitmap
     if(post != null) {
         if(post.image != null) {
             contentPic = post.image.toByteArray()
@@ -440,9 +435,9 @@ fun create_content(post: Post?): Bitmap?
 }
 
 @Composable
-fun viewPostsOnMap(posts: Array<Coordinates?>, userId: Long, navigator: DestinationsNavigator) {
+fun viewPostsOnMap(posts: Array<Coordinates?>, userId: Long, navController: NavHostController) {
     val context = LocalContext.current
-    var mapView: MapView? = null
+    var mapView: MapView?
 
     Card(
         modifier = Modifier
@@ -456,7 +451,7 @@ fun viewPostsOnMap(posts: Array<Coordinates?>, userId: Long, navigator: Destinat
         AndroidView(
             factory = { View.inflate(it, R.layout.map_layout, null)},
             modifier = Modifier.fillMaxSize(),
-            update = { it ->
+            update = {
                 mapView = it.findViewById(R.id.mapView)
                 mapView?.getMapboxMap()?.loadStyleUri(
                     Style.MAPBOX_STREETS,
@@ -464,7 +459,7 @@ fun viewPostsOnMap(posts: Array<Coordinates?>, userId: Long, navigator: Destinat
                         override fun onStyleLoaded(style: Style) {
                             posts.forEach { post ->
                                 if (post != null) {
-                                    addAnnotationToMap(context, mapView!!, post.longitude.toFloat(), post.latitude.toFloat(), post.postId, userId, navigator)
+                                    addAnnotationToMap(context, mapView!!, post.longitude.toFloat(), post.latitude.toFloat(), post.postId, userId, navController)
                                 }
                             }
                         }

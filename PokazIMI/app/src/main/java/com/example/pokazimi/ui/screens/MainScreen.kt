@@ -17,7 +17,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.pokazimi.data.item.BottomNavItem
+import com.example.pokazimi.ui.screens.MapScreen
 import com.example.pokazimi.ui.screens.ProfileScreen
+import com.example.pokazimi.ui.screens.SearchResultScreen
 import com.example.pokazimi.ui.screens.ViewPostScreen
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -67,6 +69,9 @@ fun Navigation(navController: NavHostController, navigator: DestinationsNavigato
         composable("home") {
             HomeScreen(navController, navigator)
         }
+        composable("search/{radius}/{latitude}/{longitude}", arguments = listOf(navArgument(name = "radius"){ type = NavType.FloatType},navArgument(name = "latitude"){ type = NavType.FloatType},navArgument(name = "longitude"){ type = NavType.FloatType})) {
+            SearchResultScreen(navController, navigator, radius = it.arguments!!.getFloat("radius").toDouble(), latitude = it.arguments!!.getFloat("latitude").toDouble(), longitude = it.arguments!!.getFloat("longitude").toDouble())
+        }
         composable("post") {
             PostScreen(navController, navigator)
         }
@@ -78,6 +83,9 @@ fun Navigation(navController: NavHostController, navigator: DestinationsNavigato
         }
         composable("viewpost/{postId}/{userId}", arguments = listOf(navArgument(name = "postId"){ type = NavType.LongType }, navArgument(name = "userId"){ type = NavType.LongType })) {
             ViewPostScreen(navController, navigator, postId = it.arguments!!.getLong("postId"), userId = it.arguments!!.getLong("userId"))
+        }
+        composable("map/{viewingPost}", arguments = listOf(navArgument(name = "viewingPost"){ type = NavType.BoolType })) {
+            MapScreen(navController = navController, viewingPost = it.arguments!!.getBoolean("viewingPost"), description = "")
         }
     }
 

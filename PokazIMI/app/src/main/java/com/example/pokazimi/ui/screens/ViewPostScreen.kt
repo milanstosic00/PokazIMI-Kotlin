@@ -1,6 +1,5 @@
 package com.example.pokazimi.ui.screens
 
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
@@ -11,6 +10,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.Comment
@@ -20,6 +20,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.pokazimi.data.remote.dto.CommentRequest
 import com.example.pokazimi.data.remote.model.Comment
+import com.example.pokazimi.data.remote.model.Like
 import com.example.pokazimi.data.remote.model.ViewPost
 import com.example.pokazimi.destinations.MapScreenDestination
 import com.example.pokazimi.destinations.ViewPostScreenDestination
@@ -64,8 +66,8 @@ fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavi
     val accessToken = lines?.get(1)
 
     val postActivity = PostActivity(accessToken as String, refreshToken as String)
-    val viewPostActivity = ViewPostActivity(accessToken as String, refreshToken as String)
-    val post = viewPostActivity.getPost(postId, userId)
+    val viewPostActivity = ViewPostActivity(accessToken, refreshToken)
+    val post = viewPostActivity.getPost(postId, getUserId())
     var likes = 0
     if (post != null) {
         likes = if(post.likes != null) {
@@ -83,7 +85,7 @@ fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavi
         Header(navController, post!!.user.id, postActivity, post.id)
         create_img(post)?.let { PostImage(it) }
         if (post != null) {
-            PostInfo(navController, navigator, post.lat, post.lon, likes, post.description, post.user.id)
+            PostInfo(navController, navigator, post.id, post.lat, post.lon, likes, post.description, post.user.id, post.likedByUser)
             Divide()
             CommentSection(post.id, userId, post.comments, postActivity, navigator, navController)
         }
@@ -152,11 +154,17 @@ fun PostImage(image: Bitmap) {
 }
 
 @Composable
-fun PostInfo(navController: NavHostController, navigator: DestinationsNavigator, lat: Double, lon: Double, likes: Int, description: String, userId: Long) {
+fun PostInfo(navController: NavHostController, navigator: DestinationsNavigator, postId: Long, lat: Double, lon: Double, likes: Int, description: String, userId: Long, liked: Boolean) {
     val context = LocalContext.current
-    val myImage: Bitmap = BitmapFactory.decodeResource(Resources.getSystem(), android.R.mipmap.sym_def_app_icon)
-    val result = remember {
-        mutableStateOf<Bitmap>(myImage)
+
+    val userIdFromJWT = getUserId()
+
+    val like = remember {
+        mutableStateOf(liked)
+    }
+
+    val numLikes = remember {
+        mutableStateOf(likes)
     }
 
     val path = context.getExternalFilesDir(null)!!.absolutePath
@@ -228,10 +236,23 @@ fun PostInfo(navController: NavHostController, navigator: DestinationsNavigator,
             Row(
                 modifier = Modifier.height(30.dp))
             {
-                IconButton(
-                    onClick = { /*TODO*/ }
-                ) {
-                    Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = "Like", Modifier.size(30.dp))
+                if(!like.value) {
+                    IconButton(onClick = {
+                        like.value = !like.value
+                        numLikes.value++
+                        postActivity.likePost(Like(postId, userIdFromJWT))
+                    }) {
+                        Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = "Like", Modifier.size(30.dp))
+                    }
+                }
+                else {
+                    IconButton(onClick = {
+                        like.value = !like.value
+                        numLikes.value--
+                        postActivity.deleteLike(postId)
+                    }) {
+                        Icon(imageVector = Icons.Default.Favorite, contentDescription = "Like", Modifier.size(30.dp), tint = Color.Red)
+                    }
                 }
             }
             Row (
@@ -239,7 +260,7 @@ fun PostInfo(navController: NavHostController, navigator: DestinationsNavigator,
                     .height(20.dp)
                     .absoluteOffset(y = 2.dp)
             ) {
-                Text(text = likes.toString(), fontSize = 12.sp)
+                Text(text = numLikes.value.toString(), fontSize = 12.sp)
             }
         }
     }
@@ -313,7 +334,7 @@ fun CommentComposable(navController: NavHostController, userId: Long, text : Str
 
 @Composable
 fun NewComment(postId: Long, userId: Long, navigator: DestinationsNavigator) {
-    var userIdfromJWT = getUserId()
+    val userIdfromJWT = getUserId()
     val context = LocalContext.current
     var commentText by remember {
         mutableStateOf(TextFieldValue(""))

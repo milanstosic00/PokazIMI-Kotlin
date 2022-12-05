@@ -8,7 +8,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.annotation.DrawableRes
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -28,49 +27,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import com.example.pokazimi.R
-import com.example.pokazimi.destinations.HomeScreenDestination
 import com.example.pokazimi.destinations.MainScreenDestination
 import com.example.pokazimi.destinations.ViewPostScreenDestination
 import com.example.pokazimi.getUserId
 import com.example.pokazimi.readFromFile
 import com.example.pokazimi.ui.activity.PostActivity
-import com.google.gson.Gson
-import com.google.gson.JsonElement
-import com.mapbox.android.core.crashreporter.CrashReportBuilder.fromJson
-import com.mapbox.bindgen.Value.fromJson
-import com.mapbox.common.ValueConverter.fromJson
-import com.mapbox.geojson.BoundingBox.fromJson
-import com.mapbox.geojson.Feature.fromJson
-import com.mapbox.geojson.FeatureCollection.fromJson
-import com.mapbox.geojson.LineString.fromJson
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
-import com.mapbox.maps.MapboxMap
 import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
-import com.mapbox.maps.viewannotation.ViewAnnotationManager
-import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import org.json.JSONObject
 import java.io.File
-
-
-private lateinit var mapboxMap: MapboxMap
-private lateinit var viewAnnotationManager: ViewAnnotationManager
 
 @Destination
 @Composable
-fun MapScreen(navController: NavHostController, navigator: DestinationsNavigator, newPost: Boolean = false, viewingPost: Boolean = false, longitude: Float = 0.0f, latitude: Float = 0.0f, description: String?) {
+fun MapScreen(navController: NavHostController, newPost: Boolean = false, viewingPost: Boolean = false, longitude: Float = 0.0f, latitude: Float = 0.0f, description: String?) {
     var mapView: MapView? = null
 
-    var lines = readFromFile()
-    var userIdfromJWT = getUserId()
+    val lines = readFromFile()
+    val userIdfromJWT = getUserId()
 
     val refreshToken = lines?.get(0)
     val accessToken = lines?.get(1)
@@ -78,8 +59,9 @@ fun MapScreen(navController: NavHostController, navigator: DestinationsNavigator
     Column(
         modifier = Modifier
             .background(color = MaterialTheme.colors.background)
+            .padding(PaddingValues(0.dp, 0.dp, 0.dp, 55.dp))
     ) {
-        Header(navigator)
+        Header(navController)
         Row(modifier = Modifier.fillMaxWidth()) {
             val context = LocalContext.current
             Box(
@@ -97,7 +79,7 @@ fun MapScreen(navController: NavHostController, navigator: DestinationsNavigator
                             object : Style.OnStyleLoaded {
                                 override fun onStyleLoaded(style: Style) {
                                     if(viewingPost) {
-                                        addAnnotationToMap(context, mapView!!, longitude, latitude, -1, -1, navigator)
+                                        addAnnotationToMap(context, mapView!!, longitude, latitude, -1, -1, navController)
                                         val cameraOptions = CameraOptions.Builder().center(Point.fromLngLat(longitude.toDouble(), latitude.toDouble())).zoom(12.0).build()
                                         mapView!!.getMapboxMap().setCamera(cameraOptions)
                                     }
@@ -117,22 +99,23 @@ fun MapScreen(navController: NavHostController, navigator: DestinationsNavigator
                     ) {
                         FloatingActionButton(
                             onClick = {
+                                val position = mapView!!.getMapboxMap().cameraState.center
+                                val lat = position.latitude()
+                                val lon = position.longitude()
                                 if(newPost) {
                                     // Ako je novi post uzmi koordinate centra kamere i posalji request za cuvanje posta
                                     val path = context.getExternalFilesDir(null)!!.absolutePath
                                     val imagePath = "$path/tempFileName.jpg"
                                     val image = BitmapFactory.decodeFile(imagePath)
-                                    val position = mapView!!.getMapboxMap().cameraState.center
-                                    val lat = position.latitude()
-                                    val lon = position.longitude()
+
                                     postActivity.savePost(userIdfromJWT, description!!, image, lat, lon)
                                     File(imagePath).deleteOnExit()
                                     Thread.sleep(300)
-                                    navigator.navigate(MainScreenDestination)
+                                    navController.navigate("home")
                                 }
                                 else {
                                     // U suprotnom idi na home stranicu i posalji request za search postova koji su blizu koordinata centra kamere
-                                    navigator.navigate(MainScreenDestination)
+                                    navController.navigate("search/200f/${lat.toFloat()}/${lon.toFloat()}")
                                 }
                             }
                         ) {
@@ -146,7 +129,7 @@ fun MapScreen(navController: NavHostController, navigator: DestinationsNavigator
     }
 }
 
-fun addAnnotationToMap(context : Context,mapView: MapView, longitude: Float, latitude: Float, postId: Long, userId: Long, navigator: DestinationsNavigator) {
+fun addAnnotationToMap(context : Context,mapView: MapView, longitude: Float, latitude: Float, postId: Long, userId: Long, navController: NavHostController) {
 
     // Create an instance of the Annotation API and get the PointAnnotationManager.
     bitmapFromDrawableRes(
@@ -154,17 +137,15 @@ fun addAnnotationToMap(context : Context,mapView: MapView, longitude: Float, lat
         R.drawable.red_marker
     )?.let {
         // Set options for the resulting symbol layer.
-        val annotationApi = mapView?.annotations
+        val annotationApi = mapView.annotations
         val pointAnnotationManager = annotationApi.createPointAnnotationManager()
         if(postId > -1) {
             pointAnnotationManager.addClickListener(OnPointAnnotationClickListener {
                     annotation: PointAnnotation ->
-                onMarkerItemClick(annotation, postId, userId, navigator)
+                onMarkerItemClick(annotation, postId, userId, navController)
             })
         }
 
-        var jsonObject = JSONObject();
-        jsonObject.put("somevalue", 1)
         val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
         // Define a geographic coordinate.
             .withPoint(Point.fromLngLat(longitude.toDouble(), latitude.toDouble()))
@@ -202,13 +183,13 @@ private fun convertDrawableToBitmap(sourceDrawable: Drawable?): Bitmap? {
     }
 }
 
-private fun onMarkerItemClick(marker: PointAnnotation, postId: Long, userId: Long, navigator: DestinationsNavigator): Boolean {
-    navigator.navigate(ViewPostScreenDestination(postId = postId, userId = userId))
+private fun onMarkerItemClick(marker: PointAnnotation, postId: Long, userId: Long, navController: NavHostController): Boolean {
+    navController.navigate("viewpost/$postId/$userId")
     return true
 }
 
 @Composable
-fun Header(navigator: DestinationsNavigator) {
+fun Header(navController: NavHostController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -217,7 +198,7 @@ fun Header(navigator: DestinationsNavigator) {
             .background(color = MaterialTheme.colors.background)
     ) {
         IconButton(
-            onClick = { navigator.navigateUp() }
+            onClick = { navController.navigateUp() }
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,

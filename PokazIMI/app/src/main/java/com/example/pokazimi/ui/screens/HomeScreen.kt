@@ -56,9 +56,10 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
 
     var followingPosts: Array<ViewPost>? = null
     var featuredPosts: Array<ViewPost>? = null
+    var searchPosts: Array<ViewPost>? = null
 
     if(following.value) {
-        followingPosts= homeActivity.getFollowingPosts()
+        followingPosts = homeActivity.getFollowingPosts()
     }
     else {
         featuredPosts = homeActivity.getFeaturedPosts()
@@ -95,7 +96,9 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
     ) {
         TextButton(
             modifier = Modifier.weight(1f),
-            onClick = { if(!following.value) following.value = !following.value; println(following.value) },
+            onClick = {
+                if(!following.value) following.value = !following.value
+            },
             colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background, contentColor = MaterialTheme.colors.onSurface),
             contentPadding = PaddingValues(horizontal = 2.dp)
         ) {
@@ -104,7 +107,9 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
 
         TextButton(
             modifier = Modifier.weight(1f),
-            onClick = { if(following.value) following.value = !following.value; println(following.value) },
+            onClick = {
+                if(following.value) following.value = !following.value
+            },
             colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background, contentColor = MaterialTheme.colors.onSurface),
             contentPadding = PaddingValues(horizontal = 2.dp)
         ) {
@@ -118,7 +123,7 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
                 .padding(vertical = 5.dp)
         ) {
             Button(
-                onClick = { navigator.navigate(MapScreenDestination(viewingPost = false)) },
+                onClick = { navController.navigate("map/false") },
                 modifier = Modifier
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(50.dp),
@@ -141,7 +146,6 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-
 
         if(following.value) {
             followingPosts!!.forEach {

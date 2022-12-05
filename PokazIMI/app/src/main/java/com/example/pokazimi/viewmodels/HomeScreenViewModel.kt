@@ -18,4 +18,9 @@ class HomeScreenViewModel(accessToken: String, refreshToken: String): ViewModel(
     {
         return runBlocking { homeService.getFollowingPosts() }
     }
+
+    fun getSearchPosts(latitude: Double, longitude: Double, radius: Double): Array<ViewPost>?
+    {
+        return runBlocking { homeService.getSearchPosts(latitude, longitude, radius) }
+    }
 }

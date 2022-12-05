@@ -1,6 +1,7 @@
 package com.example.pokazimi.data.remote.services
 
 import android.content.Context
+import android.view.View
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import com.example.pokazimi.MainActivity
@@ -23,6 +24,8 @@ interface HomeService {
     suspend fun getFeaturedPosts(): Array<ViewPost>?
 
     suspend fun getFollowingPosts(): Array<ViewPost>?
+
+    suspend fun getSearchPosts(latitude: Double, longitude: Double, radius: Double): Array<ViewPost>?
 
     companion object {
         fun create(accessToken: String, refreshToken: String): HomeService {

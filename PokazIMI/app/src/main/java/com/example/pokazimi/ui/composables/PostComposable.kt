@@ -230,7 +230,6 @@ fun CircularImage(navController: NavHostController, image: Bitmap?, userId: Long
         image!!.asImageBitmap(),
         contentDescription = "Image",
         modifier = Modifier
-            .height(50.dp)
             .width(50.dp)
             .clip(CircleShape)
             .clickable { navController.navigate("profile/$userId") }
