@@ -193,7 +193,7 @@ fun PreviewHeader(navController: NavHostController, navigator: DestinationsNavig
                     val fOut = FileOutputStream(tempFile)
                     image.compress(Bitmap.CompressFormat.JPEG, 100, fOut)
                     fOut.close()
-                    navigator.navigate(MapScreenDestination(newPost = true, viewingPost = false, description = description))
+                    navController.navigate("map/true/false/$description")
                 }
             ) {
                 Icon(
@@ -209,9 +209,6 @@ fun PreviewHeader(navController: NavHostController, navigator: DestinationsNavig
 
 @Composable
 fun PostPreviewHeader(desciption: String, usernameAndProfilePic: UsernameAndProfilePic?, navController: NavHostController) {
-
-
-
     Row(
         modifier = Modifier
             .fillMaxWidth()

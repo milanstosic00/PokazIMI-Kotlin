@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.pokazimi.NoPosts
 import com.example.pokazimi.data.remote.model.ViewPost
 import com.example.pokazimi.readFileAsLinesUsingUseLines
 import com.example.pokazimi.ui.activity.HomeActivity
@@ -57,6 +58,9 @@ fun SearchResultScreen(navController: NavHostController, navigator: Destinations
         searchPosts!!.forEach {
             val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(it.user.id) }
             Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_img(it), it.lat, it.lon, it.id, it.user.id, it.time, it.likedByUser)
+        }
+        if(searchPosts!!.isEmpty()){
+            NoPosts()
         }
     }
 }
@@ -102,29 +106,5 @@ fun SearchHeader(navController: NavHostController) {
         ) {
 
         }
-    }
-}
-
-@Composable
-fun SearchResult(navController: NavHostController, navigator: DestinationsNavigator, radius: Double, latitude: Double, longitude: Double) {
-    val context = LocalContext.current
-    val path = context.getExternalFilesDir(null)!!.absolutePath
-    val tempFile = File(path, "tokens.txt")
-    var lines: List<String>? = null
-    if(tempFile.isFile) {
-        lines = readFileAsLinesUsingUseLines(tempFile)
-    }
-    val refreshToken = lines?.get(0)
-    val accessToken = lines?.get(1)
-
-    var searchPosts: Array<ViewPost>? = null
-    val postActivity = PostActivity(accessToken as String, refreshToken as String)
-    val homeActivity = HomeActivity(accessToken as String, refreshToken as String)
-
-    searchPosts = homeActivity.getSearchPosts(latitude, longitude, radius)
-
-    searchPosts!!.forEach {
-        val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(it.user.id) }
-        Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_img(it), it.lat, it.lon, it.id, it.user.id, it.time, it.likedByUser)
     }
 }

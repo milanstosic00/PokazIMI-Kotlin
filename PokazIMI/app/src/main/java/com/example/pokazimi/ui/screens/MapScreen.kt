@@ -111,7 +111,7 @@ fun MapScreen(navController: NavHostController, newPost: Boolean = false, viewin
                                     postActivity.savePost(userIdfromJWT, description!!, image, lat, lon)
                                     File(imagePath).deleteOnExit()
                                     Thread.sleep(300)
-                                    navController.navigate("home")
+                                    navController.navigate("profile")
                                 }
                                 else {
                                     // U suprotnom idi na home stranicu i posalji request za search postova koji su blizu koordinata centra kamere

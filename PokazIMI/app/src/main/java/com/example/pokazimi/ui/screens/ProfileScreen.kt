@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
+import com.example.pokazimi.NoPosts
 import com.example.pokazimi.R
 import com.example.pokazimi.data.remote.model.Coordinates
 import com.example.pokazimi.data.remote.model.Post
@@ -92,7 +93,8 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
         modifier = Modifier
             .verticalScroll(rememberScrollState())
     ) {
-        ProfileInfo(user!!, userId, navigator, navController, user.followedByUser)
+        ProfileHeader(navigator, navController, user.followedByUser, user.username, user.id, profileActivity)
+        ProfileInfo(user!!, userId, navController)
         Spacer(modifier = Modifier.height(20.dp))
         ProfileStats()
         Spacer(modifier = Modifier.height(5.dp))
@@ -131,6 +133,9 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
             user.posts.forEach {
                 Post(navController, navigator, user.username, it.description, create_image(user), create_content(it), it.lat, it.lon, it.id, userId, it.time, it.likedByUser)
             }
+            if(user.posts.isEmpty()) {
+                NoPosts()
+            }
         }
         else {
             viewPostsOnMap(postCoordinates, userId, navController)
@@ -142,11 +147,7 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
 }
 
 @Composable
-fun ProfileInfo(user: User, userId: Long, navigator: DestinationsNavigator, navController: NavHostController, isFollowing: Boolean) {
-
-    val following = remember {
-        mutableStateOf(isFollowing)
-    }
+fun ProfileInfo(user: User, userId: Long, navController: NavHostController) {
 
     val userIdfromJWT = getUserId()
     val context = LocalContext.current
@@ -273,7 +274,7 @@ fun ProfileInfo(user: User, userId: Long, navigator: DestinationsNavigator, navC
 }
 
 @Composable
-fun ProfileHeader(navigator: DestinationsNavigator, navController: NavHostController, follow: Boolean, username: String, userId: Int) {
+fun ProfileHeader(navigator: DestinationsNavigator, navController: NavHostController, follow: Boolean, username: String, userId: Long, profileActivity: ProfileActivity) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val dataStore = Storage(context)
@@ -281,6 +282,8 @@ fun ProfileHeader(navigator: DestinationsNavigator, navController: NavHostContro
     val following = remember {
         mutableStateOf(follow)
     }
+
+    val userIdfromJWT = getUserId()
 
     Row(
         modifier = Modifier

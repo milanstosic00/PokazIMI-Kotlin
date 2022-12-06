@@ -2,7 +2,7 @@ package com.example.pokazimi.data.remote.model
 
 @kotlinx.serialization.Serializable
 data class User (
-    val id: Int,
+    val id: Long,
     val firstName: String,
     val lastName: String,
     val username: String,

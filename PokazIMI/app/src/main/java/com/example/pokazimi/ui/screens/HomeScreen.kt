@@ -8,6 +8,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -152,15 +153,42 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
                 val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(it.user.id) }
                 Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_img(it), it.lat, it.lon, it.id, it.user.id, it.time, it.likedByUser)
             }
+            if(followingPosts!!.isEmpty()) {
+                NoPosts()
+            }
         }
         else {
             featuredPosts!!.forEach {
                 val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(it.user.id) }
                 Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_img(it), it.lat, it.lon, it.id, it.user.id, it.time, it.likedByUser)
             }
+            if(featuredPosts!!.isEmpty()) {
+                NoPosts()
+            }
         }
 
         Spacer(modifier = Modifier.height(115.dp))
+    }
+}
+
+@Composable
+fun NoPosts() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+            .height(100.dp),
+        shape = RoundedCornerShape(16.dp),
+        backgroundColor = MaterialTheme.colors.surface,
+        elevation = 5.dp
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Text(text = "Nothing to see here  ¯\\_(ツ)_/¯", fontWeight = FontWeight.Medium)
+        }
     }
 }
 

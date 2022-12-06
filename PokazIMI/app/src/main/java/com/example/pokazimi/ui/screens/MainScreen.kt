@@ -87,6 +87,9 @@ fun Navigation(navController: NavHostController, navigator: DestinationsNavigato
         composable("map/{viewingPost}", arguments = listOf(navArgument(name = "viewingPost"){ type = NavType.BoolType })) {
             MapScreen(navController = navController, viewingPost = it.arguments!!.getBoolean("viewingPost"), description = "")
         }
+        composable("map/{newPost}/{viewingPost}/{description}", arguments = listOf(navArgument(name = "newPost"){ type = NavType.BoolType }, navArgument(name = "description"){ type = NavType.StringType }, navArgument(name = "viewingPost"){ type = NavType.BoolType })) {
+            MapScreen(navController = navController, newPost = it.arguments!!.getBoolean("newPost"), viewingPost = it.arguments!!.getBoolean("viewingPost"), description = it.arguments!!.getString("description"))
+        }
     }
 
 }
