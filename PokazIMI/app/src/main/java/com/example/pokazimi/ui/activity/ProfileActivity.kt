@@ -21,7 +21,7 @@ class ProfileActivity(accessToken: String, refreshToken: String): ComponentActiv
     {
 
         val stream = ByteArrayOutputStream()
-        image.compress(Bitmap.CompressFormat.PNG, 90, stream)
+        image.compress(Bitmap.CompressFormat.JPEG, 30, stream)
         val imageByteArray = stream.toByteArray()
 
         profileViewModel.changeProfilePicture(userId,imageByteArray)

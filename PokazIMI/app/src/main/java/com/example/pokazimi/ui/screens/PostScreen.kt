@@ -7,6 +7,7 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
@@ -188,17 +189,26 @@ fun PreviewHeader(navController: NavHostController, navigator: DestinationsNavig
         ) {
             IconButton(
                 onClick = {
-                    val path = context.getExternalFilesDir(null)!!.absolutePath
-                    val tempFile = File(path, "tempFileName.jpg")
-                    val fOut = FileOutputStream(tempFile)
-                    image.compress(Bitmap.CompressFormat.JPEG, 100, fOut)
-                    fOut.close()
-                    navController.navigate("map/true/false/$description")
+                    var dec = description
+                    if(dec == "") {
+                        dec = "No description"
+                    }
+                    if(image != null) {
+                        val path = context.getExternalFilesDir(null)!!.absolutePath
+                        val tempFile = File(path, "tempFileName.jpg")
+                        val fOut = FileOutputStream(tempFile)
+                        image.compress(Bitmap.CompressFormat.JPEG, 100, fOut)
+                        fOut.close()
+                        navController.navigate("map/true/false/$dec")
+                    }
+                    else {
+                        Toast.makeText(context, "No image selected", Toast.LENGTH_SHORT).show()
+                    }
                 }
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowForward,
-                    contentDescription = "Back",
+                    contentDescription = "Forward",
                     Modifier.size(30.dp),
                     tint = MaterialTheme.colors.onSurface
                 )

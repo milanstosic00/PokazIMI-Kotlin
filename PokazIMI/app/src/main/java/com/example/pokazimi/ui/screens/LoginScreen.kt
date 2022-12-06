@@ -45,9 +45,11 @@ fun LoginScreen(navigator: DestinationsNavigator) {
     val scope = rememberCoroutineScope()
     val dataStore = Storage(context)
 
+    val bgColor = MaterialTheme.colors.background
+
     val systemUiController = rememberSystemUiController()
     SideEffect {
-        systemUiController.setStatusBarColor(Color(0xffff0008))
+        systemUiController.setStatusBarColor(bgColor)
     }
 
     var firstName by remember {
@@ -84,22 +86,22 @@ fun LoginScreen(navigator: DestinationsNavigator) {
 
 
 
-    Scaffold(backgroundColor = MaterialTheme.colors.primary) {
+    Scaffold(backgroundColor = bgColor) {
         Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top){
             Image(
-                painter = painterResource(id = R.drawable.instagram),
+                painter = painterResource(id = R.drawable.logo),
                 contentDescription = "App Logo",
                 modifier = Modifier
                     .weight(1f)
-                    .size(188.dp),
-                colorFilter = ColorFilter.tint(Color.White),
-
+                    .width(300.dp),
+                colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface),
             )
             Card(
                 modifier = Modifier
                     .weight(if (!expandedState) 2f else 5f)
                     .padding(8.dp),
-                shape = RoundedCornerShape(32.dp)
+                shape = RoundedCornerShape(32.dp),
+                elevation = 5.dp
             ) {
                 Column(
                     Modifier

@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -89,7 +90,7 @@ fun MapScreen(navController: NavHostController, newPost: Boolean = false, viewin
                     }
                 )
                 if(!viewingPost) {
-                    Icon(imageVector = Icons.Default.LocationOn, contentDescription = "Icon", modifier = Modifier.absoluteOffset(y = (-12).dp))
+                    Icon(imageVector = Icons.Default.LocationOn, contentDescription = "Icon", modifier = Modifier.absoluteOffset(y = (-12).dp), tint = Color.Black)
                     Row(
                         modifier = Modifier
                             .fillMaxSize()
@@ -108,7 +109,10 @@ fun MapScreen(navController: NavHostController, newPost: Boolean = false, viewin
                                     val imagePath = "$path/tempFileName.jpg"
                                     val image = BitmapFactory.decodeFile(imagePath)
 
-                                    postActivity.savePost(userIdfromJWT, description!!, image, lat, lon)
+                                    if(description != "No description")
+                                        postActivity.savePost(userIdfromJWT, description!!, image, lat, lon)
+                                    else
+                                        postActivity.savePost(userIdfromJWT, "", image, lat, lon)
                                     File(imagePath).deleteOnExit()
                                     Thread.sleep(300)
                                     navController.navigate("profile")
