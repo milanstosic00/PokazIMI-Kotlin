@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.pokazimi.data.remote.dto.LikeRequest
 import com.example.pokazimi.data.remote.model.Like
 import com.example.pokazimi.destinations.MapScreenDestination
 import com.example.pokazimi.getUserId
@@ -184,7 +185,7 @@ fun PostFooter(navController: NavHostController, navigator: DestinationsNavigato
             if(!like.value) {
                 IconButton(onClick = {
                     like.value = !like.value
-                    postActivity.likePost(Like(postId, userIdfromJWT))
+                    postActivity.likePost(LikeRequest(postId, userIdfromJWT))
                 }) {
                     Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = "Like", Modifier.size(30.dp))
                 }

@@ -2,6 +2,7 @@ package com.example.pokazimi.data.remote.model
 
 @kotlinx.serialization.Serializable
 data class Like(
-    val post: Long,
+    val id: Long,
+    val time: String = "",
     val likersId: Long
 )

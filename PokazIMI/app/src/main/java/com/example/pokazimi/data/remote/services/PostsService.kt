@@ -20,7 +20,7 @@ interface PostsService {
 
     suspend fun createPost(postRequest: PostRequest): Boolean?
 
-    suspend fun like(like: Like): MessageResponse?
+    suspend fun like(like: LikeRequest): MessageResponse?
 
     suspend fun deleteLike(postId: Long): MessageResponse?
 

@@ -16,8 +16,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.pokazimi.data.remote.model.ViewPost
-import com.example.pokazimi.dataStore.Storage
-import com.example.pokazimi.destinations.MapScreenDestination
 import com.example.pokazimi.ui.activity.HomeActivity
 import com.example.pokazimi.ui.activity.PostActivity
 import com.example.pokazimi.ui.composables.Post
@@ -42,8 +40,6 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
     }
 
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    val dataStore = Storage(context)
     val path = context.getExternalFilesDir(null)!!.absolutePath
     val tempFile = File(path, "tokens.txt")
     var lines: List<String>? = null
@@ -53,11 +49,10 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
     val refreshToken = lines?.get(0)
     val accessToken = lines?.get(1)
     val postActivity = PostActivity(accessToken as String, refreshToken as String)
-    val homeActivity = HomeActivity(accessToken as String, refreshToken as String)
+    val homeActivity = HomeActivity(accessToken, refreshToken)
 
     var followingPosts: Array<ViewPost>? = null
     var featuredPosts: Array<ViewPost>? = null
-    var searchPosts: Array<ViewPost>? = null
 
     if(following.value) {
         followingPosts = homeActivity.getFollowingPosts()
@@ -65,29 +60,6 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
     else {
         featuredPosts = homeActivity.getFeaturedPosts()
     }
-
-    /*Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-            .padding(horizontal = 10.dp, vertical = 5.dp)
-    ) {
-        Button(
-            onClick = { navigator.navigate(MapScreenDestination(viewingPost = false)) },
-            modifier = Modifier
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(50.dp),
-            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface)
-        ) {
-            Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
-            Text(
-                text = "  Search here",
-                textAlign = TextAlign.Start,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-        }
-    }*/
 
     Row(
         modifier = Modifier
@@ -153,7 +125,7 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
                 val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(it.user.id) }
                 Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_img(it), it.lat, it.lon, it.id, it.user.id, it.time, it.likedByUser)
             }
-            if(followingPosts!!.isEmpty()) {
+            if(followingPosts.isEmpty()) {
                 NoPosts()
             }
         }
@@ -162,7 +134,7 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
                 val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(it.user.id) }
                 Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_img(it), it.lat, it.lon, it.id, it.user.id, it.time, it.likedByUser)
             }
-            if(featuredPosts!!.isEmpty()) {
+            if(featuredPosts.isEmpty()) {
                 NoPosts()
             }
         }

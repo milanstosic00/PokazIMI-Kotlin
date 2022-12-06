@@ -94,9 +94,9 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
             .verticalScroll(rememberScrollState())
     ) {
         ProfileHeader(navigator, navController, user.followedByUser, user.username, user.id, profileActivity)
-        ProfileInfo(user!!, userId, navController)
+        ProfileInfo(user, userId, navController)
         Spacer(modifier = Modifier.height(20.dp))
-        ProfileStats()
+        ProfileStats(user.posts.size, 0, 0)
         Spacer(modifier = Modifier.height(5.dp))
         Divide()
 
@@ -349,13 +349,13 @@ fun ProfileHeader(navigator: DestinationsNavigator, navController: NavHostContro
 }
 
 @Composable
-fun ProfileStats() {
+fun ProfileStats(posts: Int, followers: Int, following: Int) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier.fillMaxWidth()
     ) {
-        ProfileStat(numberText = "108", text = "Posts", Modifier.weight(1f))
+        ProfileStat(numberText = "$posts", text = "Posts", Modifier.weight(1f))
         ProfileStat(numberText = "3,820", text = "Followers", Modifier.weight(1f))
         ProfileStat(numberText = "6,290", text = "Following", Modifier.weight(1f))
     }

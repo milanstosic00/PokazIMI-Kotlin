@@ -7,6 +7,7 @@ import android.os.PersistableBundle
 import android.util.Base64
 import androidx.activity.ComponentActivity
 import com.example.pokazimi.data.remote.dto.CommentRequest
+import com.example.pokazimi.data.remote.dto.LikeRequest
 import com.example.pokazimi.data.remote.model.Comment
 import com.example.pokazimi.data.remote.model.Like
 import com.example.pokazimi.data.remote.model.UsernameAndProfilePic
@@ -51,7 +52,7 @@ class PostActivity(accessToken: String, refreshToken: String): ComponentActivity
         return runBlocking { postViewModel.getUsernameAndProfilePic(userId) }
     }
 
-    fun likePost(like: Like)
+    fun likePost(like: LikeRequest)
     {
         postViewModel.likePost(like)
     }

@@ -1,11 +1,8 @@
 package com.example.pokazimi.data.remote.services.implementations
 
 import com.example.pokazimi.data.remote.HttpRoutes
-import com.example.pokazimi.data.remote.dto.CommentRequest
+import com.example.pokazimi.data.remote.dto.*
 import com.example.pokazimi.data.remote.model.Like
-import com.example.pokazimi.data.remote.dto.MessageResponse
-import com.example.pokazimi.data.remote.dto.PostRequest
-import com.example.pokazimi.data.remote.dto.PostResponse
 import com.example.pokazimi.data.remote.model.Comment
 import com.example.pokazimi.data.remote.model.UsernameAndProfilePic
 import com.example.pokazimi.data.remote.model.ViewPost
@@ -43,7 +40,7 @@ class PostsServiceImpl(private val client: HttpClient): PostsService {
         }
     }
 
-    override suspend fun like(like: Like): MessageResponse? {
+    override suspend fun like(like: LikeRequest): MessageResponse? {
         return try {
             client.post<MessageResponse> {
                 url(HttpRoutes.LIKE + "?post=${like.post}&likersId=${like.likersId}")

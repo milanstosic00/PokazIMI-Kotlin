@@ -11,7 +11,7 @@ data class ViewPost (
     val description: String,
     val lat: Double,
     val lon: Double,
-    val likes: Array<LikeResponse>?,
+    val likes: Array<Like>?,
     val comments: Array<Comment>?,
     val likedByUser: Boolean
 )

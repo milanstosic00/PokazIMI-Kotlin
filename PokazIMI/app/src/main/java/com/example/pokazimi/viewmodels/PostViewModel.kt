@@ -3,6 +3,7 @@ package com.example.pokazimi.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokazimi.data.remote.dto.CommentRequest
+import com.example.pokazimi.data.remote.dto.LikeRequest
 import com.example.pokazimi.data.remote.model.Comment
 import com.example.pokazimi.data.remote.model.Like
 import com.example.pokazimi.data.remote.dto.PostRequest
@@ -27,7 +28,7 @@ class PostViewModel(accessToken: String, refreshToken: String): ViewModel() {
         return runBlocking { postsService.getUsernameAndProfilePic(userId) }
     }
 
-    fun likePost(like: Like)
+    fun likePost(like: LikeRequest)
     {
         viewModelScope.launch { postsService.like(like) }
     }

@@ -30,11 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.pokazimi.data.remote.dto.CommentRequest
+import com.example.pokazimi.data.remote.dto.LikeRequest
 import com.example.pokazimi.data.remote.model.Comment
-import com.example.pokazimi.data.remote.model.Like
 import com.example.pokazimi.data.remote.model.ViewPost
 import com.example.pokazimi.destinations.MapScreenDestination
-import com.example.pokazimi.destinations.ViewPostScreenDestination
 import com.example.pokazimi.getUserId
 import com.example.pokazimi.readFileAsLinesUsingUseLines
 import com.example.pokazimi.ui.activity.PostActivity
@@ -84,11 +83,9 @@ fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavi
     ) {
         Header(navController, post!!.user.id, postActivity, post.id)
         create_img(post)?.let { PostImage(it) }
-        if (post != null) {
-            PostInfo(navController, navigator, post.id, post.lat, post.lon, likes, post.description, post.user.id, post.likedByUser)
-            Divide()
-            CommentSection(post.id, userId, post.comments, postActivity, navigator, navController)
-        }
+        PostInfo(navController, navigator, post.id, post.lat, post.lon, likes, post.description, post.user.id, post.likedByUser)
+        Divide()
+        CommentSection(post.id, userId, post.comments, postActivity, navController)
         Spacer(modifier = Modifier.height(125.dp))
     }
 }
@@ -240,7 +237,7 @@ fun PostInfo(navController: NavHostController, navigator: DestinationsNavigator,
                     IconButton(onClick = {
                         like.value = !like.value
                         numLikes.value++
-                        postActivity.likePost(Like(postId, userIdFromJWT))
+                        postActivity.likePost(LikeRequest(postId, userIdFromJWT))
                     }) {
                         Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = "Like", Modifier.size(30.dp))
                     }
@@ -275,7 +272,7 @@ fun PostInfo(navController: NavHostController, navigator: DestinationsNavigator,
 }
 
 @Composable
-fun CommentSection(postId: Long, userId:Long, comments: Array<Comment>?, postActivity: PostActivity, navigator: DestinationsNavigator, navController: NavHostController) {
+fun CommentSection(postId: Long, userId:Long, comments: Array<Comment>?, postActivity: PostActivity, navController: NavHostController) {
 
     Column(
         modifier = Modifier
@@ -288,7 +285,7 @@ fun CommentSection(postId: Long, userId:Long, comments: Array<Comment>?, postAct
             CommentComposable(userId = it.commentersId, text = it.content, postActivity = postActivity, navController = navController, commentId = it.id)
         }
 
-        NewComment(postId, userId, navigator)
+        NewComment(postId, userId, navController)
     }
 }
 
@@ -333,7 +330,7 @@ fun CommentComposable(navController: NavHostController, userId: Long, text : Str
 }
 
 @Composable
-fun NewComment(postId: Long, userId: Long, navigator: DestinationsNavigator) {
+fun NewComment(postId: Long, userId: Long, navController: NavHostController) {
     val userIdfromJWT = getUserId()
     val context = LocalContext.current
     var commentText by remember {
@@ -387,7 +384,8 @@ fun NewComment(postId: Long, userId: Long, navigator: DestinationsNavigator) {
                         }
                         innerTextField()
                     }
-                }
+                },
+                textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colors.onSurface)
             )
         }
         Column(
@@ -399,9 +397,9 @@ fun NewComment(postId: Long, userId: Long, navigator: DestinationsNavigator) {
         ) {
             IconButton(onClick = {
                 val comment = CommentRequest(post_id = postId, content = commentText.text, commentersId = userIdfromJWT)
-                println(comment)
                 postActivity.comment(comment)
-                navigator.navigate(ViewPostScreenDestination(postId = postId, userId = userId))
+                //navigator.navigate(ViewPostScreenDestination(postId = postId, userId = userId))
+                navController.navigate("viewpost/$postId/$userId")
             }) {
                 Icon(imageVector = Icons.Outlined.Send, contentDescription = "Send Comment", Modifier.size(30.dp))
             }
@@ -430,10 +428,9 @@ fun create_img(post: ViewPost?): Bitmap?
 
 fun convert(img: String?): Bitmap?
 {
-    var pic: ByteArray
     val bmp:Bitmap
 
-    pic = img!!.toByteArray()
+    var pic: ByteArray = img!!.toByteArray()
     pic = Base64.decode(pic, Base64.DEFAULT)
 
     bmp = BitmapFactory.decodeByteArray(pic, 0, pic.size)
