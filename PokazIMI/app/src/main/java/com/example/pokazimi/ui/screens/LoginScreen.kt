@@ -191,11 +191,11 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                                 if(!expandedState)
                                 {
                                     val loginResponse = login(email, password)
-                                    if(loginResponse.accessToken.contains("Email not found"))
+                                    if(loginResponse.accessToken == "wrongemail")
                                     {
                                         Toast.makeText(context, "Wrong email", Toast.LENGTH_SHORT).show()
                                     }
-                                    else if(loginResponse.accessToken.contains(("Wrong password")))
+                                    else if(loginResponse.accessToken == "wrongpassword")
                                     {
                                         Toast.makeText(context, "Wrong password", Toast.LENGTH_SHORT).show()
                                     }
