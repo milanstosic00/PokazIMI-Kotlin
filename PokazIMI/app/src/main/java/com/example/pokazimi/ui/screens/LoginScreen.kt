@@ -37,6 +37,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.io.File
+import java.util.regex.Pattern
 
 @Destination
 @Composable
@@ -199,6 +200,10 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                                     {
                                         Toast.makeText(context, "Wrong password", Toast.LENGTH_SHORT).show()
                                     }
+                                    else if(loginResponse.accessToken == "bademail")
+                                    {
+                                        Toast.makeText(context, "Email not valid", Toast.LENGTH_SHORT).show()
+                                    }
                                     else {
 
                                         val path = context.getExternalFilesDir(null)!!.absolutePath
@@ -227,6 +232,10 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                                     else if(response == "takenusername")
                                     {
                                         Toast.makeText(context, "The username is already taken", Toast.LENGTH_SHORT).show()
+                                    }
+                                    else if(response == "bademail")
+                                    {
+                                        Toast.makeText(context, "Email not valid", Toast.LENGTH_SHORT).show()
                                     }
                                 }
                             },
@@ -266,6 +275,19 @@ fun LoginScreen(navigator: DestinationsNavigator) {
 }
 
 fun register(username: String, password: String, firstName: String, lastName: String, email: String): String {
+    val EMAIL_ADDRESS_PATTERN = Pattern.compile(
+        "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+                "\\@" +
+                "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+                "(" +
+                "\\." +
+                "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+                ")+"
+    )
+    if(!EMAIL_ADDRESS_PATTERN.matcher(email).matches())
+    {
+        return "bademail"
+    }
     val service = RegistrationService.create()
     val response = runBlocking { service.registration(RegistrationRequest(firstName, lastName, username, email, password)) }
     if(response.message.contains("There is an account with that email address:"))
@@ -276,10 +298,22 @@ fun register(username: String, password: String, firstName: String, lastName: St
 }
 
 
-fun login(username: String, password: String) : LogInResponse {
-
+fun login(email: String, password: String) : LogInResponse {
+    val EMAIL_ADDRESS_PATTERN = Pattern.compile(
+        "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+                "\\@" +
+                "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+                "(" +
+                "\\." +
+                "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+                ")+"
+    )
+    if(!EMAIL_ADDRESS_PATTERN.matcher(email).matches())
+    {
+        return LogInResponse("bademail", "")
+    }
     val service = LogInService.create()
-    val response = runBlocking { service.login(LoginRequest(username, password)) }
+    val response = runBlocking { service.login(LoginRequest(email, password)) }
 
     if(response.accessToken.contains("Email not found"))
         return LogInResponse("wrongemail", "")
