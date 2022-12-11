@@ -21,7 +21,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -32,6 +34,7 @@ import androidx.navigation.NavHostController
 import com.example.pokazimi.data.remote.dto.CommentRequest
 import com.example.pokazimi.data.remote.dto.LikeRequest
 import com.example.pokazimi.data.remote.model.Comment
+import com.example.pokazimi.data.remote.model.Post
 import com.example.pokazimi.data.remote.model.ViewPost
 import com.example.pokazimi.destinations.MapScreenDestination
 import com.example.pokazimi.getUserId
@@ -39,10 +42,12 @@ import com.example.pokazimi.readFileAsLinesUsingUseLines
 import com.example.pokazimi.ui.activity.PostActivity
 import com.example.pokazimi.ui.activity.ViewPostActivity
 import com.example.pokazimi.ui.composables.CircularImage
+import com.google.accompanist.pager.*
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import java.io.File
+import kotlin.math.absoluteValue
 
 @Destination
 @Composable
@@ -436,3 +441,90 @@ fun convert(img: String?): Bitmap?
     bmp = BitmapFactory.decodeByteArray(pic, 0, pic.size)
     return bmp
 }
+
+//@ExperimentalPagerApi
+//@Composable
+//fun ImagePagerSlider(
+//    post: Post,
+//    photos: List<Post>
+//){
+//
+//    val pagerState = rememberPagerState(
+//        pageCount = photos.size,
+//        initialPage = 0
+//    )
+//
+//    Card(
+//        modifier = Modifier
+//            //.padding(horizontal = 10.dp, vertical = 0.dp)
+//            .fillMaxWidth(),
+//        shape = RectangleShape,
+//        backgroundColor = Color.White
+//    ) {
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth(),
+//            horizontalAlignment = Alignment.CenterHorizontally,
+//            verticalArrangement = Arrangement.Center
+//        ){
+//
+//            Column(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(250.dp),
+//            ){
+//
+//                HorizontalPager(
+//                    state = pagerState,
+//                    modifier = Modifier
+//                        .weight(1f)
+//                        .padding(0.dp, 30.dp, 0.dp, 15.dp)
+//                ) { page->
+//                    Card(
+//                        modifier = Modifier
+//                            .graphicsLayer {
+//                                val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
+//
+//                                lerp(
+//                                    start = 0.85f,
+//                                    stop = 1f,
+//                                    fraction = 1f - pageOffset.coerceIn(0f, 1f)
+//                                ).also { scale ->
+//                                    scaleX = scale
+//                                    scaleY = scale
+//                                }
+//
+//                                alpha = lerp(
+//                                    start = 0.5f,
+//                                    stop = 1f,
+//                                    fraction = 1f - pageOffset.coerceIn(0f, 1f)
+//                                )
+//                            }
+//                            .fillMaxWidth()
+//                            .padding(25.dp, 0.dp, 25.dp, 0.dp),
+//                        shape = RoundedCornerShape(15.dp)
+//                    ){
+//                        val photo = photos[page];
+//
+//                        Box(
+//                            modifier = Modifier
+//                                .fillMaxSize()
+//                                .background(Color.LightGray)
+//                                .align(Alignment.Center)
+//                        )
+//
+//
+//                    }
+//                }
+//            }
+//            HorizontalPagerIndicator(
+//                pagerState = pagerState,
+//                modifier = Modifier
+//                    .align(Alignment.CenterHorizontally)
+//                    .padding(top = 10.dp, bottom = 15.dp),
+//                activeColor = Color.Blue,
+//                inactiveColor = Color.LightGray
+//            )
+//        }
+//    }
+//}

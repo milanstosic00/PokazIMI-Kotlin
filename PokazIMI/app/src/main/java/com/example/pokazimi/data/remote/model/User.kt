@@ -11,6 +11,7 @@ data class User (
     val posts: Array<Post>,
     val role: String,
     val jwtVersion: Int,
-    val followedByUser: Boolean
-
+    val followedByUser: Boolean,
+    val numberOfFollowers: Int,
+    val numberOfFollowing: Int
 )

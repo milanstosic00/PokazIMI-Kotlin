@@ -91,7 +91,7 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
     ) {
         ProfileHeader(navigator, navController, user.followedByUser, user.username, user.id, profileActivity)
         ProfileInfo(user, userId, navController)
-        ProfileStats(user.posts.size, 0, 0)
+        ProfileStats(user.posts.size, user.numberOfFollowers, user.numberOfFollowing)
         Spacer(modifier = Modifier.height(5.dp))
         Divide()
 
@@ -358,8 +358,8 @@ fun ProfileStats(posts: Int, followers: Int, following: Int) {
         modifier = Modifier.fillMaxWidth()
     ) {
         ProfileStat(numberText = "$posts", text = "Posts", Modifier.weight(1f))
-        ProfileStat(numberText = "3,820", text = "Followers", Modifier.weight(1f))
-        ProfileStat(numberText = "6,290", text = "Following", Modifier.weight(1f))
+        ProfileStat(numberText = "$followers", text = "Followers", Modifier.weight(1f))
+        ProfileStat(numberText = "$following", text = "Following", Modifier.weight(1f))
     }
 }
 

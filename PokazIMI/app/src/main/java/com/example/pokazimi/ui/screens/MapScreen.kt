@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.util.Base64
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
@@ -40,6 +41,7 @@ import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListene
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.ramcosta.composedestinations.annotation.Destination
+import java.io.ByteArrayOutputStream
 import java.io.File
 
 @Destination
@@ -104,15 +106,23 @@ fun MapScreen(navController: NavHostController, newPost: Boolean = false, viewin
                                 val lon = position.longitude()
                                 if(newPost) {
                                     // Ako je novi post uzmi koordinate centra kamere i posalji request za cuvanje posta
-                                    val path = context.getExternalFilesDir(null)!!.absolutePath
-                                    val imagePath = "$path/tempFileName.jpg"
-                                    val image = BitmapFactory.decodeFile(imagePath)
+                                    val slike = mutableListOf<Bitmap>()
+                                    for (i in 0..4) {
+                                        val path = context.getExternalFilesDir(null)!!.absolutePath
+                                        val imagePath = "$path/tempFileName$i.jpg"
+                                        val image = BitmapFactory.decodeFile(imagePath)
+                                        if(image != null) {
+                                            slike.add(image)
+                                        }
+                                    }
 
-                                    if(description != "No description")
-                                        postActivity.savePost(userIdfromJWT, description!!, image, lat, lon)
-                                    else
-                                        postActivity.savePost(userIdfromJWT, "", image, lat, lon)
-                                    File(imagePath).deleteOnExit()
+
+                                    encodeImage(slike[0])
+//                                    if(description != "No description")
+//                                        postActivity.savePost(userIdfromJWT, description!!, image, lat, lon)
+//                                    else
+//                                        postActivity.savePost(userIdfromJWT, "", image, lat, lon)
+//                                    File(imagePath).deleteOnExit()
                                     Thread.sleep(300)
                                     navController.navigate("profile")
                                 }
@@ -225,4 +235,13 @@ fun Header(navController: NavHostController) {
 
         }
     }
+}
+
+fun encodeImage(bm: Bitmap) {
+    val baos = ByteArrayOutputStream()
+    bm.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+    val b = baos.toByteArray()
+    println("#######################################")
+    print(Base64.encodeToString(b, Base64.DEFAULT))
+    println("#######################################")
 }
