@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.pokazimi.data.remote.model.UsernameAndProfilePic
-import com.example.pokazimi.destinations.MapScreenDestination
 import com.example.pokazimi.ui.activity.PostActivity
 import com.example.pokazimi.ui.composables.CircularImage
 import com.example.pokazimi.ui.screens.convert
@@ -91,9 +90,9 @@ fun PostScreen(navController: NavHostController, navigator: DestinationsNavigato
         modifier = Modifier
             .fillMaxSize()
     ) {
-        PreviewHeader(navController, navigator, desciption.text, result.value)
+        PreviewHeader(navController, desciption.text, result.value)
 
-        PostPreview(navController, navigator, result.value, desciption.text, usernameAndProfilePic)
+        PostPreview(navController, result.value, desciption.text, usernameAndProfilePic)
 
         Column(
             modifier = Modifier
@@ -146,7 +145,7 @@ fun PostScreen(navController: NavHostController, navigator: DestinationsNavigato
 }
 
 @Composable
-fun PreviewHeader(navController: NavHostController, navigator: DestinationsNavigator, description: String, image: Bitmap) {
+fun PreviewHeader(navController: NavHostController, description: String, image: Bitmap) {
     val context = LocalContext.current
     Row(
         modifier = Modifier
@@ -193,17 +192,12 @@ fun PreviewHeader(navController: NavHostController, navigator: DestinationsNavig
                     if(dec == "") {
                         dec = "No description"
                     }
-                    if(image != null) {
-                        val path = context.getExternalFilesDir(null)!!.absolutePath
-                        val tempFile = File(path, "tempFileName.jpg")
-                        val fOut = FileOutputStream(tempFile)
-                        image.compress(Bitmap.CompressFormat.JPEG, 100, fOut)
-                        fOut.close()
-                        navController.navigate("map/true/false/$dec")
-                    }
-                    else {
-                        Toast.makeText(context, "No image selected", Toast.LENGTH_SHORT).show()
-                    }
+                    val path = context.getExternalFilesDir(null)!!.absolutePath
+                    val tempFile = File(path, "tempFileName.jpg")
+                    val fOut = FileOutputStream(tempFile)
+                    image.compress(Bitmap.CompressFormat.JPEG, 100, fOut)
+                    fOut.close()
+                    navController.navigate("map/true/false/$dec")
                 }
             ) {
                 Icon(
@@ -254,7 +248,7 @@ fun PostPreviewHeader(desciption: String, usernameAndProfilePic: UsernameAndProf
 }
 
 @Composable
-fun PostPreview(navController: NavHostController, navigator: DestinationsNavigator, image: Bitmap, desciption: String, usernameAndProfilePic: UsernameAndProfilePic?) {
+fun PostPreview(navController: NavHostController, image: Bitmap, desciption: String, usernameAndProfilePic: UsernameAndProfilePic?) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -272,7 +266,6 @@ fun PostPreview(navController: NavHostController, navigator: DestinationsNavigat
                 PostPreviewHeader(desciption, usernameAndProfilePic, navController)
                 Spacer(modifier = Modifier.height(10.dp))
                 PostImagePreview(image)
-                //PostFooter(navController, navigator)
             }
         }
     }

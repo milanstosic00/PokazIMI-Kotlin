@@ -61,7 +61,7 @@ fun Post(navController: NavHostController, navigator: DestinationsNavigator, use
                 PostHeader(navController, username, description, image, userId, postId, time)
                 Spacer(modifier = Modifier.height(10.dp))
                 PostContent(navController, content!!, postId, userId)
-                PostFooter(navController, navigator, lat, lon, postId, likedByUser)
+                PostFooter(navController, lat, lon, postId, likedByUser)
             }
         }
     }
@@ -80,7 +80,7 @@ fun PostHeader(navController: NavHostController, username: String, description: 
     val refreshToken = lines?.get(0)
     val accessToken = lines?.get(1)
     val postActivity = PostActivity(accessToken as String, refreshToken as String)
-    var time1 = time.replaceAfter("T", "").replace("T", "")
+    //var time1 = time.replaceAfter("T", "").replace("T", "")
     val timestamp = LocalDateTime.parse(time)
     Row(
         modifier = Modifier
@@ -152,7 +152,7 @@ fun PostContent(navController: NavHostController, content: Bitmap, postId: Long,
 }
 
 @Composable
-fun PostFooter(navController: NavHostController, navigator: DestinationsNavigator, lat: Double, lon: Double, postId: Long, liked: Boolean) {
+fun PostFooter(navController: NavHostController, lat: Double, lon: Double, postId: Long, liked: Boolean) {
     val context = LocalContext.current
     val path = context.getExternalFilesDir(null)!!.absolutePath
     val tempFile = File(path, "tokens.txt")
@@ -217,7 +217,8 @@ fun PostFooter(navController: NavHostController, navigator: DestinationsNavigato
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            IconButton(onClick = { navigator.navigate(MapScreenDestination(viewingPost = true, longitude = lon.toFloat(), latitude = lat.toFloat())) }) {
+            IconButton(onClick = { navController.navigate("map/false/true/desc/$lon/$lat") }
+            ) {
                 Icon(imageVector = Icons.Default.LocationOn, contentDescription = "View Location", Modifier.size(30.dp))
             }
         }

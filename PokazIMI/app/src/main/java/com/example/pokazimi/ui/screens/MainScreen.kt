@@ -17,10 +17,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.pokazimi.data.item.BottomNavItem
-import com.example.pokazimi.ui.screens.MapScreen
-import com.example.pokazimi.ui.screens.ProfileScreen
-import com.example.pokazimi.ui.screens.SearchResultScreen
-import com.example.pokazimi.ui.screens.ViewPostScreen
+import com.example.pokazimi.ui.screens.*
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -89,6 +86,12 @@ fun Navigation(navController: NavHostController, navigator: DestinationsNavigato
         }
         composable("map/{newPost}/{viewingPost}/{description}", arguments = listOf(navArgument(name = "newPost"){ type = NavType.BoolType }, navArgument(name = "description"){ type = NavType.StringType }, navArgument(name = "viewingPost"){ type = NavType.BoolType })) {
             MapScreen(navController = navController, newPost = it.arguments!!.getBoolean("newPost"), viewingPost = it.arguments!!.getBoolean("viewingPost"), description = it.arguments!!.getString("description"))
+        }
+        composable("map/{newPost}/{viewingPost}/{description}/{longitude}/{latitude}", arguments = listOf(navArgument(name = "newPost"){ type = NavType.BoolType }, navArgument(name = "description"){ type = NavType.StringType }, navArgument(name = "viewingPost"){ type = NavType.BoolType }, navArgument(name = "longitude"){ type = NavType.FloatType }, navArgument(name = "latitude"){ type = NavType.FloatType })) {
+            MapScreen(navController = navController, newPost = it.arguments!!.getBoolean("newPost"), viewingPost = it.arguments!!.getBoolean("viewingPost"), description = it.arguments!!.getString("description"), longitude = it.arguments!!.getFloat("longitude"), latitude = it.arguments!!.getFloat("latitude"))
+        }
+        composable("search") {
+            SearchLocationScreen(navController = navController)
         }
     }
 

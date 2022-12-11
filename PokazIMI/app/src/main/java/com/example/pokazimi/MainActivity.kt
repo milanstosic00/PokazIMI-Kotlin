@@ -5,26 +5,33 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import com.example.pokazimi.dataStore.Storage
 import com.example.pokazimi.destinations.LoginScreenDestination
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import com.example.pokazimi.data.remote.dto.RefreshTokenRequest
 import com.example.pokazimi.data.remote.services.AuthService
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.navigation.NavHostController
 import com.auth0.android.jwt.JWT
 import com.example.pokazimi.destinations.MainScreenDestination
 import com.example.pokazimi.ui.theme.PokazIMITheme
-import com.google.accompanist.insets.ProvideWindowInsets
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.io.File
-import java.io.FileOutputStream
 
 class MainActivity : ComponentActivity() {
 
@@ -46,9 +53,8 @@ class MainActivity : ComponentActivity() {
 
 @com.ramcosta.composedestinations.annotation.Destination(start = true)
 @Composable
-fun LoadingScreen(navController: NavHostController, navigator: DestinationsNavigator){
+fun LoadingScreen(navigator: DestinationsNavigator){
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
     val dataStore = Storage(context)
     val token = dataStore.getAccessToken.collectAsState(initial = "token").value
     val path = context.getExternalFilesDir(null)!!.absolutePath
@@ -86,6 +92,23 @@ fun LoadingScreen(navController: NavHostController, navigator: DestinationsNavig
             }
             navigator.navigate(MainScreenDestination)
         }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.background),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "App Logo",
+            modifier = Modifier
+                .weight(1f)
+                .width(300.dp),
+            colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface),
+        )
     }
 }
 

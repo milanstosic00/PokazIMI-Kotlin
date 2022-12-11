@@ -28,8 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import com.example.pokazimi.R
-import com.example.pokazimi.destinations.MainScreenDestination
-import com.example.pokazimi.destinations.ViewPostScreenDestination
 import com.example.pokazimi.getUserId
 import com.example.pokazimi.readFromFile
 import com.example.pokazimi.ui.activity.PostActivity
@@ -39,11 +37,9 @@ import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
-import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import java.io.File
 
 @Destination
@@ -57,6 +53,7 @@ fun MapScreen(navController: NavHostController, newPost: Boolean = false, viewin
     val refreshToken = lines?.get(0)
     val accessToken = lines?.get(1)
     val postActivity = PostActivity(accessToken as String, refreshToken as String)
+
     Column(
         modifier = Modifier
             .background(color = MaterialTheme.colors.background)
@@ -79,10 +76,12 @@ fun MapScreen(navController: NavHostController, newPost: Boolean = false, viewin
                             Style.MAPBOX_STREETS,
                             object : Style.OnStyleLoaded {
                                 override fun onStyleLoaded(style: Style) {
-                                    if(viewingPost) {
-                                        addAnnotationToMap(context, mapView!!, longitude, latitude, -1, -1, navController)
+                                    if(longitude > 0.0 || latitude > 0.0 || longitude < 0.0 || latitude < 0.0) {
                                         val cameraOptions = CameraOptions.Builder().center(Point.fromLngLat(longitude.toDouble(), latitude.toDouble())).zoom(12.0).build()
                                         mapView!!.getMapboxMap().setCamera(cameraOptions)
+                                        if(viewingPost){
+                                            addAnnotationToMap(context, mapView!!, longitude, latitude, -1, -1, navController)
+                                        }
                                     }
                                 }
                             }
@@ -145,8 +144,7 @@ fun addAnnotationToMap(context : Context,mapView: MapView, longitude: Float, lat
         val pointAnnotationManager = annotationApi.createPointAnnotationManager()
         if(postId > -1) {
             pointAnnotationManager.addClickListener(OnPointAnnotationClickListener {
-                    annotation: PointAnnotation ->
-                onMarkerItemClick(annotation, postId, userId, navController)
+                onMarkerItemClick(postId, userId, navController)
             })
         }
 
@@ -187,7 +185,7 @@ private fun convertDrawableToBitmap(sourceDrawable: Drawable?): Bitmap? {
     }
 }
 
-private fun onMarkerItemClick(marker: PointAnnotation, postId: Long, userId: Long, navController: NavHostController): Boolean {
+private fun onMarkerItemClick(postId: Long, userId: Long, navController: NavHostController): Boolean {
     navController.navigate("viewpost/$postId/$userId")
     return true
 }
@@ -212,7 +210,7 @@ fun Header(navController: NavHostController) {
             )
         }
         Button(
-            onClick = { },
+            onClick = { navController.navigate("search") },
             modifier = Modifier
                 .fillMaxWidth(),
             shape = RoundedCornerShape(50.dp),

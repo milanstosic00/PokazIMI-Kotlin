@@ -40,9 +40,9 @@ fun SearchResultScreen(navController: NavHostController, navigator: Destinations
     val refreshToken = lines?.get(0)
     val accessToken = lines?.get(1)
 
-    var searchPosts: Array<ViewPost>? = null
+    var searchPosts: Array<ViewPost>?
     val postActivity = PostActivity(accessToken as String, refreshToken as String)
-    val homeActivity = HomeActivity(accessToken as String, refreshToken as String)
+    val homeActivity = HomeActivity(accessToken, refreshToken)
 
     searchPosts = homeActivity.getSearchPosts(latitude, longitude, radius)
 
@@ -59,7 +59,7 @@ fun SearchResultScreen(navController: NavHostController, navigator: Destinations
             val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(it.user.id) }
             Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_img(it), it.lat, it.lon, it.id, it.user.id, it.time, it.likedByUser)
         }
-        if(searchPosts!!.isEmpty()){
+        if(searchPosts.isEmpty()){
             NoPosts()
         }
     }

@@ -12,13 +12,10 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -90,12 +87,10 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
     println(postCoordinates)
 
     Column(
-        modifier = Modifier
-            .verticalScroll(rememberScrollState())
+        modifier = returnModifier(listView = listView.value)
     ) {
         ProfileHeader(navigator, navController, user.followedByUser, user.username, user.id, profileActivity)
         ProfileInfo(user, userId, navController)
-        Spacer(modifier = Modifier.height(20.dp))
         ProfileStats(user.posts.size, 0, 0)
         Spacer(modifier = Modifier.height(5.dp))
         Divide()
@@ -147,6 +142,14 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
 }
 
 @Composable
+fun returnModifier(listView: Boolean) : Modifier {
+    if(listView) {
+        return Modifier.verticalScroll(rememberScrollState())
+    }
+    return Modifier.fillMaxSize()
+}
+
+@Composable
 fun ProfileInfo(user: User, userId: Long, navController: NavHostController) {
 
     val userIdfromJWT = getUserId()
@@ -159,7 +162,7 @@ fun ProfileInfo(user: User, userId: Long, navController: NavHostController) {
     }
     val refreshToken = lines?.get(0)
     val accessToken = lines?.get(1)
-    val client = ProfileService.create(accessToken as String, refreshToken as String)
+    ProfileService.create(accessToken as String, refreshToken as String)
     val myImage: Bitmap = BitmapFactory.decodeResource(Resources.getSystem(), android.R.mipmap.sym_def_app_icon)
     val result = remember {
         mutableStateOf<Bitmap>(myImage)
@@ -259,7 +262,6 @@ fun ProfileInfo(user: User, userId: Long, navController: NavHostController) {
             }
         }
     }
-    Spacer(modifier = Modifier.height(20.dp))
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
@@ -453,7 +455,7 @@ fun viewPostsOnMap(posts: Array<Coordinates?>, userId: Long, navController: NavH
 
     Card(
         modifier = Modifier
-            .height(460.dp)
+            .height(345.dp)
             .fillMaxWidth()
             .padding(PaddingValues(10.dp, 0.dp, 10.dp, 10.dp)),
         shape = RoundedCornerShape(16.dp),
