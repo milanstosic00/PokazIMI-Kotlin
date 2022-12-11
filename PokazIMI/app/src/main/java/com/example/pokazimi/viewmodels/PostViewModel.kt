@@ -18,7 +18,7 @@ class PostViewModel(accessToken: String, refreshToken: String): ViewModel() {
 
     private var postsService = PostsService.create(accessToken, refreshToken)
 
-    fun savePost(userId: Long, description: String, image: ByteArray, lat: Double, lon: Double)
+    fun savePost(userId: Long, description: String, image: List<ByteArray>, lat: Double, lon: Double)
     {
         viewModelScope.launch { postsService.createPost(PostRequest(image,userId,description,lat,lon)) }
     }

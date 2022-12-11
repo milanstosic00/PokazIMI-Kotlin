@@ -39,12 +39,18 @@ class PostActivity(accessToken: String, refreshToken: String): ComponentActivity
         super.onCreate(savedInstanceState, persistentState)
     }
 
-    fun savePost(userId: Long, description: String, image: Bitmap, lat: Double, lon: Double)
+    fun savePost(userId: Long, description: String, images: List<Bitmap>, lat: Double, lon: Double)
     {
-        val stream = ByteArrayOutputStream()
-        image.compress(Bitmap.CompressFormat.JPEG, 30, stream)
-        val imageByteArray = stream.toByteArray()
-        postViewModel.savePost(userId,description,imageByteArray, lat, lon)
+        val imageList = mutableListOf<ByteArray>()
+
+        images.forEach {
+            val stream = ByteArrayOutputStream()
+            it.compress(Bitmap.CompressFormat.JPEG, 20, stream)
+            val imageByteArray = stream.toByteArray()
+            imageList.add(imageByteArray)
+        }
+
+        postViewModel.savePost(userId, description, imageList, lat, lon)
     }
 
     fun getUsernameAndProfilePic(userId: Long): UsernameAndProfilePic?

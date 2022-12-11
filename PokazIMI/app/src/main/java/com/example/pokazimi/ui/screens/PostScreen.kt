@@ -208,12 +208,6 @@ fun PostScreen(navController: NavHostController, navigator: DestinationsNavigato
 fun PreviewHeader(navController: NavHostController, description: String, images: MutableList<Bitmap>) {
     val context = LocalContext.current
 
-    images.forEach {
-        if (it == BitmapFactory.decodeResource(Resources.getSystem(), android.R.mipmap.sym_def_app_icon)) {
-            images.remove(it)
-        }
-    }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -255,12 +249,20 @@ fun PreviewHeader(navController: NavHostController, description: String, images:
         ) {
             IconButton(
                 onClick = {
+                    val images2 = mutableListOf<Bitmap>()
+                    images.forEach {
+                        if (!it.sameAs(BitmapFactory.decodeResource(Resources.getSystem(), android.R.mipmap.sym_def_app_icon))) {
+                            images2.add(it)
+                            println("DODAO SAM")
+                        }
+                    }
+
                     var dec = description
                     if(dec == "") {
                         dec = "No description"
                     }
 
-                    images.forEachIndexed { index, element ->
+                    images2.forEachIndexed { index, element ->
                         val path = context.getExternalFilesDir(null)!!.absolutePath
                         val tempFile = File(path, "tempFileName$index.jpg")
                         val fOut = FileOutputStream(tempFile)

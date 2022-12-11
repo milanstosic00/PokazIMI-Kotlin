@@ -114,15 +114,19 @@ fun MapScreen(navController: NavHostController, newPost: Boolean = false, viewin
                                         if(image != null) {
                                             slike.add(image)
                                         }
+                                        File(imagePath).deleteOnExit()
                                     }
 
+                                    if(description != "No description")
+                                        postActivity.savePost(userIdfromJWT, description!!, slike, lat, lon)
+                                    else
+                                        postActivity.savePost(userIdfromJWT, "", slike, lat, lon)
 
-                                    encodeImage(slike[0])
-//                                    if(description != "No description")
-//                                        postActivity.savePost(userIdfromJWT, description!!, image, lat, lon)
-//                                    else
-//                                        postActivity.savePost(userIdfromJWT, "", image, lat, lon)
-//                                    File(imagePath).deleteOnExit()
+                                    for(i in 0..4) {
+                                        val path = context.getExternalFilesDir(null)!!.absolutePath
+                                        val imagePath = "$path/tempFileName$i.jpg"
+                                        File(imagePath).delete()
+                                    }
                                     Thread.sleep(300)
                                     navController.navigate("profile")
                                 }

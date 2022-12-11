@@ -2,8 +2,6 @@ package com.example.pokazimi.data.remote.services.implementations
 
 import com.example.pokazimi.data.remote.HttpRoutes
 import com.example.pokazimi.data.remote.dto.*
-import com.example.pokazimi.data.remote.model.Like
-import com.example.pokazimi.data.remote.model.Comment
 import com.example.pokazimi.data.remote.model.UsernameAndProfilePic
 import com.example.pokazimi.data.remote.model.ViewPost
 import com.example.pokazimi.data.remote.services.PostsService
@@ -25,12 +23,14 @@ class PostsServiceImpl(private val client: HttpClient): PostsService {
                 formData = formData {
                     append("user", postRequest.user)
                     append("description", postRequest.description)
-                    append("image", postRequest.image, Headers.build {
-                        append(HttpHeaders.ContentType, "image/jpeg")
-                        append(HttpHeaders.ContentDisposition, "filename=image.png")
-                    })
                     append("lat", postRequest.lat)
                     append("lon", postRequest.lon)
+                    postRequest.images.forEachIndexed {index, it ->
+                        append("image$index", it, Headers.build {
+                            append(HttpHeaders.ContentType, "image/jpeg")
+                            append(HttpHeaders.ContentDisposition, "filename=image$index.png")
+                        })
+                    }
                 }
             )
             true
