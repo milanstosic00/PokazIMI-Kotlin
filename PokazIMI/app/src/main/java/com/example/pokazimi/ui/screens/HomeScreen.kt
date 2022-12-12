@@ -73,7 +73,7 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
             .padding(PaddingValues(2.dp, 0.dp, 10.dp, 0.dp))
     ) {
         TextButton(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).absoluteOffset(y = 3.dp),
             onClick = {
                 if(following.value) following.value = !following.value
             },
