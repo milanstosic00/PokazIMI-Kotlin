@@ -49,15 +49,6 @@ interface PostsService {
                             loadTokens {
                                 BearerTokens(accessToken, refreshToken)
                             }
-                            refreshTokens {
-                                /*val dataStore = Storage(context)
-                                val refreshToken = dataStore.returnRefreshToken()
-                                val authService = AuthService.create()
-                                val logInResponse =
-                                    runBlocking { authService.refresh(RefreshTokenRequest(refreshToken)) }
-                                logInResponse?.let { it1 -> BearerTokens(it1.accessToken, logInResponse.accessToken) }*/
-                                BearerTokens("asd", "asd")
-                            }
                         }
                     }
                 }

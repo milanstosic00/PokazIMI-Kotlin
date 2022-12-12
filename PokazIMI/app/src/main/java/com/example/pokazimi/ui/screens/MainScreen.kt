@@ -69,8 +69,8 @@ fun Navigation(navController: NavHostController, navigator: DestinationsNavigato
         composable("home") {
             HomeScreen(navController, navigator)
         }
-        composable("home/1") {
-            HomeScreen(navController, navigator, 1)
+        composable("home/{sort}", arguments = listOf(navArgument(name = "sort"){ type = NavType.IntType})) {
+            HomeScreen(navController, navigator, it.arguments!!.getInt("sort"))
         }
         composable("search/{radius}/{latitude}/{longitude}", arguments = listOf(navArgument(name = "radius"){ type = NavType.FloatType},navArgument(name = "latitude"){ type = NavType.FloatType},navArgument(name = "longitude"){ type = NavType.FloatType})) {
             SearchResultScreen(navController, navigator, radius = it.arguments!!.getFloat("radius").toDouble(), latitude = it.arguments!!.getFloat("latitude").toDouble(), longitude = it.arguments!!.getFloat("longitude").toDouble())

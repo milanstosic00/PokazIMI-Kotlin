@@ -22,9 +22,9 @@ import kotlinx.coroutines.runBlocking
 
 interface HomeService {
 
-    suspend fun getFeaturedPosts(): Array<FeedPost>?
+    suspend fun getFeaturedPosts(filter: String): Array<FeedPost>?
 
-    suspend fun getFollowingPosts(): Array<FeedPost>?
+    suspend fun getFollowingPosts(filter: String): Array<FeedPost>?
 
     suspend fun getSearchPosts(latitude: Double, longitude: Double, radius: Double): Array<FeedPost>?
 
@@ -42,15 +42,6 @@ interface HomeService {
                         bearer{
                             loadTokens {
                                 BearerTokens(accessToken, refreshToken)
-                            }
-                            refreshTokens {
-                                /*val dataStore = Storage(context)
-                                val refreshToken = dataStore.returnRefreshToken()
-                                val authService = AuthService.create()
-                                val logInResponse =
-                                    runBlocking { authService.refresh(RefreshTokenRequest(refreshToken)) }
-                                logInResponse?.let { it1 -> BearerTokens(it1.accessToken, logInResponse.accessToken) }*/
-                                BearerTokens("asd", "asd")
                             }
                         }
                     }

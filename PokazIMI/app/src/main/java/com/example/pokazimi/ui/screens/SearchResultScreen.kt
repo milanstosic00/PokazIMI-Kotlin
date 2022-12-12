@@ -109,7 +109,7 @@ fun SearchHeader(navController: NavHostController) {
             modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.End
         ) {
-            Sort()
+            //Sort(navController)
         }
     }
 }

@@ -17,14 +17,14 @@ class HomeActivity(accessToken: String, refreshToken: String): ComponentActivity
         super.onCreate(savedInstanceState, persistentState)
     }
 
-    fun getFeaturedPosts(): Array<FeedPost>?
+    fun getFeaturedPosts(filter: String): Array<FeedPost>?
     {
-        return homeViewModel.getFeaturedPosts()
+        return homeViewModel.getFeaturedPosts(filter)
     }
 
-    fun getFollowingPosts(): Array<FeedPost>?
+    fun getFollowingPosts(filter: String): Array<FeedPost>?
     {
-        return homeViewModel.getFollowingPosts()
+        return homeViewModel.getFollowingPosts(filter)
     }
 
     fun getSearchPosts(latitude: Double, longitude: Double, radius: Double): Array<FeedPost>?

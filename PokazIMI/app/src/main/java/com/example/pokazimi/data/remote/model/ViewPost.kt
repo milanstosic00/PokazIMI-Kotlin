@@ -17,5 +17,7 @@ data class ViewPost (
     val lon: Double,
     val likes: Array<Like>?,
     val comments: Array<Comment>?,
-    val likedByUser: Boolean
+    val likedByUser: Boolean,
+    val likesNum: Int?,
+    val commentsNum: Int?
 )

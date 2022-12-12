@@ -33,7 +33,7 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
     if(navController.previousBackStackEntry?.destination == navController.currentBackStackEntry?.destination) {
         navController.popBackStack()
     }
-
+    var filter= "Sort by newest"
     val systemUiController = rememberSystemUiController()
     val color = MaterialTheme.colors.background
     SideEffect {
@@ -60,10 +60,50 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
     var featuredPosts: Array<FeedPost>? = null
 
     if(following.value) {
-        followingPosts = homeActivity.getFollowingPosts()
+
+        println("####################################################### $sort")
+        when(sort){
+            0 -> {
+                followingPosts = homeActivity.getFollowingPosts("NEW")
+                filter= "Sort by newest"
+            }
+            1 -> {
+                followingPosts = homeActivity.getFollowingPosts("OLD")
+                filter = "Sort by oldest"
+            }
+            2 -> {
+                followingPosts = homeActivity.getFollowingPosts("MOST_LIKES")
+                filter = "Sort by most liked"
+            }
+            3 -> {
+                followingPosts = homeActivity.getFollowingPosts("MOST_COMMENTS")
+                filter = "Sort by most comments"
+            }
+        }
+
     }
     else {
-        featuredPosts = homeActivity.getFeaturedPosts()
+        println("####################################################### $sort")
+        when(sort){
+            0 -> {
+                featuredPosts = homeActivity.getFeaturedPosts("NEW")
+                filter= "Sort by newest"
+            }
+            1 -> {
+                featuredPosts = homeActivity.getFeaturedPosts("OLD")
+                filter= "Sort by oldest"
+            }
+            2 -> {
+                featuredPosts = homeActivity.getFeaturedPosts("MOST_LIKES")
+                filter= "Sort by most liked"
+            }
+            3 -> {
+                featuredPosts = homeActivity.getFeaturedPosts("MOST_COMMENTS")
+                filter= "Sort by most comments"
+            }
+    }
+
+
     }
 
     Row(
@@ -111,7 +151,7 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
                     modifier = Modifier.fillMaxWidth()
                 )
             }
-            Sort()
+            Sort(navController, filter)
         }
     }
 
@@ -174,11 +214,11 @@ fun switchFont(bool: Boolean): FontWeight {
 }
 
 @Composable
-fun Sort() {
-    val listItems = arrayOf("Sort by time", "Sort by popularity")
+fun Sort(navController: NavHostController, filter: String) {
+    val listItems = arrayOf("Sort by newest", "Sort by oldest", "Sort by most comments", "Sort by most liked")
 
     val selectedItem = remember {
-        mutableStateOf("Sort by time")
+        mutableStateOf(filter)
     }
 
     val expanded = remember {
@@ -210,6 +250,12 @@ fun Sort() {
                     onClick = {
                         expanded.value = false
                         selectedItem.value = itemValue
+                        when(selectedItem.value){
+                            "Sort by newest" -> navController.navigate("home")
+                            "Sort by oldest" -> navController.navigate("home/1")
+                            "Sort by most liked" -> navController.navigate("home/2")
+                            "Sort by most comments" -> navController.navigate("home/3")
+                        }
                     },
                     enabled = true
                 ) {
