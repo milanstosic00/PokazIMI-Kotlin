@@ -105,6 +105,8 @@ fun MapScreen(navController: NavHostController, newPost: Boolean = false, viewin
                         verticalAlignment = Alignment.Bottom
                     ) {
                         FloatingActionButton(
+                            backgroundColor = Color.Black,
+                            contentColor = Color.White,
                             onClick = {
                                 val position = mapView!!.getMapboxMap().cameraState.center
                                 val lat = position.latitude()
@@ -142,7 +144,7 @@ fun MapScreen(navController: NavHostController, newPost: Boolean = false, viewin
                                 }
                                 else {
                                     // U suprotnom idi na home stranicu i posalji request za search postova koji su blizu koordinata centra kamere
-                                    navController.navigate("search/${radius.toFloat() }/${lat.toFloat()}/${lon.toFloat()}")
+                                    navController.navigate("search/${radius.toFloat() }/${lat.toFloat()}/${lon.toFloat()}/NEW")
                                 }
                             }
                         ) {

@@ -26,7 +26,7 @@ interface HomeService {
 
     suspend fun getFollowingPosts(filter: String): Array<FeedPost>?
 
-    suspend fun getSearchPosts(latitude: Double, longitude: Double, radius: Double): Array<FeedPost>?
+    suspend fun getSearchPosts(latitude: Double, longitude: Double, radius: Double, filter: String): Array<FeedPost>?
 
     companion object {
         fun create(accessToken: String, refreshToken: String): HomeService {

@@ -27,8 +27,8 @@ class HomeActivity(accessToken: String, refreshToken: String): ComponentActivity
         return homeViewModel.getFollowingPosts(filter)
     }
 
-    fun getSearchPosts(latitude: Double, longitude: Double, radius: Double): Array<FeedPost>?
+    fun getSearchPosts(latitude: Double, longitude: Double, radius: Double, filter: String): Array<FeedPost>?
     {
-        return homeViewModel.getSearchPosts(latitude, longitude, radius)
+        return homeViewModel.getSearchPosts(latitude, longitude, radius, filter)
     }
 }

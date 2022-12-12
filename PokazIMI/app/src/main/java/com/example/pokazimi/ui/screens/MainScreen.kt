@@ -69,11 +69,26 @@ fun Navigation(navController: NavHostController, navigator: DestinationsNavigato
         composable("home") {
             HomeScreen(navController, navigator)
         }
-        composable("home/{sort}", arguments = listOf(navArgument(name = "sort"){ type = NavType.IntType})) {
-            HomeScreen(navController, navigator, it.arguments!!.getInt("sort"))
+        composable("home/1") {
+            HomeScreen(navController, navigator, 1)
         }
-        composable("search/{radius}/{latitude}/{longitude}", arguments = listOf(navArgument(name = "radius"){ type = NavType.FloatType},navArgument(name = "latitude"){ type = NavType.FloatType},navArgument(name = "longitude"){ type = NavType.FloatType})) {
-            SearchResultScreen(navController, navigator, radius = it.arguments!!.getFloat("radius").toDouble(), latitude = it.arguments!!.getFloat("latitude").toDouble(), longitude = it.arguments!!.getFloat("longitude").toDouble())
+        composable("home/2") {
+            HomeScreen(navController, navigator, 2)
+        }
+        composable("home/3", ) {
+            HomeScreen(navController, navigator, 3)
+        }
+        composable("search/{radius}/{latitude}/{longitude}/NEW", arguments = listOf(navArgument(name = "radius"){ type = NavType.FloatType},navArgument(name = "latitude"){ type = NavType.FloatType}, navArgument(name = "longitude"){ type = NavType.FloatType})) {
+            SearchResultScreen(navController, navigator, radius = it.arguments!!.getFloat("radius").toDouble(), latitude = it.arguments!!.getFloat("latitude").toDouble(), longitude = it.arguments!!.getFloat("longitude").toDouble(), filter = "NEW")
+        }
+        composable("search/{radius}/{latitude}/{longitude}/OLD", arguments = listOf(navArgument(name = "radius"){ type = NavType.FloatType},navArgument(name = "latitude"){ type = NavType.FloatType}, navArgument(name = "longitude"){ type = NavType.FloatType})) {
+            SearchResultScreen(navController, navigator, radius = it.arguments!!.getFloat("radius").toDouble(), latitude = it.arguments!!.getFloat("latitude").toDouble(), longitude = it.arguments!!.getFloat("longitude").toDouble(), filter = "OLD")
+        }
+        composable("search/{radius}/{latitude}/{longitude}/MOST_LIKES", arguments = listOf(navArgument(name = "radius"){ type = NavType.FloatType},navArgument(name = "latitude"){ type = NavType.FloatType}, navArgument(name = "longitude"){ type = NavType.FloatType})) {
+            SearchResultScreen(navController, navigator, radius = it.arguments!!.getFloat("radius").toDouble(), latitude = it.arguments!!.getFloat("latitude").toDouble(), longitude = it.arguments!!.getFloat("longitude").toDouble(), filter = "MOST_LIKES")
+        }
+        composable("search/{radius}/{latitude}/{longitude}/MOST_COMMENTS", arguments = listOf(navArgument(name = "radius"){ type = NavType.FloatType},navArgument(name = "latitude"){ type = NavType.FloatType}, navArgument(name = "longitude"){ type = NavType.FloatType})) {
+            SearchResultScreen(navController, navigator, radius = it.arguments!!.getFloat("radius").toDouble(), latitude = it.arguments!!.getFloat("latitude").toDouble(), longitude = it.arguments!!.getFloat("longitude").toDouble(), filter = "MOST_COMMENTS")
         }
         composable("post") {
             PostScreen(navController, navigator)
