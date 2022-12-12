@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.pokazimi.NoPosts
+import com.example.pokazimi.Sort
+import com.example.pokazimi.data.remote.model.FeedPost
 import com.example.pokazimi.data.remote.model.ViewPost
 import com.example.pokazimi.readFileAsLinesUsingUseLines
 import com.example.pokazimi.ui.activity.HomeActivity
@@ -29,6 +31,9 @@ import java.io.File
 
 @Composable
 fun SearchResultScreen(navController: NavHostController, navigator: DestinationsNavigator, radius: Double, latitude: Double, longitude: Double) {
+    if(navController.previousBackStackEntry?.destination == navController.currentBackStackEntry?.destination) {
+        navController.popBackStack()
+    }
 
     val context = LocalContext.current
     val path = context.getExternalFilesDir(null)!!.absolutePath
@@ -40,7 +45,7 @@ fun SearchResultScreen(navController: NavHostController, navigator: Destinations
     val refreshToken = lines?.get(0)
     val accessToken = lines?.get(1)
 
-    var searchPosts: Array<ViewPost>?
+    var searchPosts: Array<FeedPost>?
     val postActivity = PostActivity(accessToken as String, refreshToken as String)
     val homeActivity = HomeActivity(accessToken, refreshToken)
 
@@ -57,7 +62,7 @@ fun SearchResultScreen(navController: NavHostController, navigator: Destinations
         SearchHeader(navController = navController)
         searchPosts!!.forEach {
             val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(it.user.id) }
-            Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_img(it), it.lat, it.lon, it.id, it.user.id, it.time, it.likedByUser)
+            Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), convert(it.image0), it.lat, it.lon, it.id, it.user.id, it.time, it.likedByUser)
         }
         if(searchPosts.isEmpty()){
             NoPosts()
@@ -104,7 +109,7 @@ fun SearchHeader(navController: NavHostController) {
             modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.End
         ) {
-
+            Sort()
         }
     }
 }

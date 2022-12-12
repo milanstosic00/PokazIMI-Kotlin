@@ -56,7 +56,10 @@ import java.io.File
 @Destination
 @Composable
 fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController: NavHostController) {
-
+    if(navController.previousBackStackEntry?.destination == navController.currentBackStackEntry?.destination) {
+        navController.popBackStack()
+    }
+    
     val context = LocalContext.current
     val path = context.getExternalFilesDir(null)!!.absolutePath
     val tempFile = File(path, "tokens.txt")
@@ -93,7 +96,7 @@ fun ProfileScreen(userId: Long, navigator: DestinationsNavigator, navController:
         ProfileInfo(user, userId, navController)
         ProfileStats(user.posts.size, user.numberOfFollowers, user.numberOfFollowing)
         Spacer(modifier = Modifier.height(5.dp))
-        Divide()
+        Divide(10)
 
         Row(
             modifier = Modifier
@@ -403,11 +406,11 @@ fun isListView(listView: Boolean): Color {
 }
 
 @Composable
-fun Divide() {
+fun Divide(height: Int) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(10.dp)
+            .height(height.dp)
             .padding(horizontal = 10.dp)
     ) {
         Divider(color = MaterialTheme.colors.onSurface, thickness = 1.dp)
@@ -436,8 +439,8 @@ fun create_content(post: Post?): Bitmap?
     var contentPic: ByteArray
     val bmp: Bitmap
     if(post != null) {
-        if(post.image != null) {
-            contentPic = post.image.toByteArray()
+        if(post.image0 != null) {
+            contentPic = post.image0.toByteArray()
             contentPic = Base64.decode(contentPic, Base64.DEFAULT)
 
             bmp = BitmapFactory.decodeByteArray(contentPic, 0, contentPic.size)

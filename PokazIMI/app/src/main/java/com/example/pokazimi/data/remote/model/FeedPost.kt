@@ -1,11 +1,11 @@
 package com.example.pokazimi.data.remote.model
 
-import com.example.pokazimi.data.remote.model.Comment
-import com.example.pokazimi.data.remote.model.Like
+import com.example.pokazimi.data.remote.dto.LikeResponse
 
 @kotlinx.serialization.Serializable
-data class Post (
+data class FeedPost (
     val id: Long,
+    val user: PostUser,
     val time: String,
     val image0: String?,
     val description: String,

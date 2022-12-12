@@ -1,12 +1,13 @@
 package com.example.pokazimi
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -22,6 +23,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 
+@RequiresApi(Build.VERSION_CODES.P)
 @Destination
 @Composable
 fun MainScreen(navigator: DestinationsNavigator) {
@@ -58,13 +60,17 @@ fun MainScreen(navigator: DestinationsNavigator) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun Navigation(navController: NavHostController, navigator: DestinationsNavigator) {
-    var userIdfromJWT = getUserId()
+    val userIdfromJWT = getUserId()
 
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
             HomeScreen(navController, navigator)
+        }
+        composable("home/1") {
+            HomeScreen(navController, navigator, 1)
         }
         composable("search/{radius}/{latitude}/{longitude}", arguments = listOf(navArgument(name = "radius"){ type = NavType.FloatType},navArgument(name = "latitude"){ type = NavType.FloatType},navArgument(name = "longitude"){ type = NavType.FloatType})) {
             SearchResultScreen(navController, navigator, radius = it.arguments!!.getFloat("radius").toDouble(), latitude = it.arguments!!.getFloat("latitude").toDouble(), longitude = it.arguments!!.getFloat("longitude").toDouble())

@@ -6,6 +6,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import com.example.pokazimi.MainActivity
 import com.example.pokazimi.data.remote.dto.RefreshTokenRequest
+import com.example.pokazimi.data.remote.model.FeedPost
 import com.example.pokazimi.data.remote.model.ViewPost
 import com.example.pokazimi.data.remote.services.implementations.HomeServiceImpl
 import com.example.pokazimi.dataStore.Storage
@@ -21,11 +22,11 @@ import kotlinx.coroutines.runBlocking
 
 interface HomeService {
 
-    suspend fun getFeaturedPosts(): Array<ViewPost>?
+    suspend fun getFeaturedPosts(): Array<FeedPost>?
 
-    suspend fun getFollowingPosts(): Array<ViewPost>?
+    suspend fun getFollowingPosts(): Array<FeedPost>?
 
-    suspend fun getSearchPosts(latitude: Double, longitude: Double, radius: Double): Array<ViewPost>?
+    suspend fun getSearchPosts(latitude: Double, longitude: Double, radius: Double): Array<FeedPost>?
 
     companion object {
         fun create(accessToken: String, refreshToken: String): HomeService {

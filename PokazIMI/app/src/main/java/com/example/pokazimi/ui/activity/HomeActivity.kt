@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.os.PersistableBundle
 import androidx.activity.ComponentActivity
+import com.example.pokazimi.data.remote.model.FeedPost
 import com.example.pokazimi.data.remote.model.ViewPost
 import com.example.pokazimi.viewmodels.HomeScreenViewModel
 import kotlinx.coroutines.runBlocking
@@ -16,17 +17,17 @@ class HomeActivity(accessToken: String, refreshToken: String): ComponentActivity
         super.onCreate(savedInstanceState, persistentState)
     }
 
-    fun getFeaturedPosts(): Array<ViewPost>?
+    fun getFeaturedPosts(): Array<FeedPost>?
     {
         return homeViewModel.getFeaturedPosts()
     }
 
-    fun getFollowingPosts(): Array<ViewPost>?
+    fun getFollowingPosts(): Array<FeedPost>?
     {
         return homeViewModel.getFollowingPosts()
     }
 
-    fun getSearchPosts(latitude: Double, longitude: Double, radius: Double): Array<ViewPost>?
+    fun getSearchPosts(latitude: Double, longitude: Double, radius: Double): Array<FeedPost>?
     {
         return homeViewModel.getSearchPosts(latitude, longitude, radius)
     }

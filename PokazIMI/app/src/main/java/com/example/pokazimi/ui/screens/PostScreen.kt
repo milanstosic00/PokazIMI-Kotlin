@@ -53,6 +53,9 @@ import kotlin.math.absoluteValue
 @Destination
 @Composable
 fun PostScreen(navController: NavHostController, navigator: DestinationsNavigator) {
+    if(navController.previousBackStackEntry?.destination == navController.currentBackStackEntry?.destination) {
+        navController.popBackStack()
+    }
 
     val context = LocalContext.current
 

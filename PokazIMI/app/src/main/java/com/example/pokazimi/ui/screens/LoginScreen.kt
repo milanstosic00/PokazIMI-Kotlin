@@ -1,6 +1,12 @@
 package com.example.pokazimi.ui.screens
 
+import android.app.Activity
+import android.os.Build
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.OnBackPressedDispatcher
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,9 +18,13 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -23,6 +33,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.pokazimi.R
 import com.example.pokazimi.data.remote.dto.LogInResponse
 import com.example.pokazimi.data.remote.dto.LoginRequest
@@ -31,6 +42,7 @@ import com.example.pokazimi.data.remote.services.LogInService
 import com.example.pokazimi.data.remote.services.RegistrationService
 import com.example.pokazimi.dataStore.Storage
 import com.example.pokazimi.destinations.MainScreenDestination
+import com.example.pokazimi.destinations.ProfileScreenDestination
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -39,9 +51,11 @@ import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.util.regex.Pattern
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Destination
 @Composable
 fun LoginScreen(navigator: DestinationsNavigator) {
+
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val dataStore = Storage(context)
@@ -85,10 +99,16 @@ fun LoginScreen(navigator: DestinationsNavigator) {
         email.isNotBlank() && password.length >= 5
     }
 
-
+    val onBack = { Toast.makeText(context, "Come back again!", Toast.LENGTH_SHORT).show() }
+    BackPressHandler(onBackPressed = onBack)
 
     Scaffold(backgroundColor = bgColor) {
-        Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top){
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top)
+        {
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "App Logo",
@@ -326,10 +346,30 @@ fun login(email: String, password: String) : LogInResponse {
     return response
 }
 
-/*
 @Composable
-@Preview(showBackground = true)
-fun LoginScreenPreview() {
-    LoginScreen()
+fun BackPressHandler(
+    backPressedDispatcher: OnBackPressedDispatcher? =
+        LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher,
+    onBackPressed: () -> Unit
+) {
+    val currentOnBackPressed by rememberUpdatedState(newValue = onBackPressed)
+
+    val activity = (LocalContext.current as? Activity)
+
+    val backCallback = remember {
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                currentOnBackPressed()
+                activity?.finish()
+            }
+        }
+    }
+
+    DisposableEffect(key1 = backPressedDispatcher) {
+        backPressedDispatcher?.addCallback(backCallback)
+
+        onDispose {
+            backCallback.remove()
+        }
+    }
 }
-*/

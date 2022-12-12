@@ -6,8 +6,8 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.util.Base64
 import android.view.View
+import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.background
@@ -15,15 +15,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -41,12 +41,17 @@ import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListene
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.ramcosta.composedestinations.annotation.Destination
-import java.io.ByteArrayOutputStream
 import java.io.File
+
+var radius: Int = 500
 
 @Destination
 @Composable
 fun MapScreen(navController: NavHostController, newPost: Boolean = false, viewingPost: Boolean = false, longitude: Float = 0.0f, latitude: Float = 0.0f, description: String?) {
+    if(navController.previousBackStackEntry?.destination == navController.currentBackStackEntry?.destination) {
+        navController.popBackStack()
+    }
+
     var mapView: MapView? = null
 
     val lines = readFromFile()
@@ -117,22 +122,27 @@ fun MapScreen(navController: NavHostController, newPost: Boolean = false, viewin
                                         File(imagePath).deleteOnExit()
                                     }
 
-                                    if(description != "No description")
-                                        postActivity.savePost(userIdfromJWT, description!!, slike, lat, lon)
-                                    else
-                                        postActivity.savePost(userIdfromJWT, "", slike, lat, lon)
+                                    if(slike.size > 0) {
+                                        if(description != "No description")
+                                            postActivity.savePost(userIdfromJWT, description!!, slike, lat, lon)
+                                        else
+                                            postActivity.savePost(userIdfromJWT, "", slike, lat, lon)
 
-                                    for(i in 0..4) {
-                                        val path = context.getExternalFilesDir(null)!!.absolutePath
-                                        val imagePath = "$path/tempFileName$i.jpg"
-                                        File(imagePath).delete()
+                                        for(i in 0..4) {
+                                            val path = context.getExternalFilesDir(null)!!.absolutePath
+                                            val imagePath = "$path/tempFileName$i.jpg"
+                                            File(imagePath).delete()
+                                        }
+                                        Thread.sleep(300)
+                                        navController.navigate("profile")
                                     }
-                                    Thread.sleep(300)
-                                    navController.navigate("profile")
+                                    else {
+                                        Toast.makeText(context, "No images selected.", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                                 else {
                                     // U suprotnom idi na home stranicu i posalji request za search postova koji su blizu koordinata centra kamere
-                                    navController.navigate("search/200f/${lat.toFloat()}/${lon.toFloat()}")
+                                    navController.navigate("search/${radius.toFloat() }/${lat.toFloat()}/${lon.toFloat()}")
                                 }
                             }
                         ) {
@@ -209,12 +219,12 @@ fun Header(navController: NavHostController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(55.dp)
+            .height(60.dp)
             .padding(PaddingValues(0.dp, 5.dp, 10.dp, 10.dp))
             .background(color = MaterialTheme.colors.background)
     ) {
         IconButton(
-            onClick = { navController.navigateUp() }
+            onClick = { navController.navigateUp() },
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
@@ -224,9 +234,8 @@ fun Header(navController: NavHostController) {
             )
         }
         Button(
+            modifier = Modifier.width(295.dp),
             onClick = { navController.navigate("search") },
-            modifier = Modifier
-                .fillMaxWidth(),
             shape = RoundedCornerShape(50.dp),
             colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface)
         ) {
@@ -238,14 +247,57 @@ fun Header(navController: NavHostController) {
             )
 
         }
+        DropdownMenu()
     }
 }
 
-fun encodeImage(bm: Bitmap) {
-    val baos = ByteArrayOutputStream()
-    bm.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-    val b = baos.toByteArray()
-    println("#######################################")
-    print(Base64.encodeToString(b, Base64.DEFAULT))
-    println("#######################################")
+
+@Composable
+fun DropdownMenu() {
+    val listItems = arrayOf(1, 5, 10, 25, 50, 100, 200, 500)
+
+    var selectedItem: Int = radius
+
+    var expanded = remember {
+        mutableStateOf(false)
+    }
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.absoluteOffset(x = 6.dp)
+    ) {
+        IconButton(onClick = {
+            expanded.value = true
+        }) {
+            Icon(
+                imageVector = Icons.Default.MoreVert,
+                contentDescription = "Open Options",
+                modifier = Modifier.size(30.dp)
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded.value,
+            onDismissRequest = {
+                expanded.value = false
+            }
+        ) {
+            listItems.forEach { itemValue ->
+                DropdownMenuItem(
+                    onClick = {
+                        radius = itemValue
+                        expanded.value = false
+                        selectedItem = itemValue
+                    },
+                    enabled = true
+                ) {
+                    if(itemValue == selectedItem) {
+                        Text(text = "${itemValue.toString()}km", fontWeight = FontWeight.Bold)
+                    } else {
+                        Text(text = "${itemValue.toString()}km")
+                    }
+                }
+            }
+        }
+    }
 }

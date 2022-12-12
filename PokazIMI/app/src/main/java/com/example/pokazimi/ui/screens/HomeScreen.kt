@@ -6,6 +6,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,11 +16,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.pokazimi.data.remote.model.ViewPost
+import com.example.pokazimi.data.remote.model.FeedPost
 import com.example.pokazimi.ui.activity.HomeActivity
 import com.example.pokazimi.ui.activity.PostActivity
 import com.example.pokazimi.ui.composables.Post
-import com.example.pokazimi.ui.screens.create_img
+import com.example.pokazimi.ui.screens.convert
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -28,7 +29,11 @@ import java.io.File
 
 @Destination
 @Composable
-fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigator) {
+fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigator, sort: Int = 0) {
+    if(navController.previousBackStackEntry?.destination == navController.currentBackStackEntry?.destination) {
+        navController.popBackStack()
+    }
+
     val systemUiController = rememberSystemUiController()
     val color = MaterialTheme.colors.background
     SideEffect {
@@ -36,7 +41,7 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
     }
 
     val following = remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
 
     val context = LocalContext.current
@@ -51,8 +56,8 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
     val postActivity = PostActivity(accessToken as String, refreshToken as String)
     val homeActivity = HomeActivity(accessToken, refreshToken)
 
-    var followingPosts: Array<ViewPost>? = null
-    var featuredPosts: Array<ViewPost>? = null
+    var followingPosts: Array<FeedPost>? = null
+    var featuredPosts: Array<FeedPost>? = null
 
     if(following.value) {
         followingPosts = homeActivity.getFollowingPosts()
@@ -64,20 +69,9 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp)
+            .height(60.dp)
             .padding(PaddingValues(2.dp, 0.dp, 10.dp, 0.dp))
     ) {
-        TextButton(
-            modifier = Modifier.weight(1f),
-            onClick = {
-                if(!following.value) following.value = !following.value
-            },
-            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background, contentColor = MaterialTheme.colors.onSurface),
-            contentPadding = PaddingValues(horizontal = 2.dp)
-        ) {
-            Text(text = "Following", fontWeight = switchFont(following.value))
-        }
-
         TextButton(
             modifier = Modifier.weight(1f),
             onClick = {
@@ -88,28 +82,36 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
         ) {
             Text(text = "Featured", fontWeight = switchFont(!following.value))
         }
-
+        TextButton(
+            modifier = Modifier.weight(1f).absoluteOffset(y = 3.dp),
+            onClick = {
+                if(!following.value) following.value = !following.value
+            },
+            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background, contentColor = MaterialTheme.colors.onSurface),
+            contentPadding = PaddingValues(horizontal = 2.dp)
+        ) {
+            Text(text = "Following", fontWeight = switchFont(following.value))
+        }
         Row(
             modifier = Modifier
                 .weight(2f)
-                .height(50.dp)
+                .height(55.dp)
                 .padding(vertical = 5.dp)
         ) {
             Button(
                 onClick = { navController.navigate("map/false") },
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.width(150.dp),
                 shape = RoundedCornerShape(50.dp),
                 colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface)
             ) {
                 Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
                 Text(
-                    text = "  Search here",
+                    text = "  Search",
                     textAlign = TextAlign.Start,
                     modifier = Modifier.fillMaxWidth()
                 )
-
             }
+            Sort()
         }
     }
 
@@ -123,7 +125,7 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
         if(following.value) {
             followingPosts!!.forEach {
                 val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(it.user.id) }
-                Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_img(it), it.lat, it.lon, it.id, it.user.id, it.time, it.likedByUser)
+                Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), convert(it.image0), it.lat, it.lon, it.id, it.user.id, it.time, it.likedByUser)
             }
             if(followingPosts.isEmpty()) {
                 NoPosts()
@@ -132,7 +134,7 @@ fun HomeScreen(navController: NavHostController, navigator: DestinationsNavigato
         else {
             featuredPosts!!.forEach {
                 val usernameAndProfilePic = runBlocking { postActivity.getUsernameAndProfilePic(it.user.id) }
-                Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), create_img(it), it.lat, it.lon, it.id, it.user.id, it.time, it.likedByUser)
+                Post(navController, navigator, usernameAndProfilePic!!.username, it.description, postActivity.create_pfp(usernameAndProfilePic.profilePicture), convert(it.image0), it.lat, it.lon, it.id, it.user.id, it.time, it.likedByUser)
             }
             if(featuredPosts.isEmpty()) {
                 NoPosts()
@@ -169,4 +171,55 @@ fun switchFont(bool: Boolean): FontWeight {
         return FontWeight.Bold
     }
     return FontWeight.Normal
+}
+
+@Composable
+fun Sort() {
+    val listItems = arrayOf("Sort by time", "Sort by popularity")
+
+    val selectedItem = remember {
+        mutableStateOf("Sort by time")
+    }
+
+    val expanded = remember {
+        mutableStateOf(false)
+    }
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.absoluteOffset(x = 6.dp)
+    ) {
+        IconButton(onClick = {
+            expanded.value = true
+        }) {
+            Icon(
+                imageVector = Icons.Default.MoreVert,
+                contentDescription = "Open Options",
+                modifier = Modifier.size(30.dp)
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded.value,
+            onDismissRequest = {
+                expanded.value = false
+            }
+        ) {
+            listItems.forEach { itemValue ->
+                DropdownMenuItem(
+                    onClick = {
+                        expanded.value = false
+                        selectedItem.value = itemValue
+                    },
+                    enabled = true
+                ) {
+                    if(itemValue == selectedItem.value) {
+                        Text(text = itemValue, fontWeight = FontWeight.Bold)
+                    } else {
+                        Text(text = itemValue)
+                    }
+                }
+            }
+        }
+    }
 }

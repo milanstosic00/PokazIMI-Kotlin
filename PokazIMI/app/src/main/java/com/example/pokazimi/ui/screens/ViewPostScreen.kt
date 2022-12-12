@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.lerp
 import androidx.navigation.NavHostController
 import com.example.pokazimi.data.remote.dto.CommentRequest
 import com.example.pokazimi.data.remote.dto.LikeRequest
@@ -49,9 +50,14 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import java.io.File
 import kotlin.math.absoluteValue
 
+@OptIn(ExperimentalPagerApi::class)
 @Destination
 @Composable
 fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavigator, postId: Long = -1, userId: Long) {
+    if(navController.previousBackStackEntry?.destination == navController.currentBackStackEntry?.destination) {
+        navController.popBackStack()
+    }
+
     val context = LocalContext.current
     val systemUiController = rememberSystemUiController()
     val color = MaterialTheme.colors.background
@@ -87,9 +93,10 @@ fun ViewPostScreen(navController: NavHostController, navigator: DestinationsNavi
             .fillMaxSize()
     ) {
         Header(navController, post!!.user.id, postActivity, post.id)
-        create_img(post)?.let { PostImage(it) }
+        //create_img(post)?.let { PostImage(it) }
+        PostImageCards(post.image0, post.image1, post.image2, post.image3, post.image4)
         PostInfo(navController, navigator, post.id, post.lat, post.lon, likes, post.description, post.user.id, post.likedByUser)
-        Divide()
+        Divide(2)
         CommentSection(post.id, userId, post.comments, postActivity, navController)
         Spacer(modifier = Modifier.height(125.dp))
     }
@@ -138,19 +145,73 @@ fun Header(navController: NavHostController, userId: Long, postActivity: PostAct
     }
 }
 
+@ExperimentalPagerApi
 @Composable
-fun PostImage(image: Bitmap) {
-    Row(
+fun PostImageCards(image0: String?, image1: String?, image2: String?, image3: String?, image4: String?) {
+    val images = mutableListOf<String?>()
+
+    if(image0 != null) images.add(image0)
+    if(image1 != null) images.add(image1)
+    if(image2 != null) images.add(image2)
+    if(image3 != null) images.add(image3)
+    if(image4 != null) images.add(image4)
+
+    val pagerState = rememberPagerState(
+        pageCount = images.size,
+        initialPage = 0
+    )
+
+    Column(
         modifier = Modifier
-            .padding(horizontal = 10.dp)
             .fillMaxWidth()
-            .clip(shape = RoundedCornerShape(16.dp))
+            .height(480.dp)
     ) {
-        Image(
-            bitmap = image.asImageBitmap(),
-            contentDescription = "Image",
-            modifier = Modifier.fillMaxWidth(),
-            contentScale = ContentScale.Crop
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .weight(1f)
+        ) { page ->
+            Card(
+                modifier = Modifier
+                    .graphicsLayer {
+                        val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
+
+                        lerp(
+                            start = 0.85f,
+                            stop = 1f,
+                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                        ).also { scale ->
+                            scaleX = scale
+                            scaleY = scale
+                        }
+                        alpha = lerp(
+                            start = 0.5f,
+                            stop = 1f,
+                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                        )
+                    }
+                    .fillMaxWidth()
+                    .height(460.dp)
+                    .padding(horizontal = 10.dp),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Image(
+                        bitmap = convert(images[page])!!.asImageBitmap(),
+                        contentDescription = "Image",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
+        }
+        HorizontalPagerIndicator(
+            pagerState = pagerState,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(8.dp)
         )
     }
 }
@@ -419,8 +480,8 @@ fun create_img(post: ViewPost?): Bitmap?
     var contentPic: ByteArray
     val bmp: Bitmap
     if(post != null) {
-        if(post.image != null) {
-            contentPic = post.image.toByteArray()
+        if(post.image0 != null) {
+            contentPic = post.image0.toByteArray()
             contentPic = Base64.decode(contentPic, Base64.DEFAULT)
 
             bmp = BitmapFactory.decodeByteArray(contentPic, 0, contentPic.size)
@@ -441,90 +502,3 @@ fun convert(img: String?): Bitmap?
     bmp = BitmapFactory.decodeByteArray(pic, 0, pic.size)
     return bmp
 }
-
-//@ExperimentalPagerApi
-//@Composable
-//fun ImagePagerSlider(
-//    post: Post,
-//    photos: List<Post>
-//){
-//
-//    val pagerState = rememberPagerState(
-//        pageCount = photos.size,
-//        initialPage = 0
-//    )
-//
-//    Card(
-//        modifier = Modifier
-//            //.padding(horizontal = 10.dp, vertical = 0.dp)
-//            .fillMaxWidth(),
-//        shape = RectangleShape,
-//        backgroundColor = Color.White
-//    ) {
-//        Column(
-//            modifier = Modifier
-//                .fillMaxWidth(),
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//            verticalArrangement = Arrangement.Center
-//        ){
-//
-//            Column(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(250.dp),
-//            ){
-//
-//                HorizontalPager(
-//                    state = pagerState,
-//                    modifier = Modifier
-//                        .weight(1f)
-//                        .padding(0.dp, 30.dp, 0.dp, 15.dp)
-//                ) { page->
-//                    Card(
-//                        modifier = Modifier
-//                            .graphicsLayer {
-//                                val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
-//
-//                                lerp(
-//                                    start = 0.85f,
-//                                    stop = 1f,
-//                                    fraction = 1f - pageOffset.coerceIn(0f, 1f)
-//                                ).also { scale ->
-//                                    scaleX = scale
-//                                    scaleY = scale
-//                                }
-//
-//                                alpha = lerp(
-//                                    start = 0.5f,
-//                                    stop = 1f,
-//                                    fraction = 1f - pageOffset.coerceIn(0f, 1f)
-//                                )
-//                            }
-//                            .fillMaxWidth()
-//                            .padding(25.dp, 0.dp, 25.dp, 0.dp),
-//                        shape = RoundedCornerShape(15.dp)
-//                    ){
-//                        val photo = photos[page];
-//
-//                        Box(
-//                            modifier = Modifier
-//                                .fillMaxSize()
-//                                .background(Color.LightGray)
-//                                .align(Alignment.Center)
-//                        )
-//
-//
-//                    }
-//                }
-//            }
-//            HorizontalPagerIndicator(
-//                pagerState = pagerState,
-//                modifier = Modifier
-//                    .align(Alignment.CenterHorizontally)
-//                    .padding(top = 10.dp, bottom = 15.dp),
-//                activeColor = Color.Blue,
-//                inactiveColor = Color.LightGray
-//            )
-//        }
-//    }
-//}
