@@ -334,11 +334,13 @@ fun ProfileHeader(navigator: DestinationsNavigator, navController: NavHostContro
                         if(!following.value) {
                             following.value = !following.value
                             profileActivity.followUser(userId, userIdfromJWT)
+                            navController.navigate("profile/${userId}")
                         }
                         else {
 
                             following.value = !following.value
                             profileActivity.unfollowUser(userId, userIdfromJWT)
+                            navController.navigate("profile/${userId}")
                         }
                     }) {
                         Icon(
